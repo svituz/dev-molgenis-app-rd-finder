@@ -8,7 +8,7 @@
               <i v-if="biobank.organization_type == 'biobank'" class="fa fa-table mr-1" style="color:green" aria-hidden="true" aria-labelledby="biobank-name"></i>
               <i v-if="biobank.organization_type == 'registry'" class="fa fa-table mr-1" style="color:blue" aria-hidden="true" aria-labelledby="biobank-name"></i>
             </router-link>
-            <span id="biobank-name">{{ biobank.organization_type }}</span>
+            <span id="biobank-name">{{ biobank.name }}</span>
           </h5>
           <small v-if="biobank.quality && biobank.quality.length > 0">
             <quality-column :qualities="biobank.quality" :spacing="0"></quality-column>

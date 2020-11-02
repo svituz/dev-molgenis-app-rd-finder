@@ -30,6 +30,7 @@
                     <td>{{ mainContent.Age.value }}</td>
                   </tr>
                   <report-list-row :data="mainContent.Type">Type:</report-list-row>
+                  <report-list-row :data="mainContent.Type">More info from anja:</report-list-row>
                   <report-list-row :data="mainContent.Sex">Sex:</report-list-row>
                   <report-list-row :data="mainContent.Materials">Materials:</report-list-row>
                   <report-list-row :data="mainContent.Storage">Storage:</report-list-row>
