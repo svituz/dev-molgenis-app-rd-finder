@@ -5,8 +5,7 @@
         <div class="col-md-5" v-if="!loading">
           <h5>
             <router-link :to="'/biobank/' + biobank.id">
-              <i v-if="biobank.organization_type == 'biobank'" class="fa fa-table mr-1" style="color:green" aria-hidden="true" aria-labelledby="biobank-name"></i>
-              <i v-if="biobank.organization_type == 'registry'" class="fa fa-table mr-1" style="color:blue" aria-hidden="true" aria-labelledby="biobank-name"></i>
+              <span class="fa fa-table mr-2 icon-alignment" aria-hidden="true" aria-labelledby="biobank-name"></span>
             </router-link>
             <span id="biobank-name">{{ biobank.name }}</span>
           </h5>
@@ -23,31 +22,26 @@
         </div>
         <div class="col-md-7" v-if="!loading">
           <p>
-            <small>
-              <b>Collection types:</b>
+            <small class="mr-2">
+              <span class="font-weight-bold">Collection types:</span>
             </small>
             <small>{{ collectionTypes }}</small>
             <br />
-            <small>
-              <b>Organization type:</b>
-            </small>
-            <small>{{ biobank['organization_type'] }}</small>
-            <br />
-            <small>
-              <b>Juridical person:</b>
+            <small class="mr-2">
+              <span class="font-weight-bold">Juridical person:</span>
             </small>
             <small>{{ biobank['juridical_person'] }}</small>
             <template v-if="availableCovidTypes">
               <br />
-              <small>
-                <b>Covid-19:</b>
+              <small class="mr-2">
+                <span class="font-weight-bold">Covid-19:</span>
               </small>
               <small :key="type + index" v-for="(type, index) of availableCovidTypes">{{type}}</small>
             </template>
           </p>
         </div>
         <div v-else class="col-md-12 text-center">
-          <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+          <span class="fa fa-spinner fa-spin" aria-hidden="true"></span>
         </div>
       </div>
     </div>
@@ -57,33 +51,6 @@
     </div>
   </div>
 </template>
-
-<style>
-.table-card {
-  padding: 0.1rem;
-}
-
-.biobank-card {
-  margin-bottom: 1em;
-}
-
-.biobank-card-header {
-  background-color: #f5f5f5;
-}
-
-.biobank-card-header:hover {
-  cursor: pointer;
-  background-color: #e4e4e4;
-}
-.biobank-icon:hover {
-  cursor: pointer;
-}
-
-.covid-icon {
-  height: 1.5rem;
-  width: auto;
-}
-</style>
 
 <script>
 import CollectionsTable from '../tables/CollectionsTable.vue'
@@ -144,3 +111,35 @@ export default {
   }
 }
 </script>
+
+<style>
+  .table-card {
+    padding: 0.1rem;
+  }
+
+  .biobank-card {
+    margin-bottom: 1em;
+  }
+
+  .biobank-card-header {
+    background-color: #f5f5f5;
+  }
+
+  .biobank-card-header:hover {
+    cursor: pointer;
+    background-color: #e4e4e4;
+  }
+  .biobank-icon:hover {
+    cursor: pointer;
+  }
+
+  .covid-icon {
+    height: 1.5rem;
+    width: auto;
+  }
+
+  .icon-alignment{
+    position: relative;
+    top:1px;
+  }
+</style>
