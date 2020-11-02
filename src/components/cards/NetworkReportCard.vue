@@ -86,6 +86,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { GET_NETWORK_REPORT } from '../../store/actions'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import ReportDescription from '../report-components/ReportDescription.vue'
@@ -98,7 +99,9 @@ export default {
   name: 'NetworkReportCard',
   components: { ReportTitle, ReportDescription, ReportDetailsList, Loading, ReportCollection },
   methods: {
-    ...mapActions(['GetNetworkReport']),
+    ...mapActions({
+      getNetworkReport: GET_NETWORK_REPORT
+    }),
     back () {
       this.$router.go(-1)
     }
@@ -133,7 +136,7 @@ export default {
     }
   },
   mounted () {
-    this.GetNetworkReport([this.networkId])
+    this.getNetworkReport([this.networkId])
   }
 }
 </script>

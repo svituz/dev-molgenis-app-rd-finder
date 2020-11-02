@@ -3,13 +3,7 @@
     <b>
       <router-link :to='"/collection/"+collection.id'>{{collection.name}}</router-link>
     </b>
-
-    <table class="mg-report-details-list mb-3">
-      <report-list-row :data="collection.content.Size">Size:</report-list-row>
-      <report-list-row :data="collection.content.Materials">Materials:</report-list-row>
-      <report-list-row :data="collection.content.Data">Data:</report-list-row>
-    </table>
-
+    <report-details-list :reportDetails="collection.content"></report-details-list>
     <div v-if="collection.subCollections && collection.subCollections.length > 0" class="m-3">
       <b>Sub collections</b>
       <report-sub-collection
@@ -23,13 +17,11 @@
 </template>
 
 <script>
-import ReportListRow from '@/components/report-components/ReportListRow'
+import ReportDetailsList from '../report-components/ReportDetailsList.vue'
 
 export default {
   name: 'ReportSubCollection',
-  components: {
-    ReportListRow
-  },
+  components: { ReportDetailsList },
   props: {
     level: Number,
     collection: {

@@ -50,7 +50,7 @@ describe('NetworkReportCard', () => {
         }
       },
       actions: {
-        GetNetworkReport: () => {}
+        __GET_NETWORK_REPORT__: () => {}
       }
     })
     mocks = {

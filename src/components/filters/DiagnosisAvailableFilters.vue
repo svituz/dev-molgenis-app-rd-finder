@@ -1,8 +1,8 @@
 <template>
   <div class="card filter-card">
     <div class="card-header filter-header" @click.prevent="collapsed = !collapsed">
-      <span class="fa fa-caret-right mr-2" aria-hidden="true" v-if="collapsed"></span>
-      <span class="fa fa-caret-down mr-2" aria-hidden="true" v-else></span>
+      <i class="fa fa-caret-right" aria-hidden="true" v-if="collapsed"></i>
+      <i class="fa fa-caret-down" aria-hidden="true" v-else></i>
       Diagnosis available
     </div>
     <div class="card-body" v-if="!collapsed">
@@ -27,7 +27,6 @@
 </template>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
 <style>
 .multiselect__tag {
   max-width: 10em;
@@ -51,7 +50,10 @@
 </style>
 
 <script>
+import { QUERY_DIAGNOSIS_AVAILABLE_OPTIONS } from '../../store/actions'
+import { UPDATE_FILTER } from '../../store/mutations'
 import { mapGetters } from 'vuex'
+
 import Multiselect from 'vue-multiselect'
 
 export default {
@@ -63,7 +65,7 @@ export default {
   },
   methods: {
     getDiagnosisOptions (query) {
-      this.$store.dispatch('QueryDiagnosisAvailableOptions', query)
+      this.$store.dispatch(QUERY_DIAGNOSIS_AVAILABLE_OPTIONS, query)
     },
     getLimitText (count) {
       return `and ${count} more`
@@ -78,7 +80,7 @@ export default {
         return this.$store.state.diagnosis_available.filters
       },
       set (filters) {
-        this.$store.commit('UpdateFilter', {
+        this.$store.commit(UPDATE_FILTER, {
           name: 'diagnosis_available',
           filters: filters
         })

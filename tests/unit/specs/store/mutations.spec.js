@@ -1,4 +1,10 @@
-import mutations from '../../../../src/store/mutations'
+import { expect } from 'chai'
+import mutations, {
+  SET_COLLECTION_IDS,
+  SET_COLLECTION_TYPES,
+  SET_DATA_TYPES,
+  SET_BIOBANKS
+} from '../../../../src/store/mutations'
 import { mockState } from '../mockState'
 import { covid19CollectionNetworkSelectionId, covid19NetworkId, covid19BiobankNetworkSelectionId } from '../../../../src/store/helpers/covid19Helper'
 
@@ -9,16 +15,16 @@ describe('store', () => {
     state = mockState()
   })
   describe('mutations', () => {
-    describe('SetCountries', () => {
+    describe('SET_COUNTRIES', () => {
       it('should set the countries in the state with the payload', () => {
         const countries = [{ id: 'NL', name: 'Nederland' }, { id: 'BE', name: 'Belgie' }, { id: 'DE', name: 'Duitsland' }]
-        mutations.SetCountries(state, countries)
+        mutations.__SET_COUNTRIES__(state, countries)
 
-        expect(state.country.options).toStrictEqual([{ id: 'NL', name: 'Nederland' }, { id: 'BE', name: 'Belgie' }, { id: 'DE', name: 'Duitsland' }])
+        expect(state.country.options).to.deep.equal([{ id: 'NL', name: 'Nederland' }, { id: 'BE', name: 'Belgie' }, { id: 'DE', name: 'Duitsland' }])
       })
     })
 
-    describe('SetDataTypes', () => {
+    describe('SET_DATA_TYPES', () => {
       it('should set the data types in the state with the payload', () => {
         const dataTypes = [{
           _href: '/api/v2/eu_bbmri_eric_data_types/BIOLOGICAL_SAMPLES',
@@ -32,13 +38,13 @@ describe('store', () => {
           label: 'Genealogical records',
           ontology: 'Miabis'
         }]
-        mutations.SetDataTypes(state, dataTypes)
+        mutations[SET_DATA_TYPES](state, dataTypes)
 
-        expect(state.dataType.options).toStrictEqual(dataTypes)
+        expect(state.dataType.options).to.deep.equal(dataTypes)
       })
     })
 
-    describe('SetCollectionTypes', () => {
+    describe('SET_COLLECTION_TYPES', () => {
       it('should set the collection types in the state with the payload', () => {
         const collectionTypes = [{
           _href: '/api/v2/eu_bbmri_eric_collection_types/BIRTH_COHORT',
@@ -51,66 +57,66 @@ describe('store', () => {
           id: 'CASE_CONTROL',
           label: 'Case-Control'
         }]
-        mutations.SetCollectionTypes(state, collectionTypes)
+        mutations[SET_COLLECTION_TYPES](state, collectionTypes)
 
-        expect(state.type.options).toStrictEqual(collectionTypes)
+        expect(state.type.options).to.deep.equal(collectionTypes)
       })
     })
 
-    describe('SetMaterials', () => {
+    describe('SET_MATERIALS', () => {
       it('should set the material types in the state with the payload', () => {
         const materials = ['PLASMA', 'RNA', 'DNA']
-        mutations.SetMaterials(state, materials)
+        mutations.__SET_MATERIALS__(state, materials)
 
-        expect(state.materials.options).toStrictEqual(materials)
+        expect(state.materials.options).to.deep.equal(materials)
       })
     })
 
-    describe('SetCollectionQuality', () => {
+    describe('SET_COLLECTION_QUALITY', () => {
       it('should set the qualities in the state with the payload', () => {
         const collectionQuality = ['eric']
-        mutations.SetCollectionQuality(state, collectionQuality)
+        mutations.__SET_COLLECTION_QUALITY__(state, collectionQuality)
 
-        expect(state.collection_quality.options).toStrictEqual(collectionQuality)
+        expect(state.collection_quality.options).to.deep.equal(collectionQuality)
       })
     })
 
-    describe('SetBiobankQuality', () => {
+    describe('SET_BIOBANK_QUALITY', () => {
       it('should set the qualities in the state with the payload', () => {
         const biobankQuality = ['eric']
-        mutations.SetBiobankQuality(state, biobankQuality)
+        mutations.__SET_BIOBANK_QUALITY__(state, biobankQuality)
 
-        expect(state.biobank_quality.options).toStrictEqual(biobankQuality)
+        expect(state.biobank_quality.options).to.deep.equal(biobankQuality)
       })
     })
 
-    describe('SetCovid19', () => {
+    describe('SET_COVID_19', () => {
       it('should set the COVID19 options in the state with the payload', () => {
         const covidOptionsLabel = [{ id: 'covid19', label: 'member of covid 19 network' }]
-        mutations.SetCovid19(state, covidOptionsLabel)
+        mutations.__SET_COVID_19__(state, covidOptionsLabel)
 
-        expect(state.covid19.options).toStrictEqual(covidOptionsLabel)
+        expect(state.covid19.options).to.deep.equal(covidOptionsLabel)
       })
     })
 
-    describe('SetNetworkOptions', () => {
+    describe('SET_NETWORK_OPTIONS', () => {
       it('should set the network options for biobank and collections without covid19', () => {
         const testCase = [{ id: 'test_network', label: 'My awesome test network' }]
         const covidOptionsLabel = [{ id: covid19NetworkId, name: 'member of covid 19 network' }, testCase[0]]
-        mutations.SetNetworkOptions(state, covidOptionsLabel)
+        mutations.__SET_NETWORK_OPTIONS__(state, covidOptionsLabel)
 
-        expect(state.biobank_network.options).toStrictEqual(testCase)
-        expect(state.collection_network.options).toStrictEqual(testCase)
+        expect(state.biobank_network.options).to.deep.equal(testCase)
+        expect(state.collection_network.options).to.deep.equal(testCase)
       })
     })
 
-    describe('SetDiagnosisAvailable', () => {
+    describe('SET_DIAGNOSIS_AVAILABLE', () => {
       it('should set the diagnosis available in the state with the payload', () => {
         const payload = [{
           code: 'C22.3',
           label: 'Angiosarcoma of liver'
         }]
-        mutations.SetDiagnosisAvailable(state, payload)
+        mutations.__SET_DIAGNOSIS_AVAILABLE__(state, payload)
 
         const expected = [
           {
@@ -119,45 +125,45 @@ describe('store', () => {
             originalLabel: 'Angiosarcoma of liver'
           }
         ]
-        expect(state.diagnosis_available.options).toStrictEqual(expected)
+        expect(state.diagnosis_available.options).to.deep.equal(expected)
       })
     })
 
-    describe('UpdateFilter', () => {
+    describe('UPDATE_FILTER', () => {
       it('should update the list of filters for a specific state key', () => {
         const countries = ['NL', 'BE']
-        mutations.UpdateFilter(state, { name: 'country', filters: countries })
+        mutations.__UPDATE_FILTER__(state, { name: 'country', filters: countries })
 
-        expect(state.country.filters).toStrictEqual(countries)
+        expect(state.country.filters).to.deep.equal(countries)
       })
 
       it('should only set covid19networkId to biobank_network filter when covid19network biobank checkbox has been selected', () => {
-        mutations.SetCovid19Network(state, [covid19BiobankNetworkSelectionId])
-        expect(state.biobank_network.filters).toStrictEqual([covid19NetworkId])
-        expect(state.collection_network.filters).toStrictEqual([])
+        mutations.__SET_COVID_19_NETWORK__(state, [covid19BiobankNetworkSelectionId])
+        expect(state.biobank_network.filters).to.deep.equal([covid19NetworkId])
+        expect(state.collection_network.filters).to.deep.equal([])
       })
 
       it('should only set covid19networkId to collection_network filter when covid19network collection checkbox has been selected', () => {
-        mutations.SetCovid19Network(state, [covid19CollectionNetworkSelectionId])
-        expect(state.collection_network.filters).toStrictEqual([covid19NetworkId])
-        expect(state.biobank_network.filters).toStrictEqual([])
+        mutations.__SET_COVID_19_NETWORK__(state, [covid19CollectionNetworkSelectionId])
+        expect(state.collection_network.filters).to.deep.equal([covid19NetworkId])
+        expect(state.biobank_network.filters).to.deep.equal([])
       })
 
       it('should clear biobank covid19network id if not selected', () => {
         state.biobank_network.filters = ['networkA', covid19NetworkId, 'networkB']
         state.collection_network.filters = [covid19NetworkId]
-        mutations.SetCovid19Network(state, [covid19CollectionNetworkSelectionId])
-        expect(state.biobank_network.filters).toStrictEqual(['networkA', 'networkB'])
+        mutations.__SET_COVID_19_NETWORK__(state, [covid19CollectionNetworkSelectionId])
+        expect(state.biobank_network.filters).to.deep.equal(['networkA', 'networkB'])
       })
 
       it('should only set the covid19 network id once, even if already present', () => {
         state.collection_network.filters = [covid19NetworkId]
-        mutations.SetCovid19Network(state, [covid19CollectionNetworkSelectionId])
-        expect(state.collection_network.filters).toStrictEqual([covid19NetworkId])
+        mutations.__SET_COVID_19_NETWORK__(state, [covid19CollectionNetworkSelectionId])
+        expect(state.collection_network.filters).to.deep.equal([covid19NetworkId])
       })
     })
 
-    describe('ResetFilters', () => {
+    describe('RESET_FILTERS', () => {
       it('should reset all the filters in the state', () => {
         state.country = {
           filters: ['AT'],
@@ -184,7 +190,7 @@ describe('store', () => {
           options: [{ id: 'type' }]
         }
 
-        mutations.ResetFilters(state)
+        mutations.__RESET_FILTERS__(state)
         const expected = mockState()
         expected.country.options = [{ id: 'AT', name: 'Austria' }]
         expected.materials.options = [{ id: 'PLASMA', label: 'Plasma' }]
@@ -192,14 +198,14 @@ describe('store', () => {
         expected.covid19.options = [{ id: 'covid19' }]
         expected.dataType.options = [{ id: 'type' }]
 
-        expect(state.country).toStrictEqual(expected.country)
-        expect(state.materials).toStrictEqual(expected.materials)
-        expect(state.diagnosis_available).toStrictEqual(expected.diagnosis_available)
-        expect(state.collection_quality).toStrictEqual(expected.collection_quality)
+        expect(state.country).to.deep.equal(expected.country)
+        expect(state.materials).to.deep.equal(expected.materials)
+        expect(state.diagnosis_available).to.deep.equal(expected.diagnosis_available)
+        expect(state.collection_quality).to.deep.equal(expected.collection_quality)
       })
     })
 
-    describe('SetBiobanks', () => {
+    describe('SET_BIOBANKS', () => {
       it('should add the biobanks to the store', () => {
         const biobank1 = { id: 'biobank1', collections: [] }
         const biobank2 = { id: 'biobank2', collections: [] }
@@ -209,9 +215,9 @@ describe('store', () => {
 
         const biobanks = [biobank2]
 
-        mutations.SetBiobanks(state, biobanks)
+        mutations[SET_BIOBANKS](state, biobanks)
 
-        expect(state.biobanks).toStrictEqual({ biobank1, biobank2 })
+        expect(state.biobanks).to.deep.equal({ biobank1, biobank2 })
       })
       it('should reconstruct the collections tree', () => {
         const biobanks = [{
@@ -242,31 +248,41 @@ describe('store', () => {
               }]
             }]
         }
-        mutations.SetBiobanks(state, biobanks)
+        mutations[SET_BIOBANKS](state, biobanks)
 
-        expect(state.biobanks.biobank1).toStrictEqual(expected)
+        expect(state.biobanks.biobank1).to.deep.equal(expected)
       })
     })
 
-    describe('SetError', () => {
+    describe('SET_COLLECTION_IDS', () => {
+      it('should set the collection ids in the state with the payload', () => {
+        const collectionIds = ['1', '2']
+
+        mutations[SET_COLLECTION_IDS](state, collectionIds)
+
+        expect(state.collectionIds).to.deep.equal(collectionIds)
+      })
+    })
+
+    describe('SET_ERROR', () => {
       it('should set the error in the state with the payload', () => {
         const error = 'error'
-        mutations.SetError(state, error)
+        mutations.__SET_ERROR__(state, error)
 
-        expect(state.error).toBe(error)
+        expect(state.error).to.equal(error)
       })
     })
 
-    describe('SetSearch', () => {
+    describe('SET_SEARCH', () => {
       it('should set the search query in the state with the payload', () => {
         const search = 'this is a search'
-        mutations.SetSearch(state, search)
+        mutations.__SET_SEARCH__(state, search)
 
-        expect(state.search).toBe(search)
+        expect(state.search).to.equal(search)
       })
     })
 
-    describe('MapQueryToState', () => {
+    describe('MAP_QUERY_TO_STATE', () => {
       it('should map everything from router query to state without diagnoses', () => {
         state.route = {
           query: {
@@ -284,19 +300,19 @@ describe('store', () => {
           }
         }
 
-        mutations.MapQueryToState(state)
+        mutations.__MAP_QUERY_TO_STATE__(state)
 
-        expect(state.country.filters).toStrictEqual(['NL', 'BE'])
-        expect(state.materials.filters).toStrictEqual(['RNA', 'PLASMA'])
-        expect(state.type.filters).toStrictEqual(['BIRTH_COHORT'])
-        expect(state.covid19.filters).toStrictEqual(['covid19'])
-        expect(state.dataType.filters).toStrictEqual(['BIOLOGICAL_SAMPLES'])
-        expect(state.collection_quality.filters).toStrictEqual(['eric', 'self'])
-        expect(state.covid19.filters).toStrictEqual(['covid19'])
-        expect(state.biobank_network.filters).toStrictEqual(['networkA', 'networkB'])
-        expect(state.biobank_quality.filters).toStrictEqual(['qualityA'])
-        expect(state.search).toBe('search')
-        expect(state.nToken).toBe('29djgCm29104958f7dLqopf92JDJKS')
+        expect(state.country.filters).to.deep.equal(['NL', 'BE'])
+        expect(state.materials.filters).to.deep.equal(['RNA', 'PLASMA'])
+        expect(state.type.filters).to.deep.equal(['BIRTH_COHORT'])
+        expect(state.covid19.filters).to.deep.equal(['covid19'])
+        expect(state.dataType.filters).to.deep.equal(['BIOLOGICAL_SAMPLES'])
+        expect(state.collection_quality.filters).to.deep.equal(['eric', 'self'])
+        expect(state.covid19.filters).to.deep.equal(['covid19'])
+        expect(state.biobank_network.filters).to.deep.equal(['networkA', 'networkB'])
+        expect(state.biobank_quality.filters).to.deep.equal(['qualityA'])
+        expect(state.search).to.equal('search')
+        expect(state.nToken).to.equal('29djgCm29104958f7dLqopf92JDJKS')
       })
 
       it('should map everything from router query to state with diagnoses', () => {
@@ -314,7 +330,7 @@ describe('store', () => {
           code: 'C22.3',
           label: 'Angiosarcoma of liver'
         }]
-        mutations.MapQueryToState(state, { diagnoses: payload })
+        mutations.__MAP_QUERY_TO_STATE__(state, { diagnoses: payload })
 
         const expected = [
           {
@@ -324,16 +340,16 @@ describe('store', () => {
           }
         ]
 
-        expect(state.country.filters).toStrictEqual(['NL', 'BE'])
-        expect(state.materials.filters).toStrictEqual(['RNA', 'PLASMA'])
-        expect(state.collection_quality.filters).toStrictEqual(['eric', 'self'])
-        expect(state.diagnosis_available.filters).toStrictEqual(expected)
-        expect(state.search).toBe('search')
-        expect(state.nToken).toBe('29djgCm29104958f7dLqopf92JDJKS')
+        expect(state.country.filters).to.deep.equal(['NL', 'BE'])
+        expect(state.materials.filters).to.deep.equal(['RNA', 'PLASMA'])
+        expect(state.collection_quality.filters).to.deep.equal(['eric', 'self'])
+        expect(state.diagnosis_available.filters).to.deep.equal(expected)
+        expect(state.search).to.equal('search')
+        expect(state.nToken).to.equal('29djgCm29104958f7dLqopf92JDJKS')
       })
     })
 
-    describe('SetBiobankQualityBiobanks', () => {
+    describe('SET_BIOBANK_QUALITY_BIOBANKS', () => {
       it('should set the biobanks that match the applied quality standards filter', () => {
         const payload = [
           {
@@ -355,9 +371,9 @@ describe('store', () => {
 
         const expected = ['biobank-1', 'biobank-2']
 
-        mutations.SetBiobankQualityBiobanks(state, payload)
+        mutations.__SET_BIOBANK_QUALITY_BIOBANKS__(state, payload)
 
-        expect(state.biobank_quality.biobanks).toStrictEqual(expected)
+        expect(state.biobank_quality.biobanks).to.deep.equal(expected)
       })
 
       it('should set an invalid collection id when the filter applied on the biobank quality standards returns no matching biobanks', () => {
@@ -367,13 +383,13 @@ describe('store', () => {
 
         const expected = ['invalid_biobank']
 
-        mutations.SetBiobankQualityBiobanks(state, payload)
+        mutations.__SET_BIOBANK_QUALITY_BIOBANKS__(state, payload)
 
-        expect(state.biobank_quality.biobanks).toStrictEqual(expected)
+        expect(state.biobank_quality.biobanks).to.deep.equal(expected)
       })
     })
 
-    describe('SetCollectionQualityCollections', () => {
+    describe('SET_COLLECTION_QUALITY_COLLECTIONS', () => {
       it('should set the cols that match the applied quality standards filter', () => {
         const payload = [
           {
@@ -395,9 +411,9 @@ describe('store', () => {
 
         const expected = ['col-1', 'col-2']
 
-        mutations.SetCollectionQualityCollections(state, payload)
+        mutations.__SET_COLLECTION_QUALITY_COLLECTIONS__(state, payload)
 
-        expect(state.collection_quality.collections).toStrictEqual(expected)
+        expect(state.collection_quality.collections).to.deep.equal(expected)
       })
 
       it('should set an invalid collection id when the filter applied on the col quality standards returns no matching cols', () => {
@@ -407,21 +423,21 @@ describe('store', () => {
 
         const expected = ['invalid_collection']
 
-        mutations.SetCollectionQualityCollections(state, payload)
+        mutations.__SET_COLLECTION_QUALITY_COLLECTIONS__(state, payload)
 
-        expect(state.collection_quality.collections).toStrictEqual(expected)
+        expect(state.collection_quality.collections).to.deep.equal(expected)
       })
     })
 
-    describe('SetBiobankReport', () => {
+    describe('SET_BIOBANK_REPORT', () => {
       it('should set the biobank report value in the state with the payload', () => {
         const payload = { id: 'biobank-1-other' }
-        mutations.SetBiobankReport(state, payload)
-        expect(state.biobankReport).toStrictEqual(payload)
+        mutations.__SET_BIOBANK_REPORT__(state, payload)
+        expect(state.biobankReport).to.deep.equal(payload)
       })
     })
 
-    describe('SetCollectionReport', () => {
+    describe('SET_COLLECTION_REPORT', () => {
       it('should set the collection report value in the state with the payload', () => {
         const payload = {
           _meta: {
@@ -432,13 +448,13 @@ describe('store', () => {
           description: 'beautiful samples'
         }
 
-        mutations.SetCollectionReport(state, payload)
+        mutations.__SET_COLLECTION_REPORT__(state, payload)
 
-        expect(state.collectionReport).toStrictEqual(payload)
+        expect(state.collectionReport).to.deep.equal(payload)
       })
     })
 
-    describe('SetNetworkReport', () => {
+    describe('SET_NETWORK_REPORT', () => {
       it('should set the network report value in the state with the payload', () => {
         const payload = {
           _meta: {
@@ -449,79 +465,41 @@ describe('store', () => {
           description: 'beautiful data'
         }
 
-        mutations.SetNetworkReport(state, payload)
+        mutations.__SET_NETWORK_REPORT__(state, payload)
 
-        expect(state.networkReport.network).toStrictEqual(payload)
+        expect(state.networkReport.network).to.deep.equal(payload)
       })
     })
 
-    describe('SetNetworkCollections', () => {
+    describe('SET_NETWORK_COLLECTIONS', () => {
       it('should set the network collections in the state with the payload', () => {
         const payload = []
-        mutations.SetNetworkCollections(state, payload)
-        expect(state.networkReport.collections).toStrictEqual(payload)
+        mutations.__SET_NETWORK_COLLECTIONS__(state, payload)
+        expect(state.networkReport.collections).to.deep.equal(payload)
       })
     })
 
-    describe('SetNetworkBiobanks', () => {
+    describe('SET_NETWORK_BIOBANKS', () => {
       it('should set the network biobanks in the state with the payload', () => {
         const payload = []
-        mutations.SetNetworkBiobanks(state, payload)
-        expect(state.networkReport.biobanks).toStrictEqual(payload)
+        mutations.__SET_NETWORK_BIOBANKS__(state, payload)
+        expect(state.networkReport.biobanks).to.deep.equal(payload)
       })
     })
 
-    describe('SetLoading', () => {
+    describe('SET_LOADING', () => {
       it('should set the loading boolean in the state', () => {
-        mutations.SetLoading(state, true)
-        expect(state.isLoading).toStrictEqual(true)
+        mutations.__SET_LOADING__(state, true)
+
+        expect(state.isLoading).to.deep.equal(true)
       })
     })
 
-    describe('SetLoading', () => {
+    describe('SET_LOADING', () => {
       it('should set the loading boolean in the state', () => {
-        mutations.SetLoading(state, true)
-        expect(state.isLoading).toStrictEqual(true)
-      })
-    })
+        mutations.__SET_LOADING__(state, true)
 
-    describe('Negotiator logic', () => {
-      it('should set the Podium boolean if any row in the negotiator config includes podium', () => {
-        mutations.SetPodium(state, { items: [{ id: 'podium-identifier' }] })
-        expect(state.isPodium).toStrictEqual(true)
-      })
-
-      it('should map podium collection ids from response', () => {
-        const response = {
-          items: [
-            { data: { id: 'A' } },
-            { data: { id: 'B' } },
-            { data: { id: 'C' } }
-          ]
-        }
-
-        mutations.SetPodiumCollections(state, response)
-        expect(state.podiumCollectionIds).toStrictEqual(['A', 'B', 'C'])
-      })
-
-      it('should set the should get the correct tables from the negotiator config', () => {
-        const response = {
-          items: [{
-            id: 'bbmri-eric-model',
-            entity: {
-              id: 'table_for_collection'
-            },
-            biobankId: {
-              refEntityType: {
-                id: 'table_for_biobank'
-              }
-            }
-          }]
-        }
-
-        mutations.SetNegotiatorEntities(state, response)
-        expect(state.negotiatorCollectionEntityId).toStrictEqual('table_for_collection')
-        expect(state.negotiatorBiobankEntityId).toStrictEqual('table_for_biobank')
+        expect(state.isLoading).to.deep.equal(true)
       })
     })
   })

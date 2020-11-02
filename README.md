@@ -22,12 +22,15 @@ You can configure 2 main settings in the Biobank Explorer.
 
 ### Enable Google Analytics
 We use the [Vue Analytics library](https://github.com/MatteoGabriele/vue-analytics) to connect to Google Analytics.
-As administrator go to the application settings (/menu/admin/settings/sys_set_app)
+Add the GA_KEY parameter: 
 
-Scroll down to Tracking and fill in the fields and add the GA_KEY to:
+```js
+  window.__INITIAL_STATE__ = {
+    GA_KEY: 'UA-XXXXXXXX-X'
+  }
+```
 
-> Google analytics tracking ID
-
+to your index.html or freemarker template to start tracking your Biobank Explorer app.
 
 ### Configuring Negotiator
 
@@ -40,9 +43,12 @@ This setting can be toggled using the runtimeOptions section in the webpack.prod
 
 `runtimeOptions.showCountryFacet` should contain a boolean value indicating if the country facet needs to be shown.
 
+`runtimeOptions.preConfiguredCountyCode` should contain a valid country code if the showCountryFacet options is set to `false`.
+
 ```js
 "appOptions": {
-    "showCountryFacet": true
+    "showCountryFacet": true,
+    "preConfiguredCountyCode": ""
   }
 ```
 
