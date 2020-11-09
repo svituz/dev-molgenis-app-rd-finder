@@ -13,7 +13,7 @@ const BIOBANK_QUALITY_API_PATH = '/api/v2/eu_bbmri_eric_assess_level_bio'
 const COUNTRY_API_PATH = '/api/v2/eu_bbmri_eric_countries'
 const MATERIALS_API_PATH = '/api/v2/eu_bbmri_eric_material_types'
 const COLLECTION_TYPES_API_PATH = '/api/v2/eu_bbmri_eric_collection_types'
-const ANJA_path = '/api/v2/eu_bbmri_eric_ressource_types'
+const ANJA_path_ = '/api/v2/eu_bbmri_eric_age_units'
 const DATA_TYPES_API_PATH = '/api/v2/eu_bbmri_eric_data_types'
 const DISEASE_API_PATH = '/api/v2/eu_bbmri_eric_disease_types'
 const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_col_qual_info'
@@ -67,8 +67,8 @@ export default {
         })
     },
     GetAnjaOptions({ commit }) {
-        api.get(ANJA_path).then(response => {
-            commit('SetCollectionTypes', response.items)
+        api.get(ANJA_path_).then(response => {
+            commit('SetDataTypes', response.items)
         }, error => {
             commit('SetError', error)
         })

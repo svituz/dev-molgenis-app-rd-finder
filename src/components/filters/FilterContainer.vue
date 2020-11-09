@@ -141,8 +141,8 @@ export default {
           maxVisibleOptions: 25
         },
         {
-          name: 'type',
-          label: 'Search New Stuff by anja',
+          name: 'type2',
+          label: 'rrr Search New Stuff by anja',
           options: this.anjaOptions,
           initiallyCollapsed: !this.$store.state.route.query.type,
           filters: this.$store.state.type.filters,
