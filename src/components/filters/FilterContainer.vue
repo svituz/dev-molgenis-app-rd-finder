@@ -5,7 +5,7 @@
       v-model="search"
       :initiallyCollapsed="!$store.state.route.query.search"
       placeholder
-      description="search by name, id, acronym and press enter"
+      description="anja search by name, id, acronym and press enter"
     ></string-filter>
    <checkbox-filters
       class="covid-filter"
@@ -62,6 +62,7 @@ export default {
       countryOptions: 'getCountryOptions',
       materialOptions: 'getMaterialOptions',
       collectionQualityOptions: 'getCollectionQualityOptions',
+      anjaOptions: 'getAnjaOptions',
       biobankQualityOptions: 'getBiobankQualityOptions',
       typesOptions: 'getTypesOptions',
       biobankNetworkOptions: 'getBiobankNetworkOptions',
@@ -132,17 +133,17 @@ export default {
           maxVisibleOptions: 25
         },
         {
-          name: 'collection_quality',
-          label: 'Collection quality marks',
-          options: this.collectionQualityOptions,
-          initiallyCollapsed: !this.$store.state.route.query.collection_quality,
-          filters: this.$store.state.collection_quality.filters,
+          name: 'type',
+          label: 'Collection types versuch1',
+          options: this.typesOptions,
+          initiallyCollapsed: !this.$store.state.route.query.type,
+          filters: this.$store.state.type.filters,
           maxVisibleOptions: 25
         },
         {
           name: 'type',
-          label: 'Collection types',
-          options: this.typesOptions,
+          label: 'Search New Stuff by anja',
+          options: this.anjaOptions,
           initiallyCollapsed: !this.$store.state.route.query.type,
           filters: this.$store.state.type.filters,
           maxVisibleOptions: 25
@@ -196,9 +197,10 @@ export default {
   mounted () {
     this.$store.dispatch('GetCountryOptions')
     this.$store.dispatch('GetMaterialsOptions')
-    this.$store.dispatch('GetCollectionQualityOptions')
+    this.$store.dispatch('getCollectionQualityOptions')
     this.$store.dispatch('GetBiobankQualityOptions')
     this.$store.dispatch('GetTypesOptions')
+    this.$store.dispatch('GetAnjaOptions')
     this.$store.dispatch('GetDataTypeOptions')
     this.$store.dispatch('GetCovid19Options')
     this.$store.dispatch('GetNetworkOptions')
