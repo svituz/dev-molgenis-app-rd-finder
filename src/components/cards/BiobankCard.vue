@@ -5,8 +5,8 @@
         <div class="col-md-5" v-if="!loading">
           <h5>
             <router-link :to="'/biobank/' + biobank.id">
-              <i v-if="biobank.ressource_types == 'Biobank'" class="fa fa-table mr-1" style="color:green" aria-hidden="true" aria-labelledby="biobank-name"></i>
-              <i v-if="biobank.ressource_types == 'Registry'" class="fa fa-table mr-1" style="color:blue" aria-hidden="true" aria-labelledby="biobank-name"></i>
+              <i v-if="biobank.ressource_types == 'BIOBANK'" class="fa fa-table mr-1" style="color:green" aria-hidden="true" aria-labelledby="biobank-name"></i>
+              <i v-if="biobank.ressource_types == 'REGISTRY'" class="fa fa-table mr-1" style="color:blue" aria-hidden="true" aria-labelledby="biobank-name"></i>
             </router-link>
             <span id="biobank-name">{{ biobank.name }}</span>
           </h5>
@@ -31,7 +31,7 @@
             <small>
               <b>Ressource type:</b>
             </small>
-            <small>{{ biobank['ressource_types'] }}</small>
+            <small>{{ biobank['ressource_types']['label'] }}</small>
             <br />
             <small>
               <b>Juridical person:</b>
