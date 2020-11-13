@@ -62,7 +62,7 @@ export default {
       countryOptions: 'getCountryOptions',
       materialOptions: 'getMaterialOptions',
       collectionQualityOptions: 'getCollectionQualityOptions',
-      anjaOptions: 'getAnjaOptions',
+      ressourceOptions: 'getRessourceOptions',
       biobankQualityOptions: 'getBiobankQualityOptions',
       typesOptions: 'getTypesOptions',
       biobankNetworkOptions: 'getBiobankNetworkOptions',
@@ -133,45 +133,21 @@ export default {
           maxVisibleOptions: 25
         },
         {
-          name: 'type',
-          label: 'Collection types versuch1',
-          options: this.typesOptions,
-          initiallyCollapsed: !this.$store.state.route.query.type,
-          filters: this.$store.state.type.filters,
-          maxVisibleOptions: 25
-        },
-        {
-          name: 'type',
-          label: 'Search New Stuff by anja',
-          options: this.anjaOptions,
-          initiallyCollapsed: !this.$store.state.route.query.type,
-          filters: this.$store.state.type.filters,
-          maxVisibleOptions: 25
-        },
-        {
-          name: 'biobank_network',
-          label: 'Biobank network',
-          options: this.biobankNetworkOptions,
-          initiallyCollapsed: !this.$store.state.route.query.biobank_network,
-          filters: this.$store.state.biobank_network.filters,
-          maxVisibleOptions: 25
-        },
-        {
-          name: 'collection_network',
-          label: 'Collection network',
-          options: this.collectionNetworkOptions,
-          initiallyCollapsed: !this.$store.state.route.query.collection_network,
-          filters: this.$store.state.collection_network.filters,
-          maxVisibleOptions: 25
-        },
-        {
           name: 'dataType',
           label: 'Data types',
           options: this.dataTypeOptions,
           initiallyCollapsed: !this.$store.state.route.query.dataType,
           filters: this.$store.state.dataType.filters,
           maxVisibleOptions: 25
-        }
+        },        
+        {
+          name: 'ressourceTypes',
+          label: 'Search New Stuff',
+          options: this.ressourceOptions,
+          initiallyCollapsed: !this.$store.state.route.query.ressourceTypes,
+          filters: this.$store.state.ressourceTypes.filters,
+          maxVisibleOptions: 25
+        },
       ].filter(facet => {
         // config option showCountryFacet is used to toggle Country facet
         return !(this.showCountryFacet === false && facet.name === 'country')
@@ -200,7 +176,7 @@ export default {
     this.$store.dispatch('getCollectionQualityOptions')
     this.$store.dispatch('GetBiobankQualityOptions')
     this.$store.dispatch('GetTypesOptions')
-    this.$store.dispatch('GetAnjaOptions')
+    this.$store.dispatch('GetRessourceOptions')
     this.$store.dispatch('GetDataTypeOptions')
     this.$store.dispatch('GetCovid19Options')
     this.$store.dispatch('GetNetworkOptions')
