@@ -72,7 +72,7 @@ export default {
     getCollectionQualityOptions: state => state.collection_quality.options,
     getBiobankQualityOptions: state => state.biobank_quality.options,
     getTypesOptions: state => state.type.options,
-    getAnjaOptions: state => state.type.options,
+    getRessourceOptions: state => state.ressourceTypes.options,
     getDataTypeOptions: state => state.dataType.options,
     getDiagnosisAvailableOptions: state => state.diagnosis_available.options,
     showCountryFacet: state => state.showCountryFacet,
@@ -130,6 +130,9 @@ export default {
             activeFilters.covid19network = state.covid19network.options.filter(option => state.covid19network.filters.includes(option.id))
         }
 
+        if (state.ressourceTypes.filters.length > 0) {
+            activeFilters.ressourceTypes = state.ressourceTypes.options.filter(option => state.ressourceTypes.filters.includes(option.id))
+        }
         return activeFilters
     },
     getErrorMessage: state => {
