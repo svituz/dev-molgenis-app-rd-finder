@@ -63,6 +63,7 @@ export default {
       materialOptions: 'getMaterialOptions',
       collectionQualityOptions: 'getCollectionQualityOptions',
       ressourceOptions: 'getRessourceOptions',
+      orderMagOptions: 'getOrderMagOptions',
       biobankQualityOptions: 'getBiobankQualityOptions',
       typesOptions: 'getTypesOptions',
       biobankNetworkOptions: 'getBiobankNetworkOptions',
@@ -142,12 +143,20 @@ export default {
         },        
         {
           name: 'ressourceTypes',
-          label: 'Search New Stuff',
+          label: 'Search New Stuff anja',
           options: this.ressourceOptions,
           initiallyCollapsed: !this.$store.state.route.query.ressourceTypes,
           filters: this.$store.state.ressourceTypes.filters,
           maxVisibleOptions: 25
         },
+        {
+          name: 'orderMag',
+          label: 'Order of Magnitude',
+          options: this.orderMagOptions,
+          initiallyCollapsed: !this.$store.state.route.query.orderMag,
+          filters: this.$store.state.orderMag.filters,
+          maxVisibleOptions: 25
+        }
       ].filter(facet => {
         // config option showCountryFacet is used to toggle Country facet
         return !(this.showCountryFacet === false && facet.name === 'country')
@@ -180,6 +189,7 @@ export default {
     this.$store.dispatch('GetDataTypeOptions')
     this.$store.dispatch('GetCovid19Options')
     this.$store.dispatch('GetNetworkOptions')
+    this.$store.dispatch('GetOrderMagOptions')
   },
   components: { StringFilter, CheckboxFilters, DiagnosisAvailableFilters }
 }

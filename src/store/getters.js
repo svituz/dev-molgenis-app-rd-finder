@@ -80,6 +80,10 @@ export default {
     getCovid19NetworkOptions: state => state.covid19network.options,
     getBiobankNetworkOptions: state => state.biobank_network.options,
     getCollectionNetworkOptions: state => state.collection_network.options,
+    getOrderMagOptions: state => state.orderMag.options,
+
+
+
     /**
      * Get map of active filters
      */
@@ -132,6 +136,9 @@ export default {
 
         if (state.ressourceTypes.filters.length > 0) {
             activeFilters.ressourceTypes = state.ressourceTypes.options.filter(option => state.ressourceTypes.filters.includes(option.id))
+        }
+        if (state.orderMag.filters.length > 0) {
+            activeFilters.orderMag = state.orderMag.options.filter(option => state.orderMag.filters.includes(option.id))
         }
         return activeFilters
     },

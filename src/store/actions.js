@@ -21,6 +21,7 @@ const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_bio_qual_info'
 const COVID_19_API_PATH = '/api/v2/eu_bbmri_eric_COVID_19'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
 const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfig?attrs=*,biobankId(refEntityType)'
+const ORDERMAG_API_PATH = '/api/v2/eu_bbmri_eric_biobank_size'
     /**/
 
 /* Query Parameters */
@@ -80,6 +81,14 @@ export default {
             commit('SetError', error)
         })
     },
+    GetOrderMagOptions({ commit }) {
+        api.get(ORDERMAG_API_PATH).then(response => {
+            commit('SetOrderMag', response.items)
+        }, error => {
+            commit('SetError', error)
+        })
+    },
+
     GetCovid19Options({ commit }) {
         api.get(COVID_19_API_PATH).then(response => {
             commit('SetCovid19', response.items)

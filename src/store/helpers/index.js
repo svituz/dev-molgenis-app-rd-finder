@@ -13,6 +13,7 @@ export const createRSQLQuery = (state) => transformToRSQL({
     operator: 'AND',
     operands: flatten([
         createInQuery('country', state.country.filters),
+        createInQuery('order_of_magnitude_donors', state.orderMag.filters),
         createInQuery('materials', state.materials.filters),
         createInQuery('type', state.type.filters),
         createInQuery('data_categories', state.dataType.filters),
@@ -78,6 +79,7 @@ const getHumanReadableString = (state) => {
     const biobankNetwork = state.biobank_network.filters
     const collectionNetwork = state.collection_network.filters
     const ressourceTypes = state.ressourceTypes.filters
+    const orderMag = state.orderMag.filters
 
 
     if (state.search.length > 0) {
@@ -132,6 +134,12 @@ const getHumanReadableString = (state) => {
     if (ressourceTypes.length > 0) {
         if (humanReadableString.length > 0) humanReadableString += ' and '
         humanReadableString += 'selected ressource types are ' + ressourceTypes.join(',')
+    }
+
+
+    if (orderMag.length > 0) {
+        if (humanReadableString.length > 0) humanReadableString += ' and '
+        humanReadableString += 'selected orderMag are ' + orderMag.join(',')
     }
     return humanReadableString
 }

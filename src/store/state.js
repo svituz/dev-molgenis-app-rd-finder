@@ -79,5 +79,9 @@ export default {
     ressourceTypes: {
         filters: [],
         options: []
+    },
+    orderMag: {
+        filters: [],
+        options: []
     }
 }

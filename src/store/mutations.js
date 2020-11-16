@@ -67,6 +67,9 @@ export default {
     SetRessourceTypes(state, ressourceTypes) {
         state.ressourceTypes.options = ressourceTypes
     },
+    SetOrderMag(state, orderMag) {
+        state.orderMag.options = orderMag
+    },
     /**
      * Register the filters for country, materials, standards, and diagnosis_available in the state
      * so they can be used for 1) the URL and 2) retrieving biobanks based on IDs
@@ -100,6 +103,7 @@ export default {
         state.biobank_network.filters = []
         state.collection_network.filters = []
         state.ressourceTypes.filters = []
+        state.orderMag.filters = []
     },
     SetBiobanks(state, biobanks) {
         biobanks.forEach(biobank => {
@@ -182,6 +186,10 @@ export default {
 
         if (query.dataType) {
             state.dataType.filters = query.dataType.split(',')
+        }
+
+        if (query.orderMag) {
+            state.orderMag.filters = query.orderMag.split(',')
         }
 
         if (query.covid19) {
