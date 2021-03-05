@@ -1,68 +1,27 @@
-import { getUniqueIdArray } from '../utils'
-import { fixCollectionTree } from './helpers'
-import { covid19NetworkFacetName, covid19NetworkId, covid19BiobankNetworkSelectionId, covid19CollectionNetworkSelectionId } from './helpers/covid19Helper'
 import Vue from 'vue'
+import { createBookmark } from '../utils/bookmarkMapper'
+import { fixCollectionTree } from './helpers'
+import filterDefinitions from '../utils/filterDefinitions'
 
 const negotiatorConfigIds = ['directory', 'bbmri-eric-model']
 
-const combineCodeAndLabels = (diagnoses) => {
-  return diagnoses.map(diagnosis => {
-    diagnosis.originalLabel = diagnosis.label
-    diagnosis.label = diagnosis.code + ' - ' + diagnosis.label
-    return diagnosis
-  })
-}
-
-const getUniqueFilterMatches = (filter, selector) => {
-  const matches = filter.map((match) => { return match[selector].id })
-  return getUniqueIdArray(matches)
-}
-
-const hasFilterWithoutMatches = (filter, matches) => {
-  return filter.length && !matches.length
-}
-
 export default {
-  /**
-   * Update the options for the different filters available in the biobank explorer
-   */
-  SetCountries (state, countries) {
-    state.country.options = countries
+  SetCovidNetworkFilter (state, { name, value, router }) {
+    if (state.filters.selections[name]) {
+      Vue.set(state.filters.selections, name, [...new Set([...state.filters.selections[name], value.value])])
+      Vue.set(state.filters.labels, name, [...new Set([...state.filters.labels[name], value.text])])
+    } else {
+      Vue.set(state.filters.selections, name, [value.value])
+      Vue.set(state.filters.labels, name, [value.text])
+    }
+    createBookmark(router, state.filters.selections, state.selectedCollections)
   },
-  SetMaterials (state, materials) {
-    state.materials.options = materials
-  },
-  SetCollectionQuality (state, collectionQuality) {
-    state.collection_quality.options = collectionQuality
-  },
-  SetBiobankQuality (state, biobankQuality) {
-    state.biobank_quality.options = biobankQuality
-  },
-  SetCollectionTypes (state, types) {
-    state.type.options = types
-  },
-  SetDataTypes (state, dataTypes) {
-    state.dataType.options = dataTypes
-  },
-  SetDiagnosisAvailable (state, diagnoses) {
-    state.diagnosis_available.options = combineCodeAndLabels(diagnoses)
-  },
-  SetSearch (state, search) {
-    state.search = search
-  },
-  SetCollectionQualityCollections (state, collections) {
-    state.collection_quality.collections = hasFilterWithoutMatches(state.collection_quality.filters, collections) ? ['invalid_collection'] : getUniqueFilterMatches(collections, 'collection')
-  },
-  SetBiobankQualityBiobanks (state, biobanks) {
-    state.biobank_quality.biobanks = hasFilterWithoutMatches(state.biobank_quality.filters, biobanks) ? ['invalid_biobank'] : getUniqueFilterMatches(biobanks, 'biobank')
-  },
-  SetCovid19 (state, covid19) {
-    state.covid19.options = covid19
-  },
-  SetNetworkOptions (state, network) {
-    const networkOptionsWithoutCovid19 = network.filter(network => network.id !== covid19NetworkId)
-    state.biobank_network.options = networkOptionsWithoutCovid19
-    state.collection_network.options = networkOptionsWithoutCovid19
+  UnsetCovidNetworkFilter (state, { name, value, router }) {
+    if (state.filters.selections[name]) {
+      Vue.set(state.filters.selections, name, [...state.filters.selections[name].filter(item => item !== value.value)])
+      Vue.set(state.filters.labels, name, [...state.filters.labels[name].filter(item => item !== value.text)])
+    }
+    createBookmark(router, state.filters.selections, state.selectedCollections)
   },
   /**
    * Register the filters for country, materials, standards, and diagnosis_available in the state
@@ -72,30 +31,43 @@ export default {
    * @param name name of the state entry e.g. country, materials, standards, or diagnosis_available
    * @param filters an array of values
    */
-  UpdateFilter (state, { name, filters }) {
-    if (name === covid19NetworkFacetName) this.commit('SetCovid19Network', filters)
-    if (name === 'search') state.search = ''
-    else {
-      state[name].filters = filters
+  UpdateFilter (state, { name, value, router }) {
+    if (name === 'search') {
+      Vue.set(state.filters.selections, name, value)
+      createBookmark(router, state.filters.selections, state.selectedCollections)
+      return
+    }
+
+    const filterValues = []
+    const filterTexts = []
+
+    for (const item of value) {
+      filterValues.push(item.value)
+      filterTexts.push(item.text)
+    }
+
+    Vue.set(state.filters.selections, name, [...new Set(filterValues)])
+    Vue.set(state.filters.labels, name, [...new Set(filterTexts)])
+    createBookmark(router, state.filters.selections, state.selectedCollections)
+  },
+  UpdateAllFilters (state, selections) {
+    state.filters.selections = {}
+    for (const [key, value] of Object.entries(selections)) {
+      if (key === 'search') {
+        Vue.set(state.filters.selections, key, value)
+        continue
+      }
+
+      Vue.set(state.filters.selections, key, value)
+      const leftoverLabels = [...new Set(state.filterLabelCache.filter(flc => value.includes(flc.value)).map(flc => flc.text))]
+      Vue.set(state.filters.labels, key, leftoverLabels)
     }
   },
   /**
    * Reset all filters in the state
    */
   ResetFilters (state) {
-    state.diagnosis_available.filters = []
-    state.materials.filters = []
-    state.country.filters = []
-    state.collection_quality.filters = []
-    state.collection_quality.collections = []
-    state.biobank_quality.filters = []
-    state.biobank_quality.biobanks = []
-    state.type.filters = []
-    state.dataType.filters = []
-    state.covid19.filters = []
-    state.covid19network.filters = []
-    state.biobank_network.filters = []
-    state.collection_network.filters = []
+    state.filters.selections = {}
   },
   SetBiobanks (state, biobanks) {
     biobanks.forEach(biobank => {
@@ -105,24 +77,36 @@ export default {
   SetBiobankIds (state, biobankIds) {
     state.biobankIds = biobankIds
   },
-  SetCollectionInfo (state, collectionInfo) {
-    state.collectionInfo = collectionInfo
+  SetDictionaries (state, response) {
+    const collections = response.items.map(item => (
+      {
+        id: item.data.id,
+        label: item.data.label || item.data.name,
+        biobankName: item.data.biobank.data.label || item.data.biobank.data.name,
+        commercialUse: item.data.commercial
+      }))
+
+    collections.forEach(function (collection) {
+      state.collectionBiobankDictionary[collection.id] = collection.biobankName
+      state.collectionDictionary[collection.id] = collection.label
+    })
+
+    const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
+    state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
-  SetCovid19Network (state, covid19FacetSelectionIds) {
-    const biobankNetwork = state.biobank_network.filters
-    const collectionNetwork = state.collection_network.filters
-    const addForBiobank = covid19FacetSelectionIds.includes(covid19BiobankNetworkSelectionId)
-    const addForNetwork = covid19FacetSelectionIds.includes(covid19CollectionNetworkSelectionId)
+  SetCollectionInfo (state, response) {
+    if (response === undefined) {
+      state.collectionInfo = response
+      return
+    }
 
-    // clear state
-    if (biobankNetwork.includes(covid19NetworkId)) biobankNetwork.splice(biobankNetwork.indexOf(covid19NetworkId), 1)
-    if (collectionNetwork.includes(covid19NetworkId)) collectionNetwork.splice(collectionNetwork.indexOf(covid19NetworkId), 1)
-
-    if (addForBiobank) Vue.set(state.biobank_network, 'filters', [...biobankNetwork, covid19NetworkId])
-    else Vue.set(state.biobank_network, 'filters', biobankNetwork)
-
-    if (addForNetwork) Vue.set(state.collection_network, 'filters', [...collectionNetwork, covid19NetworkId])
-    else Vue.set(state.collection_network, 'filters', collectionNetwork)
+    const collectionInfo = response.items.map(item => ({
+      collectionId: item.data.id,
+      collectionName: item.data.label || item.data.name,
+      biobankId: item.data.biobank.data.id,
+      isSubcollection: item.data.parent_collection !== undefined
+    }))
+    state.collectionInfo = collectionInfo
   },
   /**
    * Store a single biobank in the state for showing a biobank report
@@ -144,67 +128,83 @@ export default {
   SetNetworkBiobanks (state, biobanks) {
     state.networkReport.biobanks = biobanks
   },
+  // methods for rehydrating bookmark
+  SetCollectionIdsWithSelectedQuality (state, response) {
+    if (response.items && response.items.length > 0) {
+      state.collectionIdsWithSelectedQuality = []
+      state.collectionIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.collection.id))]
+    } else {
+      const collectionQualityFilter = state.filters.selections.collection_quality
+      const isCollectionQualityFilterActive = (collectionQualityFilter && collectionQualityFilter.length > 0) || state.route.query.collection_quality
+
+      state.collectionIdsWithSelectedQuality = isCollectionQualityFilterActive ? ['no-collection-found'] : []
+    }
+  },
+  SetBiobankIdsWithSelectedQuality (state, response) {
+    if (response.items && response.items.length > 0) {
+      state.biobankIdsWithSelectedQuality = []
+      state.biobankIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.biobank.id))]
+    } else {
+      const biobankQualityFilter = state.filters.selections.biobank_quality
+      const isBiobankQualityFilterActive = (biobankQualityFilter && biobankQualityFilter.length > 0) || state.route.query.biobank_quality
+
+      state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
+    }
+  },
+  AddCollectionToSelection (state, { collection, router }) {
+    if (Array.isArray(collection)) {
+      const currentIds = state.selectedCollections.map(sc => sc.value)
+      const newCollections = collection.filter(cf => !currentIds.includes(cf.value))
+      state.selectedCollections = [...new Set(state.selectedCollections.concat(newCollections))]
+    } else {
+      state.selectedCollections.push(collection)
+    }
+    if (router) {
+      createBookmark(router, state.filters.selections, state.selectedCollections)
+    }
+  },
+  RemoveCollectionFromSelection (state, { collection, router }) {
+    const collectionsToRemove = Array.isArray(collection) ? collection.map(c => c.value) : [collection.value]
+    state.selectedCollections = [...new Set(state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value)))]
+
+    if (router) {
+      createBookmark(router, state.filters.selections, state.selectedCollections)
+    }
+  },
   /**
    *
    * @param state
    * @param params
    */
-  MapQueryToState (state, params) {
-    const query = state.route.query
-
-    if (params && params.diagnoses) {
-      state.diagnosis_available.filters = combineCodeAndLabels(params.diagnoses)
-    }
-
-    if (query.collection_quality) {
-      state.collection_quality.filters = query.collection_quality.split(',')
-    }
+  MapQueryToState (state, ie11Query) {
+    const query = ie11Query || state.route.query
+    const keysInQuery = Object.keys(query)
+    // we load the filterdefinitions, grab the names, so we can loop over it to map the selections
+    const filters = filterDefinitions(state).map(fd => fd.name)
+      .filter(name => keysInQuery.includes(name))
+      .filter(fr => !['search', 'nToken'].includes(fr)) // remove specific filters, else we are doing them again.
 
     if (query.search) {
-      state.search = query.search
-    }
-
-    if (query.country) {
-      state.country.filters = query.country.split(',')
-    }
-
-    if (query.materials) {
-      state.materials.filters = query.materials.split(',')
-    }
-
-    if (query.type) {
-      state.type.filters = query.type.split(',')
-    }
-
-    if (query.dataType) {
-      state.dataType.filters = query.dataType.split(',')
-    }
-
-    if (query.covid19) {
-      state.covid19.filters = query.covid19.split(',')
-    }
-
-    if (query.biobank_network) {
-      state.biobank_network.filters = query.biobank_network.split(',')
-    }
-
-    if (query.biobank_quality) {
-      state.biobank_quality.filters = query.biobank_quality.split(',')
-    }
-
-    if (query.collection_network) {
-      state.collection_network.filters = query.collection_network.split(',')
-    }
-
-    if (query.covid19network) {
-      const selectedCovid19NetworkIds = query.covid19network.split(',')
-      state.covid19network.filters = selectedCovid19NetworkIds
-      this.commit('SetCovid19Network', selectedCovid19NetworkIds)
+      Vue.set(state.filters.selections, 'search', query.search)
     }
 
     if (query.nToken) {
       state.nToken = query.nToken
     }
+
+    if (query.cart) {
+      const decoded = decodeURIComponent(query.cart)
+      const cartIdString = atob(decoded)
+      const cartIds = cartIdString.split(',')
+      state.selectedCollections = cartIds.map(id => ({ label: state.collectionDictionary[id], value: id }))
+    }
+
+    for (const filterName of filters) {
+      if (query[filterName]) {
+        Vue.set(state.filters.selections, filterName, decodeURIComponent(query[filterName]).split(','))
+      }
+    }
+    state.bookmarkMappedToState = true
   },
   SetError (state, error) {
     state.error = error

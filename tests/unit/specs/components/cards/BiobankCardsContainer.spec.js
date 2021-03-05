@@ -18,7 +18,7 @@ describe('BiobankCardsContainer', () => {
       getters: {
         biobanks: () => biobanks,
         loading: () => true,
-        getActiveFilters: () => activeFilters,
+        activeFilters: () => activeFilters,
         foundBiobanks: () => biobanks
       }
     })
@@ -27,17 +27,6 @@ describe('BiobankCardsContainer', () => {
   it('should initialize component', () => {
     const wrapper = shallowMount(BiobankCardsContainer, { store, localVue })
     expect(wrapper.html()).to.have.string('<div class="biobank-cards-container">')
-  })
-
-  it('should return "true" for isAnyFilterActive if filters are active', () => {
-    const wrapper = shallowMount(BiobankCardsContainer, { store, localVue })
-    expect(wrapper.vm.isAnyFilterActive).to.equal(true)
-  })
-
-  it('should return "false" for isAnyFilterActive if no filters are active', () => {
-    activeFilters = {}
-    const wrapper = shallowMount(BiobankCardsContainer, { store, localVue })
-    expect(wrapper.vm.isAnyFilterActive).to.equal(false)
   })
 
   it('should reset the currentPage to 1 if when the biobanks list changes', () => {

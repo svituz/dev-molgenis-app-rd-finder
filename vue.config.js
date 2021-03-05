@@ -25,7 +25,7 @@ const htmlTemplate = () => {
   if (process.env.NODE_ENV === 'test') return 'public/preview.html'
 }
 
-const PROXY_TARGET = 'https://master.dev.molgenis.org'
+const PROXY_TARGET = 'https://bbmri-test.gcc.rug.nl' // 'https://master.dev.molgenis.org'
 
 const apiDevServerProxyConf = {
   target: PROXY_TARGET,
@@ -37,12 +37,14 @@ if (process.env.DATA_EXPLORER_DEV_PW) {
 }
 
 module.exports = {
+  transpileDependencies: ['@molgenis-ui/components-library'],
   runtimeCompiler: true,
   outputDir: 'dist',
   publicPath: process.env.NODE_ENV === 'production'
     ? '/plugin/app/' + packageJson.name
     : '/',
   chainWebpack: config => {
+    config.resolve.symlinks(false)
     config
       .plugin('html')
       .tap(args => {
@@ -75,7 +77,7 @@ module.exports = {
         }
       }),
       new ZipPlugin({
-        filename: packageJson.name
+        filename: `${packageJson.name}.v${packageJson.version}`
       })
     )
   },

@@ -5,6 +5,59 @@
     </div>
 
     <div class="col-md-9">
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div v-if="isIE11">
+            <input
+              class="w-50 mr-2 p-1"
+              type="text"
+              v-model="ie11BookmarkToApply"
+              placeholder="Place your recieved bookmark here"
+            /><input
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="applyIE11Bookmark"
+              value="Apply"
+              :disabled="!ie11BookmarkToApply"
+            />
+            <div class="mt-1">
+              <input
+                class="w-50 d-inline p-1"
+                id="ie11bookmark"
+                :value="ie11Bookmark"
+                placeholder="Your current bookmark"
+              />
+              <button
+                class="btn btn-sm btn-success ml-2 d-inline"
+                @click="copyIE11Bookmark"
+                :disabled="!ie11Bookmark"
+              >
+                Copy<span class="fa fa-copy ml-1"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-md-4 text-right"
+          v-if="!loading && foundCollectionIds.length && (rsql.length || biobankRsql.length)"
+        >
+          <input
+            type="checkbox"
+            id="select-deselect-all"
+            class="add-to-cart"
+            @change="handleCollectionStatus"
+            :checked="allCollectionsSelected"
+            value="false"
+            hidden
+          />
+          <label class="add-to-cart-label btn btn-success" for="select-deselect-all"
+            >Select all collections <span class="ml-1 fa fa-plus"></span>
+          </label>
+          <label class="remove-from-cart-label btn btn-danger" for="select-deselect-all">
+            Deselect all collections <span class="ml-1 fa fa-times"></span>
+          </label>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-12" v-if="!loading">
           <result-header></result-header>
@@ -19,45 +72,86 @@
     </div>
 
     <cart-selection-toast
-      v-if="!loading && hasSelection && !podiumModalShown && this.foundCollectionIds.length"
-      :cartSelectionText="`${this.foundCollectionIds.length} collection(s) selected`"
-      :clickHandler="sendToNegotiator"
-      :title="requestButtonTitle"
+      v-if="!loading && hasSelection && !collectionCartShown && this.foundCollectionIds.length"
+      :cartSelectionText="`${this.selectedCollections.length} collection(s) selected`"
+      :clickHandler="showSelection"
+      :title="negotiatorButtonText"
       toastClass="bg-warning text-white"
     >
-      <template v-slot:buttonText>
-        REQUEST SAMPLES
-        <i class="fa fa-spin fa-spinner" aria-hidden="true" v-if="request"></i>
-      </template>
+      <template v-slot:buttonText> Show selection </template>
     </cart-selection-toast>
 
-    <b-modal hide-header id="podium-modal" scrollable centered footer-bg-variant="warning" body-class="pb-0" @hide="done">
-      <ul v-if="hasPodiumCollections">
-        <li :key="cip" v-for="cip in collectionsInPodium">
-          {{ cip }}
-        </li>
-      </ul>
-      <p v-if="!hasPodiumCollections">Sorry, none of the samples are currently in Podium.</p>
+    <b-modal
+      hide-header
+      id="collectioncart-modal"
+      scrollable
+      centered
+      footer-bg-variant="warning"
+      body-class="pb-0"
+      @hide="closeModal"
+    >
+      <template v-if="collectionCart.length > 0">
+        <div :key="`${cart.biobankLabel}-${index}`" v-for="(cart, index) in collectionCart">
+          <h4 class="mt-2 ml-2">{{ cart.biobankLabel }}</h4>
+          <div
+            class="row ml-3 my-2"
+            :key="`${collection.label}-${index}`"
+            v-for="(collection, index) in cart.collections"
+          >
+            <div class="col-md-11 p-0">
+              <font-awesome-icon
+                title="Not available for commercial use"
+                v-if="isNonCommercialCollection(collection.value)"
+                class="text-danger non-commercial"
+                :icon="['fab', 'creative-commons-nc-eu']"
+              />
+              <span> {{ collection.label }}</span>
+            </div>
+            <div class="col-md-1">
+              <span
+                class="fa fa-times text-bold remove-collection"
+                title="Remove collection"
+                @click="RemoveCollectionFromSelection({ collection, router: $router })"
+              ></span>
+            </div>
+          </div>
+        </div>
+      </template>
+      <p v-if="isPodium && !collectionsInPodium.length">
+        Sorry, none of the samples are currently in Podium.
+      </p>
       <template v-slot:modal-footer>
-        <span class="text-white font-weight-bold mr-auto">{{ `${collectionsInPodium.length} collection(s) present in Podium` }}</span>
+        <div class="mr-auto">
+          <span class="text-white font-weight-bold d-block">{{ modalFooterText }}</span>
+          <span class="text-white" v-if="selectedNonCommercialCollections > 0"
+            >
+            <font-awesome-icon
+                title="Not available for commercial use"
+                class="text-white non-commercial mr-1"
+                :icon="['fab', 'creative-commons-nc-eu']"
+              />
+              {{ selectedNonCommercialCollections }} are non-commercial only
+            </span>
+        </div>
         <b-button class="btn btn-dark" @click="hideModal">Cancel</b-button>
-        <b-button :disabled="!hasPodiumCollections" class="btn btn-secondary" @click="sendRequest">{{ requestButtonTitle }}</b-button>
+        <b-button
+          :disabled="(isPodium && !collectionsInPodium.length) || !selectedCollections.length"
+          class="btn btn-secondary"
+          @click="sendRequest"
+          >{{ negotiatorButtonText }}</b-button
+        >
       </template>
     </b-modal>
   </div>
 </template>
 
-<style>
-.biobank-explorer-container {
-  padding-top: 1rem;
-}
-</style>
 <script>
 import { CartSelectionToast } from '@molgenis-ui/components-library'
 import BiobankCardsContainer from './cards/BiobankCardsContainer'
 import FilterContainer from './filters/FilterContainer'
 import ResultHeader from './ResultHeader'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
+import { createBookmark } from '../utils/bookmarkMapper'
 
 export default {
   name: 'biobank-explorer-container',
@@ -69,28 +163,58 @@ export default {
   },
   data: () => {
     return {
-      request: false,
-      requestButtonTitle: 'Send to the negotiator'
+      modalEnabled: false,
+      ie11BookmarkToApply: ''
     }
   },
   computed: {
-    ...mapGetters(['rsql', 'biobankRsql', 'loading', 'foundBiobanks', 'foundCollectionIds', 'collectionsInPodium']),
-    ...mapState(['isPodium']),
-    podiumModalShown () {
-      if (this.isPodium) return this.request
-
-      return false
+    ...mapGetters([
+      'rsql',
+      'biobankRsql',
+      'loading',
+      'foundCollectionIds',
+      'activeFilters',
+      'allCollectionsSelected',
+      'collectionsInPodium',
+      'selectedBiobankQuality',
+      'selectedCollectionQuality',
+      'selectedCollections',
+      'collectionBiobankDictionary',
+      'foundCollectionsAsSelection',
+      'selectedNonCommercialCollections'
+    ]),
+    ...mapState(['isPodium', 'nonCommercialCollections', 'isIE11', 'ie11Bookmark']),
+    modalFooterText () {
+      const collectionCount = this.isPodium
+        ? this.collectionsInPodium.length
+        : this.selectedCollections.length
+      return this.isPodium
+        ? `${collectionCount} collection(s) present in Podium`
+        : `${collectionCount} collection(s) selected`
     },
-    hasPodiumCollections () {
-      return this.collectionsInPodium ? this.collectionsInPodium.length > 0 : false
+    negotiatorButtonText () {
+      return this.isPodium ? 'Send to Podium' : 'Send to the negotiator'
+    },
+    collectionCartShown () {
+      return this.modalEnabled
+    },
+    collectionCart () {
+      const collections = this.isPodium ? this.collectionsInPodium : this.selectedCollections
+      return this.groupCollectionsByBiobank(collections)
     },
     hasSelection () {
-      if ((this.rsql && this.rsql !== '') || (this.biobankRsql && this.biobankRsql !== '')) return true
-
-      return false
+      return this.selectedCollections.length > 0
     }
   },
   watch: {
+    selectedBiobankQuality: {
+      immediate: true,
+      handler: 'GetBiobankIdsForQuality'
+    },
+    selectedCollectionQuality: {
+      immediate: true,
+      handler: 'GetCollectionIdsForQuality'
+    },
     rsql: {
       immediate: true,
       handler: 'GetCollectionInfo'
@@ -105,30 +229,123 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'AddCollectionToSelection',
+      'RemoveCollectionFromSelection',
+      'MapQueryToState'
+    ]),
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
-      'GetPodiumCollections'
+      'GetPodiumCollections',
+      'GetBiobankIdsForQuality',
+      'GetCollectionIdsForQuality'
     ]),
-    hideModal () {
-      this.$bvModal.hide('podium-modal')
+    isNonCommercialCollection (collectionId) {
+      return this.nonCommercialCollections.indexOf(collectionId) >= 0
     },
-    done () {
-      this.request = false
+    groupCollectionsByBiobank (collectionSelectionArray) {
+      const biobankWithSelectedCollections = []
+      collectionSelectionArray.forEach(cs => {
+        const biobankLabel = this.collectionBiobankDictionary[cs.value]
+        const biobankPresent = biobankWithSelectedCollections.find(
+          bsc => bsc.biobankLabel === biobankLabel
+        )
+
+        if (biobankPresent) {
+          biobankPresent.collections.push(cs)
+        } else {
+          biobankWithSelectedCollections.push({
+            biobankLabel,
+            collections: [cs]
+          })
+        }
+      })
+      return biobankWithSelectedCollections
+    },
+    hideModal () {
+      this.$bvModal.hide('collectioncart-modal')
+      this.closeModal()
+    },
+    closeModal () {
+      this.modalEnabled = false
     },
     sendRequest () {
-      this.$bvModal.hide('podium-modal')
-      this.$store.dispatch('SendToNegotiator').finally(this.done)
+      this.$bvModal.hide('collectioncart-modal')
+      this.$store.dispatch('SendToNegotiator').finally(this.closeModal)
     },
-    sendToNegotiator () {
-      this.request = true
-      if (this.isPodium) {
-        this.$bvModal.show('podium-modal')
+    showSelection () {
+      this.$bvModal.show('collectioncart-modal')
+      this.modalEnabled = true
+    },
+    handleCollectionStatus (event) {
+      const checkbox = event.target
+      if (checkbox.checked === true) {
+        this.AddCollectionToSelection({
+          collection: this.foundCollectionsAsSelection,
+          router: this.$router
+        })
       } else {
-        this.$bvModal.hide('podium-modal')
-        this.sendRequest()
+        this.RemoveCollectionFromSelection({
+          collection: this.foundCollectionsAsSelection,
+          router: this.$router
+        })
       }
+    },
+    applyIE11Bookmark () {
+      const rawQuery = this.ie11BookmarkToApply.split('?')[1]
+      const queryParts = rawQuery.split('&')
+      const queryObject = {}
+
+      queryParts.forEach(part => {
+        const propAndValue = part.split('=')
+        queryObject[propAndValue[0]] = propAndValue[1]
+      })
+      this.MapQueryToState(queryObject)
+      this.applyIE11Bookmark = ''
+    },
+    copyIE11Bookmark () {
+      const ie11BookmarkElement = document.getElementById('ie11bookmark')
+      ie11BookmarkElement.select()
+      ie11BookmarkElement.setSelectionRange(0, 99999)
+      document.execCommand('copy')
+    }
+  },
+  mounted () {
+    // check if collections have been added off-screen.
+    if (this.selectedCollections.length) {
+      createBookmark(this.$router, this.activeFilters, this.selectedCollections)
     }
   }
 }
 </script>
+
+<style>
+.non-commercial .fa-times {
+  font-size: 1em;
+}
+.biobank-explorer-container {
+  padding-top: 1rem;
+}
+#select-all-label {
+  line-height: 2;
+}
+
+.remove-collection:hover,
+.btn:hover,
+#select-all-label:hover {
+  cursor: pointer;
+}
+
+.add-to-cart:checked ~ .add-to-cart-label {
+  display: none;
+}
+
+.remove-from-cart-label {
+  display: none;
+}
+
+.add-to-cart:checked ~ .remove-from-cart-label {
+  display: inline-block;
+}
+</style>

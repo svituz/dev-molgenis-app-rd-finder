@@ -1,7 +1,10 @@
 import { createRSQLQuery, createBiobankRSQLQuery, filterCollectionTree } from './helpers'
 import { groupCollectionsByBiobankId } from '../utils/grouping'
+import filterDefinitions from '../utils/filterDefinitions'
 
 export default {
+  filterDefinitions,
+  bookmarkMappedToState: state => state.bookmarkMappedToState,
   loading: ({ collectionInfo, biobankIds }) => !(biobankIds && collectionInfo),
   biobanks: ({ collectionInfo, biobankIds, biobanks }, { loading, rsql }) => {
     if (loading) {
@@ -28,24 +31,25 @@ export default {
       }
     })
   },
-  getFoundBiobankIds: (_, { biobanks }) => biobanks.map(b => b.id || b).filter(bid => bid !== undefined),
-  getCollectionsWithBiobankId: (state) => {
-    if (state.collectionInfo) {
-      return state.collectionInfo.map(colInfo => {
-        return {
-          collectionId: colInfo.collectionId,
-          biobankId: colInfo.biobankId
-        }
-      })
-    }
+  parentCollections: (state) => {
+    const allParentCollections = state.collectionInfo.filter(colInfo => !colInfo.isSubcollection).map(fci => fci.collectionId)
+    let flattenedCollections = []
+    allParentCollections.forEach(function (apc) {
+      flattenedCollections = flattenedCollections.concat(apc)
+    })
+    return flattenedCollections
   },
+  collectionBiobankDictionary: state => state.collectionBiobankDictionary,
+  collectionDictionary: state => state.collectionDictionary,
+  getFoundBiobankIds: (_, { biobanks }) => biobanks.map(b => b.id || b).filter(bid => bid !== undefined),
   foundBiobanks: (_, { biobanks }) => {
     return biobanks.length
   },
-  foundCollectionIds (_, { getFoundBiobankIds, getCollectionsWithBiobankId }) {
+  foundCollectionIds (state, { getFoundBiobankIds }) {
     // only if there are biobanks, then there are collections. we can't have rogue collections :)
-    if (getFoundBiobankIds.length && getCollectionsWithBiobankId.length) {
-      const biobanksWithCollections = groupCollectionsByBiobankId(getCollectionsWithBiobankId)
+    if (getFoundBiobankIds.length && state.collectionInfo.length) {
+      const biobanksWithCollections = groupCollectionsByBiobankId(state.collectionInfo)
+
       let collectionIds = []
       for (const id of getFoundBiobankIds) {
         const collectionsInBiobank = biobanksWithCollections[id]
@@ -55,82 +59,49 @@ export default {
     }
     return []
   },
-  collectionsInPodium ({ podiumCollectionIds, collectionInfo, isPodium }, { foundCollectionIds }) {
+  selectedNonCommercialCollections (state, { selectedCollections }) {
+    const selectedNonCommercialCollections = selectedCollections.map(sc => sc.value).filter(sid => state.nonCommercialCollections.includes(sid))
+    return selectedNonCommercialCollections.length
+  },
+  foundCollectionsAsSelection: (_, { parentCollections, foundCollectionIds, collectionDictionary }) => {
+    const parentCollectionIds = foundCollectionIds.filter(fci => parentCollections.includes(fci))
+    return parentCollectionIds.map(colId => ({ label: collectionDictionary[colId], value: colId }))
+  },
+  collectionsInPodium ({ podiumCollectionIds, collectionInfo, isPodium }, { foundCollectionIds, selectedCollections }) {
     if (isPodium && podiumCollectionIds && collectionInfo && foundCollectionIds) {
+      const selectedCollectionIds = selectedCollections.map(sc => sc.value)
       const collectionInfoInSelection = collectionInfo.filter(colInfo => foundCollectionIds.includes(colInfo.collectionId))
+
       const collectionNames = collectionInfoInSelection.filter(colInfo => podiumCollectionIds
         .includes(colInfo.collectionId))
-        .map(podCols => podCols.collectionName) // Returns only collection names.
+        .map(podCols => ({ label: podCols.collectionName, value: podCols.collectionId }))
+        .filter(cn => selectedCollectionIds.includes(cn.value))
+
       return collectionNames
     } else return []
+  },
+  selectedCollections: state => state.selectedCollections,
+  allCollectionsSelected: (_, { foundCollectionIds, selectedCollections }) => {
+    if (!selectedCollections.length) return false // no selection, so can't possibly selected all.
+
+    const selectedCollectionIds = selectedCollections.map(sc => sc.value)
+    const allIdsPresentInSelection = selectedCollectionIds.every(cid => foundCollectionIds.includes(cid))
+    const selectionAndFoundLengthEqual = selectedCollectionIds.length === foundCollectionIds.length
+
+    return selectionAndFoundLengthEqual && allIdsPresentInSelection
+  },
+  selectedBiobankQuality: state => state.filters.selections.biobank_quality,
+  selectedCollectionQuality: state => {
+    return state.filters.selections.collection_quality
   },
   rsql: createRSQLQuery,
   biobankRsql: createBiobankRSQLQuery,
   resetPage: state => !state.isPaginating,
-  getCountryOptions: state => state.country.options,
-  getMaterialOptions: state => state.materials.options,
-  getCollectionQualityOptions: state => state.collection_quality.options,
-  getBiobankQualityOptions: state => state.biobank_quality.options,
-  getTypesOptions: state => state.type.options,
-  getDataTypeOptions: state => state.dataType.options,
-  getDiagnosisAvailableOptions: state => state.diagnosis_available.options,
   showCountryFacet: state => state.showCountryFacet,
-  getCovid19Options: state => state.covid19.options,
-  getCovid19NetworkOptions: state => state.covid19network.options,
-  getBiobankNetworkOptions: state => state.biobank_network.options,
-  getCollectionNetworkOptions: state => state.collection_network.options,
   /**
    * Get map of active filters
    */
-  getActiveFilters: state => {
-    const activeFilters = {}
-    if (state.search !== '') {
-      activeFilters.search = [{ id: 'search', label: state.search }]
-    }
-
-    if (state.diagnosis_available.filters.length > 0) {
-      activeFilters.diagnosis_available = state.diagnosis_available.filters
-    }
-
-    if (state.materials.filters.length > 0) {
-      activeFilters.materials = state.materials.options.filter(option => state.materials.filters.includes(option.id))
-    }
-
-    if (state.country.filters.length > 0) {
-      activeFilters.country = state.country.options.filter(option => state.country.filters.includes(option.id)).map(filter => {
-        return {
-          id: filter.id,
-          label: filter.name
-        }
-      })
-    }
-
-    if (state.collection_quality.filters.length > 0) {
-      activeFilters.collection_quality = state.collection_quality.options.filter(option => state.collection_quality.filters.includes(option.id))
-    }
-
-    if (state.biobank_quality.filters.length > 0) {
-      activeFilters.biobank_quality = state.biobank_quality.options.filter(option => state.biobank_quality.filters.includes(option.id))
-    }
-
-    if (state.type.filters.length > 0) {
-      activeFilters.type = state.type.options.filter(option => state.type.filters.includes(option.id))
-    }
-
-    if (state.dataType.filters.length > 0) {
-      activeFilters.dataType = state.dataType.options.filter(option => state.dataType.filters.includes(option.id))
-    }
-
-    if (state.covid19.filters.length > 0) {
-      activeFilters.covid19 = state.covid19.options.filter(option => state.covid19.filters.includes(option.id))
-    }
-
-    if (state.covid19network.filters.length > 0) {
-      activeFilters.covid19network = state.covid19network.options.filter(option => state.covid19network.filters.includes(option.id))
-    }
-
-    return activeFilters
-  },
+  activeFilters: state => state.filters.selections,
   getErrorMessage: state => {
     if (!state.error) {
       return undefined
