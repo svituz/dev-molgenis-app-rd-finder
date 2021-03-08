@@ -18,7 +18,7 @@
 
       <div v-if="!loading && foundBiobanks > 0">
         <b-table
-        striped
+        responsive
         hover
         :items="biobank_items"
         :fields="[
@@ -42,6 +42,9 @@
             sortable: false
           }
         ]">
+        <template v-slot:cell(Name)="ressource">
+          <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
+        </template>
       </b-table>
       </div>
       <b-pagination
@@ -88,7 +91,8 @@ export default {
   data () {
     return {
       currentPage: 1,
-      pageSize: 10
+      pageSize: 10,
+      items: []
     }
   },
   methods: {
@@ -116,13 +120,14 @@ export default {
     biobankIdsToFetch () {
       return this.biobanksShown.filter(it => typeof it === 'string')
     },
-    biobank_items (biobank) {
+    biobank_items () {
       const items = []
       for (const key in this.biobanksShown) {
         items.push({
           Logo: 'placeHolder',
           Name: this.biobanksShown[key].name,
-          Ressource: this.biobanksShown[key].ressource_types.label || 'ressource',
+          id: this.biobanksShown[key].id,
+          Ressource: this.biobanksShown[key].ressource_types.label,
           Number_of_cases: this.addNumberDonors(this.biobanksShown[key]),
           Country: this.biobanksShown[key].country.name
         })

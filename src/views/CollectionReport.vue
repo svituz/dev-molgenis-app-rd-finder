@@ -1,27 +1,59 @@
 <template>
-  <div class="container mg-collection-report-card">
-    <loading :active="isLoading" loader="dots" :is-full-page="true" color="var(--secondary)" background-color="var(--light)"></loading>
+  <!-- <div class="container mg-collection-report-card"> -->
     <div class="container-fluid">
+      <loading :active="isLoading" loader="dots" :is-full-page="true" color="var(--secondary)" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
       <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
 
       <div class="row" v-if="this.collection && !this.isLoading">
         <div class="col">
-          <report-title type="Collection" :name="collection.name"></report-title>
-
           <div class="container p-0">
             <div class="row">
               <div class="col-md-8">
+                <!-- <report-description :description="collection.description" :maxLength="500"></report-description> -->
+
+                <div>
+                  <b-card
+                    class="rounded-xl"
+                    style="max-width: 50rem; background-color: #e2e3ce"
+                  >
+                  <b-card-text>
+                    <div class="row" style="height: 40px;">
+                      <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
+                      <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
+                    </div>
+                    <div class="row" style="background-color: #ffffff">
+                      <div class="col-sm-2">
+                      <h2>
+                        <b-badge
+                          v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary"
+                          >
+                        {{collection.biobank.ressource_types.label}}
+                        </b-badge>
+                        <b-badge
+                          v-if="collection.biobank.ressource_types.label == 'Biobank'" variant="success"
+                        >
+                        {{collection.biobank.ressource_types.label}}
+                        </b-badge>
+                      </h2>
+                      </div>
+                      <div class="col-sm-8" style="text-align:center">
+                        <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
+                        <h1 style="color:#a6cc74"> {{collection.name}} </h1>
+                      </div>
+                    </div>
+                    <b> Description: </b>
+                    {{getDescription}}
+                  </b-card-text>
+                  </b-card>
+                </div>
                 <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
-
-                <report-description :description="collection.description" :maxLength="500"></report-description>
-
                 <!-- main collection information -->
                 <table class="mg-report-details-list mb-3">
-                  <tr>
+                  <!-- <tr>
                     <th scope="row" class="pr-1">Id:</th>
                     <td>{{ collection.id }}</td>
-                  </tr>
+                  </tr> -->
                   <tr v-if="collection.url">
                     <th scope="row" class="pr-1">Website:</th>
                     <td>
@@ -35,32 +67,79 @@
                     <th scope="row" class="pr-1">Age:</th>
                     <td>{{ mainContent.Age.value }}</td>
                   </tr>
-                  <report-list-row :data="mainContent.Type">Type:</report-list-row>
-                  <report-list-row :data="mainContent.Sex">Sex:</report-list-row>
-                  <report-list-row :data="mainContent.Materials">Materials:</report-list-row>
-                  <report-list-row :data="mainContent.Storage">Storage:</report-list-row>
-                  <report-list-row :data="mainContent.Data">Data:</report-list-row>
-                  <report-list-row :data="mainContent.Diagnosis">Diagnosis:</report-list-row>
-                  <report-list-row :data="mainContent.DataUse">Data use conditions:</report-list-row>
                 </table>
-
                 <!-- Recursive set of subcollections -->
-                <div v-if="collection.sub_collections && collection.sub_collections.length" class="mt-2">
-                  <h5>Sub collections</h5>
-                  <report-sub-collection
-                    v-for="subCollection in subCollections"
-                    :collection="subCollection"
-                    :key="subCollection.id"
-                    :level="1"
-                  ></report-sub-collection>
-                </div>
-              </div>
-
-              <!-- Right side card -->
-              <collection-report-info-card :info="info"></collection-report-info-card>
-            </div>
+          <!-- Right side card -->
           </div>
+          <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
+        <div style="text-align:center" class="mt-2">
+                  <h2><strong>Disease Matrix</strong></h2>
+                  <b-table
+                  bordered
+                  hover
+                  small
+                  striped
+                  :items=getItemList
+                  :fields="[
+                    {
+                      key: 'name',
+                      sortable: true
+                    },
+                    {
+                      key: 'Number_of_patients',
+                      sortable: true
+                    },
+                    {
+                      key: 'gene',
+                      sortable: true
+                    },
+                    {
+                      key: 'ORPHA_Code',
+                      sortable: true
+                    },
+                    {
+                      key: 'ICD_10',
+                      sortable: true
+                    },
+                    {
+                      key: 'OMIM',
+                      sortable: true
+                    },
+                    {
+                      key: 'Synonyms',
+                      sortable: true
+                    }
+                  ]">
+                  <template #cell(data) = "data_types">
+                  <div>
+                  <span class = "lead">
+                  <span
+                    v-for=" index in data_types.value"
+                    class="m-1 badge"
+                    :key="index"
+                    :class="'badge-secondary'"
+                    >{{index}}
+                  </span>
+                  </span>
+                  </div>
+                  </template>
+                  <template #cell(materials) = "material_types">
+                  <div>
+                  <span class = "lead">
+                  <span
+                    v-for=" index in material_types.value"
+                    class="m-1 badge"
+                    :key="index"
+                    :class="'badge-danger'"
+                    >{{index}}
+                  </span>
+                  </span>
+                  </div>
+                  </template>
+                  </b-table>
+                </div>
+            </div>
       </div>
     </div>
   </div>
@@ -70,25 +149,22 @@
 import { mapActions, mapState } from 'vuex'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import ReportDescription from '@/components/report-components/ReportDescription'
-import ReportTitle from '@/components/report-components/ReportTitle'
+// import ReportDescription from '@/components/report-components/ReportDescription'
+// import ReportTitle from '@/components/report-components/ReportTitle'
 import ReportListRow from '@/components/report-components/ReportListRow'
-import ReportSubCollection from '@/components/report-components/ReportSubCollection'
+// import ReportSubCollection from '@/components/report-components/ReportSubCollection'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
+import moment from 'moment'
 import CollectionSelector from '@/components/filters/CollectionSelector'
-
 import { mapDetailsTableContent, mapCollectionsData, collectionReportInformation } from '@/utils/templateMapper'
 
 export default {
   name: 'CollectionReport',
   components: {
     ReportListRow,
-    ReportTitle,
-    ReportDescription,
-    ReportSubCollection,
-    CollectionReportInfoCard,
     Loading,
-    CollectionSelector
+    CollectionSelector,
+    CollectionReportInfoCard
   },
   methods: {
     ...mapActions(['GetCollectionReport']),
@@ -107,6 +183,9 @@ export default {
     info () {
       return collectionReportInformation(this.collection)
     },
+    get_items () {
+      return [{ id: 1, last_activation: 2 }]
+    },
     subCollections () {
       return this.collection && this.collection.sub_collections && this.collection.sub_collections.length
         ? mapCollectionsData(this.collection.sub_collections)
@@ -115,6 +194,27 @@ export default {
     collectionId () {
       const splittedUrl = this.$route.fullPath.split('/')
       return splittedUrl[splittedUrl.length - 1]
+    },
+    getTitle () {
+      return this.collection.name
+    },
+    getHeader () {
+      return 'ID: ' + this.collection.biobank.id
+    },
+    getDescription () {
+      return this.collection.biobank.description
+    },
+    getActivity () {
+      if (this.collection.sub_collections.length) {
+        const date = moment(this.collection.sub_collections[0].timestamp).format('MM/DD/YYYY hh:mm')
+        return date
+      } else {
+        const date = 'N/A'
+        return date
+      }
+    },
+    getItemList () {
+      return this.subCollections.map(x => ({ name: x.name, materials: x.content.Materials.value, data: x.content.Data.value }))
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
@@ -134,5 +234,16 @@ export default {
 <style scoped>
 >>> .mg-report-details-list th {
   vertical-align: top;
+}
+>>> .badge {
+  transition: transform 0.1s;
+  box-shadow: 0 0 0 1px white;
+}
+>>> .badge:hover {
+  transform: scale(1.4);
+}
+
+>>> .rounded-xl {
+  border-radius: 20px;
 }
 </style>
