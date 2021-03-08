@@ -67,17 +67,13 @@
                     <th scope="row" class="pr-1">Age:</th>
                     <td>{{ mainContent.Age.value }}</td>
                   </tr>
-                  <report-list-row :data="mainContent.Type">Type:</report-list-row>
-                  <report-list-row :data="mainContent.Sex">Sex:</report-list-row>
-                  <report-list-row :data="mainContent.Materials">Materials:</report-list-row>
-                  <report-list-row :data="mainContent.Storage">Storage:</report-list-row>
-                  <report-list-row :data="mainContent.Data">Data:</report-list-row>
-                  <report-list-row :data="mainContent.Diagnosis">Diagnosis:</report-list-row>
-                  <report-list-row :data="mainContent.DataUse">Data use conditions:</report-list-row>
                 </table>
-
                 <!-- Recursive set of subcollections -->
-                <div style="text-align:center" class="mt-2">
+          <!-- Right side card -->
+          </div>
+          <collection-report-info-card :info="info"></collection-report-info-card>
+        </div>
+        <div style="text-align:center" class="mt-2">
                   <h2><strong>Disease Matrix</strong></h2>
                   <b-table
                   bordered
@@ -91,11 +87,27 @@
                       sortable: true
                     },
                     {
-                      key: 'materials',
+                      key: 'Number_of_patients',
                       sortable: true
                     },
                     {
-                      key: 'data',
+                      key: 'gene',
+                      sortable: true
+                    },
+                    {
+                      key: 'ORPHA_Code',
+                      sortable: true
+                    },
+                    {
+                      key: 'ICD_10',
+                      sortable: true
+                    },
+                    {
+                      key: 'OMIM',
+                      sortable: true
+                    },
+                    {
+                      key: 'Synonyms',
                       sortable: true
                     }
                   ]">
@@ -128,10 +140,6 @@
                   </b-table>
                 </div>
             </div>
-          <!-- Right side card -->
-          <collection-report-info-card :info="info"></collection-report-info-card>
-          </div>
-        </div>
       </div>
     </div>
   </div>
