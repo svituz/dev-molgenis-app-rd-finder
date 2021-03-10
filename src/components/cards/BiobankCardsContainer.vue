@@ -121,6 +121,10 @@ export default {
       return this.biobanksShown.filter(it => typeof it === 'string')
     },
     biobank_items () {
+      // check if deeper objects (e.g.: ressource_types) can be loaded:
+      if (!this.biobanksShown[0].ressource_types) {
+        return []
+      }
       const items = []
       for (const key in this.biobanksShown) {
         items.push({
@@ -132,8 +136,9 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
-      console.log('items:')
-      console.log(this.biobanks)
+      // console.log('items:')
+      // console.log(this.biobanksShown)
+
       return items
     }
   },
