@@ -83,7 +83,7 @@ export default {
         id: item.data.id,
         label: item.data.label || item.data.name,
         biobankName: item.data.biobank.data.label || item.data.biobank.data.name,
-        commercialUse: item.data.commercial
+        commercialUse: item.data.collaboration_commercial
       }))
 
     collections.forEach(function (collection) {
@@ -151,21 +151,18 @@ export default {
       state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
     }
   },
-  AddCollectionToSelection (state, { collection, router }) {
-    if (Array.isArray(collection)) {
-      const currentIds = state.selectedCollections.map(sc => sc.value)
-      const newCollections = collection.filter(cf => !currentIds.includes(cf.value))
-      state.selectedCollections = [...new Set(state.selectedCollections.concat(newCollections))]
-    } else {
-      state.selectedCollections.push(collection)
-    }
+  AddCollectionsToSelection (state, { collections, router }) {
+    const currentIds = state.selectedCollections.map(sc => sc.value)
+    const newCollections = collections.filter(cf => !currentIds.includes(cf.value))
+    state.selectedCollections = state.selectedCollections.concat(newCollections)
+
     if (router) {
       createBookmark(router, state.filters.selections, state.selectedCollections)
     }
   },
-  RemoveCollectionFromSelection (state, { collection, router }) {
-    const collectionsToRemove = Array.isArray(collection) ? collection.map(c => c.value) : [collection.value]
-    state.selectedCollections = [...new Set(state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value)))]
+  RemoveCollectionsFromSelection (state, { collections, router }) {
+    const collectionsToRemove = collections.map(c => c.value)
+    state.selectedCollections = state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value))
 
     if (router) {
       createBookmark(router, state.filters.selections, state.selectedCollections)

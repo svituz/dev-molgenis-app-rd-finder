@@ -123,22 +123,5 @@ describe('components', () => {
         expect(CollectionsTable.methods.getCollectionSize({ size: 0, order_of_magnitude: { size: '10.000 - 100.000 Samples' } })).toEqual('10.000 - 100.000 Samples')
       })
     })
-
-    describe('Selecting collections', () => {
-      it('can set all collections when header checkbox is checked', async () => {
-        const wrapper = mount(CollectionsTable, { store, propsData: { collections }, stubs: ['router-link'] })
-        await wrapper.find('input[type=checkbox]').trigger('click')
-        expect(AddCollectionToSelection).toHaveBeenCalledWith(expect.anything(), { collection: [{ label: 'Tissues in RNAlater in Long Term Storage Collection', value: 'bbmri-eric:ID:CZ_MMCI:collection:LTS:tissue-RNAlater' }, { label: 'Short Term Storage Collection', value: 'bbmri-eric:ID:CZ_MMCI:collection:STS' }], router: undefined })
-      })
-
-      it('can set / remove a single collection when collection checkbox is clicked', async () => {
-        const wrapper = mount(CollectionsTable, { store, propsData: { collections }, stubs: ['router-link'] })
-        await wrapper.find('td').find('input[type=checkbox]').trigger('click')
-        expect(AddCollectionToSelection).toHaveBeenCalledWith(expect.anything(), { collection: { label: 'Tissues in RNAlater in Long Term Storage Collection', value: 'bbmri-eric:ID:CZ_MMCI:collection:LTS:tissue-RNAlater' }, router: undefined })
-        // Remove //
-        await wrapper.find('td').find('input[type=checkbox]').trigger('click')
-        expect(RemoveCollectionFromSelection).toHaveBeenCalledWith(expect.anything(), { collection: { label: 'Tissues in RNAlater in Long Term Storage Collection', value: 'bbmri-eric:ID:CZ_MMCI:collection:LTS:tissue-RNAlater' }, router: undefined })
-      })
-    })
   })
 })

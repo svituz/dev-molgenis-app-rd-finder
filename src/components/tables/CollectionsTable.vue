@@ -3,12 +3,6 @@
     <thead>
       <tr>
         <th scope="col" class="pr-2">
-          <input
-            ref="header_checkbox"
-            type="checkbox"
-            v-model="selectedAllCollections"
-            :indeterminate.prop="someCollectionsSelected"
-          />
         </th>
         <th scope="col">Collection</th>
         <th scope="col">Type</th>
@@ -21,15 +15,12 @@
       <template v-for="(collection, index) in topLevelElements">
         <tr :key="index">
           <td class="pr-1">
-            <input
-              type="checkbox"
-              @change="handleCollectionStatus"
-              :checked="collectionSelected(collection.id)"
-              :value="{
-                label: collection.label || collection.name,
-                value: collection.id,
-              }"
-            />
+            <collection-selector
+            class="ml-2"
+              :collectionData="collection"
+              icon-only
+              router-enabled
+            ></collection-selector>
           </td>
           <td
             :class="{
@@ -47,10 +38,15 @@
               </router-link>
             </span>
             <span v-else-if="column === 'quality'">
-              <quality-column :qualities="collection[column]" :spacing="0"></quality-column>
+              <quality-column
+                :qualities="collection[column]"
+                :spacing="0"
+              ></quality-column>
             </span>
             <span v-else-if="column === 'type'">{{ getCollectionType(collection) }}</span>
-            <span v-else-if="column === 'materials'">{{ getCollectionMaterials(collection) }}</span>
+            <span v-else-if="column === 'materials'">{{
+              getCollectionMaterials(collection)
+            }}</span>
             <span v-else-if="column === 'size'">{{ getCollectionSize(collection) }}</span>
           </td>
         </tr>
@@ -84,12 +80,14 @@ import utils from '../../utils'
 import SubCollectionsTable from './SubCollectionsTable'
 import { mapGetters, mapMutations } from 'vuex'
 import QualityColumn from './QualityColumn'
+import CollectionSelector from '@/components/buttons/CollectionSelector'
 
 export default {
   name: 'CollectionsTable',
   components: {
     SubCollectionsTable,
-    QualityColumn
+    QualityColumn,
+    CollectionSelector
   },
   props: {
     collections: {
