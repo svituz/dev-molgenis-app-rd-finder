@@ -415,6 +415,8 @@ def additional_organization_info(eric_data, rd_data):
         rd_id = int(biobank.split(":")[-1])
         description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
+        print(urls)
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
 
@@ -531,7 +533,7 @@ if __name__ == "__main__":
     package_name = "rd_connect_v1"
 
     if sub_collections:
-        output_name = "rd_connect_eric_format_V2.xlsx"
+        output_name = "rd_connect_eric_format_V2_urls.xlsx"
         package_name = "rd_connect_v2"
 
     rd_data = pd.read_excel(rd_name, sheet_name=None)
