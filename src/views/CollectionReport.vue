@@ -83,7 +83,7 @@
                   :items=getItemList
                   :fields="[
                     {
-                      key: 'name',
+                      key: 'Name',
                       sortable: true
                     },
                     {
@@ -91,7 +91,7 @@
                       sortable: true
                     },
                     {
-                      key: 'gene',
+                      key: 'diagnosis',
                       sortable: true
                     },
                     {
@@ -111,32 +111,6 @@
                       sortable: true
                     }
                   ]">
-                  <template #cell(data) = "data_types">
-                  <div>
-                  <span class = "lead">
-                  <span
-                    v-for=" index in data_types.value"
-                    class="m-1 badge"
-                    :key="index"
-                    :class="'badge-secondary'"
-                    >{{index}}
-                  </span>
-                  </span>
-                  </div>
-                  </template>
-                  <template #cell(materials) = "material_types">
-                  <div>
-                  <span class = "lead">
-                  <span
-                    v-for=" index in material_types.value"
-                    class="m-1 badge"
-                    :key="index"
-                    :class="'badge-danger'"
-                    >{{index}}
-                  </span>
-                  </span>
-                  </div>
-                  </template>
                   </b-table>
                 </div>
             </div>
@@ -214,7 +188,18 @@ export default {
       }
     },
     getItemList () {
-      return this.subCollections.map(x => ({ name: x.name, materials: x.content.Materials.value, data: x.content.Data.value }))
+      console.log(this.collection)
+      const items = []
+      for (const key in this.collection.sub_collections) {
+        console.log(this.collection.sub_collections[key].diagnosis_available)
+        items.push({
+          Name: this.collection.sub_collections[key].name,
+          Number_of_patients: this.collection.sub_collections[key].number_of_donors,
+          diagnosis: this.collection.sub_collections[key].diagnosis_available[0].label,
+          ICD_10: this.collection.sub_collections[key].diagnosis_available[0].code
+        })
+      }
+      return items
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
