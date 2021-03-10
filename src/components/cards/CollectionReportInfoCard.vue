@@ -30,13 +30,10 @@
               </li>
             </ul>
           </template>
-          <template v-if="info.biobank">
-            <h5>Biobank</h5>
+          <template class="contact-info-box" v-if="info.biobank">
+            <h4>Host Institution</h4>
             <ul class="right-content-list">
               <li>
-                <div>
-                  {{ info.biobank.name }}
-                </div>
                 <div>
                   {{ info.biobank.juridical_person }}
                 </div>
@@ -45,12 +42,12 @@
                 </div>
               </li>
               <li>
-                <div v-if="info.biobank.report">
+                <!-- <div v-if="info.biobank.report">
                   <span class="fa fa-fw fa-address-card mr-2" aria-hidden="true"></span>
                   <router-link :to="info.biobank.report">
                     <span>View {{ info.biobank.name }}</span>
                   </router-link>
-                </div>
+                </div> -->
                 <div v-if="info.biobank.website">
                   <span class="fa fa-fw fa-globe mr-2" aria-hidden="true"></span>
                   <a :href="info.biobank.website" target="_blank" rel="noopener noreferrer">
@@ -166,5 +163,8 @@ export default {
 
 .cert-badge:not(:last-child) {
   margin-right: 1rem;
+}
+.content-info-box {
+  border-color: white;
 }
 </style>
