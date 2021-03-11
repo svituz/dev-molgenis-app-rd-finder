@@ -417,6 +417,8 @@ def additional_organization_info(eric_data, rd_data):
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
         print(urls)
+        eric_data["eu_bbmri_eric_biobanks"]["url"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ",".join(urls)
+        
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
 
