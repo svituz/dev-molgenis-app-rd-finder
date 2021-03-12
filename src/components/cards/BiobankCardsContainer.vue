@@ -136,9 +136,6 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
-      // console.log('items:')
-      // console.log(this.biobanksShown)
-
       return items
     }
   },
