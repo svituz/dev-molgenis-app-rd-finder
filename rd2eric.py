@@ -175,12 +175,18 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
     for biobank_id in biobank_ids:
         m = rd_data['rd_diseases']['OrganizationID'] == int(biobank_id.split(':')[-1])
         basic_info_mask = rd_data['rd_basic_info']['OrganizationID'] == int(biobank_id.split(':')[-1])
+        
+        contact_row = eric_data['eu_bbmri_eric_persons'].loc[eric_data['eu_bbmri_eric_persons']['biobanks'] == biobank_id]['id']
+        if len(contact_row) > 0 and not pd.isnull(contact_row.values[0]):
+            contact_id = contact_row.values[0]
+            print(contact_id)
         rows = rd_data['rd_diseases'][m]
         #a = pd.concat([a,list(biobank_id + ':collection:' +rows['name'])])
         if sub_collections:
             collection_class = "_pa"
             parent_id = str(biobank_id) + ':collection{0}'.format(collection_class)
             eric_data['eu_bbmri_eric_collections'].at[count,'id'] = parent_id
+            eric_data['eu_bbmri_eric_collections'].at[count,'contact'] = contact_id
             collection_class = "_ch"
             count += 1
 
@@ -542,8 +548,8 @@ if __name__ == "__main__":
     eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
 
     add_organization_info(eric_data, rd_data)
-    add_collections_info(eric_data, rd_data, sub_collections)
     add_persons(eric_data, rd_data)
+    add_collections_info(eric_data, rd_data, sub_collections)
 
     additional_organization_info(eric_data, rd_data)
 
