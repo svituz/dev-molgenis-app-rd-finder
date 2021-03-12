@@ -366,7 +366,7 @@ def add_geo_info(eric_data, rd_data, geo_file="biobank_location_info.xlsx", try_
     """
 
     try:
-        geo_info = pd.read_excel(geo_file, sheet_name=None)
+        geo_info = pd.read_excel(geo_file, sheet_name=None, engine="openpyxl")
         geo_df = geo_info["Sheet1"]
         for biobank in eric_data["eu_bbmri_eric_biobanks"]["id"]:
             longitude = geo_df[geo_df["id"] == biobank]["longitude"].values
@@ -417,7 +417,7 @@ def additional_organization_info(eric_data, rd_data):
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
         print(urls)
-        eric_data["eu_bbmri_eric_biobanks"]["url"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ",".join(urls)
+        eric_data["eu_bbmri_eric_biobanks"]["url"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ",".join(urls).replace(" ", "")
         
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
@@ -536,10 +536,10 @@ if __name__ == "__main__":
 
     if sub_collections:
         output_name = "rd_connect_eric_format_V2_urls.xlsx"
-        package_name = "rd_connect_v2"
+        package_name = "rd_connect"
 
-    rd_data = pd.read_excel(rd_name, sheet_name=None)
-    eric_data = pd.read_excel(eric_name, sheet_name=None)
+    rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
+    eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
 
     add_organization_info(eric_data, rd_data)
     add_collections_info(eric_data, rd_data, sub_collections)
