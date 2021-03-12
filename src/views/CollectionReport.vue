@@ -39,7 +39,7 @@
                       </div>
                       <div class="col-sm-8" style="text-align:center">
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <h1 style="color:#a6cc74"> {{collection.name}} </h1>
+                        <h1 class="header"> {{collection.name}} </h1>
                       </div>
                     </div>
                     <b> Description: </b>
@@ -74,7 +74,7 @@
           <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
         <div style="text-align:center" class="mt-2">
-                  <h2><strong>Disease Matrix</strong></h2>
+                  <h2 class="header"><strong>Disease Matrix</strong></h2>
                   <b-table
                   bordered
                   hover
@@ -188,10 +188,8 @@ export default {
       }
     },
     getItemList () {
-      console.log(this.collection)
       const items = []
       for (const key in this.collection.sub_collections) {
-        console.log(this.collection.sub_collections[key].diagnosis_available)
         items.push({
           Name: this.collection.sub_collections[key].name,
           Number_of_patients: this.collection.sub_collections[key].number_of_donors,
@@ -230,5 +228,8 @@ export default {
 
 >>> .rounded-xl {
   border-radius: 20px;
+}
+.header {
+  color: #a6cc74
 }
 </style>
