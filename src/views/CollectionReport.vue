@@ -95,15 +95,11 @@
                       sortable: true
                     },
                     {
-                      key: 'ORPHA_Code',
+                      key: 'ORPHA',
                       sortable: true
                     },
                     {
                       key: 'ICD_10',
-                      sortable: true
-                    },
-                    {
-                      key: 'OMIM',
                       sortable: true
                     },
                     {
@@ -144,6 +140,14 @@ export default {
     ...mapActions(['GetCollectionReport']),
     back () {
       this.$router.go(-1)
+    },
+    getCode (subCollection, type) {
+      var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
+      if (code.length > 0) {
+        code = String(subCollection.diagnosis_available[0].ontology).includes(type) ? subCollection.diagnosis_available[0].code : ''
+      }
+      console.log(code)
+      return code
     }
   },
   computed: {
@@ -193,8 +197,10 @@ export default {
         items.push({
           Name: this.collection.sub_collections[key].name,
           Number_of_patients: this.collection.sub_collections[key].number_of_donors,
-          diagnosis: this.collection.sub_collections[key].diagnosis_available[0].label,
-          ICD_10: this.collection.sub_collections[key].diagnosis_available[0].code
+          diagnosis: (this.collection.sub_collections[key].diagnosis_available[0] === undefined) ? '' : this.collection.sub_collections[key].diagnosis_available[0].label,
+          ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
+          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet')
+
         })
       }
       return items

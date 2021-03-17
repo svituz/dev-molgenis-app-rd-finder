@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
+import { genericFilterOptions, diagnosisAvailableFilterOptions } from './filterOptions'
 
 const filterDefinitions = (state) => [
   {
@@ -8,7 +9,7 @@ const filterDefinitions = (state) => [
     type: 'string-filter',
     humanReadableString: 'Text search is',
     collapsable: false
-  }
+  },
   // {
   //   component: 'MultiFilter',
   //   name: 'ressource_types',
@@ -57,18 +58,18 @@ const filterDefinitions = (state) => [
   //   initiallyCollapsed: !state.route.query.external_sources,
   //   filters: state.filters.selections.external_sources
   // },
-  // {
-  //   component: 'MultiFilter',
-  //   name: 'diagnosis_available',
-  //   label: 'Diagnosis available',
-  //   type: 'multi-filter',
-  //   initialDisplayItems: 10,
-  //   maxVisibleOptions: 10,
-  //   table: 'eu_bbmri_eric_disease_types',
-  //   options: diagnosisAvailableFilterOptions('eu_bbmri_eric_disease_types'),
-  //   initiallyCollapsed: !state.route.query.diagnosis_available,
-  //   humanReadableString: 'Disease type(s):'
-  // },
+  {
+    component: 'MultiFilter',
+    name: 'diagnosis_available',
+    label: 'Diagnosis available',
+    type: 'multi-filter',
+    initialDisplayItems: 10,
+    maxVisibleOptions: 10,
+    table: 'eu_bbmri_eric_disease_types',
+    options: diagnosisAvailableFilterOptions('eu_bbmri_eric_disease_types'),
+    initiallyCollapsed: !state.route.query.diagnosis_available,
+    humanReadableString: 'Disease type(s):'
+  },
   // {
   //   component: 'CheckboxFilter',
   //   name: 'materials',
@@ -81,18 +82,18 @@ const filterDefinitions = (state) => [
   //   maxVisibleOptions: 25,
   //   humanReadableString: 'Material type(s):'
   // },
-  // {
-  //   component: 'CheckboxFilter',
-  //   name: 'country',
-  //   label: 'Countries',
-  //   type: 'checkbox-filter',
-  //   table: 'eu_bbmri_eric_countries',
-  //   options: dynamicCountryFilter(),
-  //   initiallyCollapsed: !state.route.query.country,
-  //   filters: state.filters.selections.country,
-  //   maxVisibleOptions: 25,
-  //   humanReadableString: 'Countries:'
-  // }
+  {
+    component: 'CheckboxFilter',
+    name: 'country',
+    label: 'Countries',
+    type: 'checkbox-filter',
+    table: 'eu_bbmri_eric_countries',
+    options: genericFilterOptions('eu_bbmri_eric_countries'),
+    initiallyCollapsed: !state.route.query.country,
+    filters: state.filters.selections.country,
+    maxVisibleOptions: 25,
+    humanReadableString: 'Countries:'
+  }
   // {
   //   component: 'CheckboxFilter',
   //   name: 'biobank_quality',

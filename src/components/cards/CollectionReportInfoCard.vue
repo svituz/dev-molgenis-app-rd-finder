@@ -58,22 +58,6 @@
               </li>
             </ul>
           </template>
-              <li>
-                <div class="container p-0">
-                  <div class="row">
-                    <div class="col pr-0">
-                      <span class="font-weight-bold">Partner charter:</span>
-                    </div>
-                    <div class="col p-0">
-                      <span class="badge badge-info"> {{ info.biobank.partnerCharter }}</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <span class="font-weight-bold mr-2">Biobank id:</span>
-                <span class="biobank-id">{{ info.biobank.id }}</span>
-              </li>
             </ul>
           </template>
           <template v-if="info.networks && info.networks.length > 0">
