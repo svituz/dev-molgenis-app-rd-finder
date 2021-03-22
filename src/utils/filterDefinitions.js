@@ -6,9 +6,9 @@ const filterDefinitions = (state) => [
   {
     name: 'search',
     label: 'Search',
-    type: 'string-filter',
+    type: 'multi-filter',
     humanReadableString: 'Text search is',
-    collapsable: false
+    initiallyCollapsed: false
   },
   // {
   //   component: 'MultiFilter',
@@ -89,10 +89,10 @@ const filterDefinitions = (state) => [
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_countries',
     options: genericFilterOptions('eu_bbmri_eric_countries'),
-    initiallyCollapsed: !state.route.query.country,
     filters: state.filters.selections.country,
-    maxVisibleOptions: 25,
-    humanReadableString: 'Countries:'
+    maxVisibleOptions: 10,
+    humanReadableString: 'Countries:',
+    initiallyCollapsed: false
   }
   // {
   //   component: 'CheckboxFilter',

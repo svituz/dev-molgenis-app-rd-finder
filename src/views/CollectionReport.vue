@@ -1,7 +1,7 @@
 <template>
   <!-- <div class="container mg-collection-report-card"> -->
     <div class="container-fluid">
-      <loading :active="isLoading" loader="dots" :is-full-page="true" color="var(--secondary)" background-color="var(--light)"></loading>
+      <loading :active="isLoading" loader="dots" :is-full-page="true" color="#598c68" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
       <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
 
@@ -15,14 +15,14 @@
                 <div>
                   <b-card
                     class="rounded-xl"
-                    style="max-width: 50rem; background-color: #e2e3ce"
+                    style="max-width: 50rem;"
                   >
                   <b-card-text>
                     <div class="row" style="height: 40px;">
                       <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
                       <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
                     </div>
-                    <div class="row" style="background-color: #ffffff">
+                    <div class="row">
                       <div class="col-sm-2">
                       <h2>
                         <b-badge

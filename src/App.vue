@@ -15,7 +15,7 @@
     background-color: #f1f1de;
 }
 .container {
-  background-color: #ffffff;
+  background-color: #fcfcf5;
 }
 </style>
 
