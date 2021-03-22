@@ -32,7 +32,7 @@ services:
 
 
     bibbox-molgenis-frontend:
-  
+      container_name: bibbox-molgenis-frontend
       image: molgenis/molgenis-frontend:latest
       ports:
         - "82:80"
