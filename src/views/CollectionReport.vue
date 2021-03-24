@@ -1,27 +1,59 @@
 <template>
-  <div class="container mg-collection-report-card">
-    <loading :active="isLoading" loader="dots" :is-full-page="true" color="var(--secondary)" background-color="var(--light)"></loading>
+  <!-- <div class="container mg-collection-report-card"> -->
     <div class="container-fluid">
+      <loading :active="isLoading" loader="dots" :is-full-page="true" color="#598c68" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
       <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
 
       <div class="row" v-if="this.collection && !this.isLoading">
         <div class="col">
-          <report-title type="Collection" :name="collection.name"></report-title>
-
           <div class="container p-0">
             <div class="row">
               <div class="col-md-8">
-                <collection-selector class="mb-2" v-if="isTopLevelCollection" :collectionData="collection" />
+                <!-- <report-description :description="collection.description" :maxLength="500"></report-description> -->
 
-                <report-description :description="collection.description" :maxLength="500"></report-description>
-
+                <div>
+                  <b-card
+                    class="rounded-xl"
+                    style="max-width: 50rem;"
+                  >
+                  <b-card-text>
+                    <div class="row" style="height: 40px;">
+                      <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
+                      <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-2">
+                      <h2>
+                        <b-badge
+                          v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary"
+                          >
+                        {{collection.biobank.ressource_types.label}}
+                        </b-badge>
+                        <b-badge
+                          v-if="collection.biobank.ressource_types.label == 'Biobank'" variant="success"
+                        >
+                        {{collection.biobank.ressource_types.label}}
+                        </b-badge>
+                      </h2>
+                      </div>
+                      <div class="col-sm-8" style="text-align:center">
+                        <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
+                        <h1 class="header"> {{collection.name}} </h1>
+                      </div>
+                    </div>
+                    <b> Description: </b>
+                    {{getDescription}}
+                  </b-card-text>
+                  </b-card>
+                </div>
+                <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
                 <!-- main collection information -->
                 <table class="mg-report-details-list mb-3">
-                  <tr>
+                  <!-- <tr>
                     <th scope="row" class="pr-1">Id:</th>
                     <td>{{ collection.id }}</td>
-                  </tr>
+                  </tr> -->
                   <tr v-if="collection.url">
                     <th scope="row" class="pr-1">Website:</th>
                     <td>
@@ -35,32 +67,49 @@
                     <th scope="row" class="pr-1">Age:</th>
                     <td>{{ mainContent.Age.value }}</td>
                   </tr>
-                  <report-list-row :data="mainContent.Type">Type:</report-list-row>
-                  <report-list-row :data="mainContent.Sex">Sex:</report-list-row>
-                  <report-list-row :data="mainContent.Materials">Materials:</report-list-row>
-                  <report-list-row :data="mainContent.Storage">Storage:</report-list-row>
-                  <report-list-row :data="mainContent.Data">Data:</report-list-row>
-                  <report-list-row :data="mainContent.Diagnosis">Diagnosis:</report-list-row>
-                  <report-list-row :data="mainContent.DataUse">Data use conditions:</report-list-row>
                 </table>
-
                 <!-- Recursive set of subcollections -->
-                <div v-if="collection.sub_collections && collection.sub_collections.length" class="mt-2">
-                  <h5>Sub collections</h5>
-                  <report-sub-collection
-                    v-for="subCollection in subCollections"
-                    :collection="subCollection"
-                    :key="subCollection.id"
-                    :level="1"
-                  ></report-sub-collection>
-                </div>
-              </div>
-
-              <!-- Right side card -->
-              <collection-report-info-card :info="info"></collection-report-info-card>
-            </div>
+          <!-- Right side card -->
           </div>
+          <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
+        <div style="text-align:center" class="mt-2">
+                  <h2 class="header"><strong>Disease Matrix</strong></h2>
+                  <b-table
+                  bordered
+                  hover
+                  small
+                  striped
+                  :items=getItemList
+                  :fields="[
+                    {
+                      key: 'Name',
+                      sortable: true
+                    },
+                    {
+                      key: 'Number_of_patients',
+                      sortable: true
+                    },
+                    {
+                      key: 'diagnosis',
+                      sortable: true
+                    },
+                    {
+                      key: 'ORPHA',
+                      sortable: true
+                    },
+                    {
+                      key: 'ICD_10',
+                      sortable: true
+                    },
+                    {
+                      key: 'Synonyms',
+                      sortable: true
+                    }
+                  ]">
+                  </b-table>
+                </div>
+            </div>
       </div>
     </div>
   </div>
@@ -70,30 +119,35 @@
 import { mapActions, mapState } from 'vuex'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import ReportDescription from '@/components/report-components/ReportDescription'
-import ReportTitle from '@/components/report-components/ReportTitle'
+// import ReportDescription from '@/components/report-components/ReportDescription'
+// import ReportTitle from '@/components/report-components/ReportTitle'
 import ReportListRow from '@/components/report-components/ReportListRow'
-import ReportSubCollection from '@/components/report-components/ReportSubCollection'
+// import ReportSubCollection from '@/components/report-components/ReportSubCollection'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
-import CollectionSelector from '@/components/buttons/CollectionSelector'
-
+import moment from 'moment'
+import CollectionSelector from '@/components/filters/CollectionSelector'
 import { mapDetailsTableContent, mapCollectionsData, collectionReportInformation } from '@/utils/templateMapper'
 
 export default {
   name: 'CollectionReport',
   components: {
     ReportListRow,
-    ReportTitle,
-    ReportDescription,
-    ReportSubCollection,
-    CollectionReportInfoCard,
     Loading,
-    CollectionSelector
+    CollectionSelector,
+    CollectionReportInfoCard
   },
   methods: {
     ...mapActions(['GetCollectionReport']),
     back () {
       this.$router.go(-1)
+    },
+    getCode (subCollection, type) {
+      var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
+      if (code.length > 0) {
+        code = String(subCollection.diagnosis_available[0].ontology).includes(type) ? subCollection.diagnosis_available[0].code : ''
+      }
+      console.log(code)
+      return code
     }
   },
   computed: {
@@ -107,6 +161,9 @@ export default {
     info () {
       return collectionReportInformation(this.collection)
     },
+    get_items () {
+      return [{ id: 1, last_activation: 2 }]
+    },
     subCollections () {
       return this.collection && this.collection.sub_collections && this.collection.sub_collections.length
         ? mapCollectionsData(this.collection.sub_collections)
@@ -115,6 +172,38 @@ export default {
     collectionId () {
       const splittedUrl = this.$route.fullPath.split('/')
       return splittedUrl[splittedUrl.length - 1]
+    },
+    getTitle () {
+      return this.collection.name
+    },
+    getHeader () {
+      return 'ID: ' + this.collection.biobank.id
+    },
+    getDescription () {
+      return this.collection.biobank.description
+    },
+    getActivity () {
+      if (this.collection.sub_collections.length) {
+        const date = moment(this.collection.sub_collections[0].timestamp).format('MM/DD/YYYY hh:mm')
+        return date
+      } else {
+        const date = 'N/A'
+        return date
+      }
+    },
+    getItemList () {
+      const items = []
+      for (const key in this.collection.sub_collections) {
+        items.push({
+          Name: this.collection.sub_collections[key].name,
+          Number_of_patients: this.collection.sub_collections[key].number_of_donors,
+          diagnosis: (this.collection.sub_collections[key].diagnosis_available[0] === undefined) ? '' : this.collection.sub_collections[key].diagnosis_available[0].label,
+          ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
+          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet')
+
+        })
+      }
+      return items
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
@@ -134,5 +223,19 @@ export default {
 <style scoped>
 >>> .mg-report-details-list th {
   vertical-align: top;
+}
+>>> .badge {
+  transition: transform 0.1s;
+  box-shadow: 0 0 0 1px white;
+}
+>>> .badge:hover {
+  transform: scale(1.4);
+}
+
+>>> .rounded-xl {
+  border-radius: 20px;
+}
+.header {
+  color: #a6cc74
 }
 </style>

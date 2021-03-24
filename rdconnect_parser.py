@@ -83,9 +83,9 @@ def parse_data(package_name, workbook_name):
     workbook.close()
 
     df_dict = {}
-    xls = pd.ExcelFile(workbook_name)
+    xls = pd.ExcelFile(workbook_name, engine="openpyxl")
     for sheet_name in xls.sheet_names:
-        df_dict[sheet_name] = pd.read_excel(xls, sheet_name)
+        df_dict[sheet_name] = pd.read_excel(xls, sheet_name, engine="openpyxl")
     
     return df_dict, entities
 

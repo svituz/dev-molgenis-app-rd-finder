@@ -9,13 +9,44 @@
         v-model="currentPage"
         :per-page="pageSize"
       ></b-pagination>
-      <biobank-card
+      <!-- <biobank-card
         v-for="biobank in biobanksShown"
         :key="biobank.id || biobank"
         :biobank="biobank"
         :initCollapsed="(biobanksShown[0].id !== biobank.id || biobanksShown[0] !== biobank)">
-      </biobank-card>
+      </biobank-card> -->
 
+      <div v-if="!loading && foundBiobanks > 0">
+        <b-table
+        responsive
+        hover
+        :items="biobank_items"
+        :fields="[
+          {
+            key: 'Logo'
+          },
+          {
+            key: 'Name',
+            sortable: false,
+          },
+          {
+            key: 'Ressource',
+            sortable: false
+          },
+          {
+            key: 'Number_of_cases',
+            sortable: false
+          },
+          {
+            key: 'Country',
+            sortable: false
+          }
+        ]">
+        <template v-slot:cell(Name)="ressource">
+          <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
+        </template>
+      </b-table>
+      </div>
       <b-pagination
         v-if="foundBiobanks > pageSize"
         size="md"
@@ -52,7 +83,7 @@
 </style>
 
 <script>
-import BiobankCard from './BiobankCard'
+// import BiobankCard from './BiobankCard'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -60,11 +91,19 @@ export default {
   data () {
     return {
       currentPage: 1,
-      pageSize: 10
+      pageSize: 10,
+      items: []
     }
   },
   methods: {
-    ...mapActions(['GetBiobanks'])
+    ...mapActions(['GetBiobanks']),
+    addNumberDonors (biobank) {
+      var sum = 0
+      for (const key in biobank.collections) {
+        sum = sum + biobank.collections[key].number_of_donors
+      }
+      return sum
+    }
   },
   computed: {
     ...mapGetters([
@@ -80,11 +119,29 @@ export default {
     },
     biobankIdsToFetch () {
       return this.biobanksShown.filter(it => typeof it === 'string')
+    },
+    biobank_items () {
+      // check if deeper objects (e.g.: ressource_types) can be loaded:
+      if (!this.biobanksShown[0].ressource_types) {
+        return []
+      }
+      const items = []
+      for (const key in this.biobanksShown) {
+        items.push({
+          Logo: 'placeHolder',
+          Name: this.biobanksShown[key].name,
+          id: this.biobanksShown[key].id,
+          Ressource: this.biobanksShown[key].ressource_types.label,
+          Number_of_cases: this.addNumberDonors(this.biobanksShown[key]),
+          Country: this.biobanksShown[key].country.name
+        })
+      }
+      return items
     }
   },
-  components: {
-    BiobankCard
-  },
+  // components: {
+  //   BiobankCard
+  // },
   watch: {
     biobankIds (newValue, oldValue) {
       if (newValue.length !== oldValue.length ||

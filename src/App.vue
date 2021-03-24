@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app">
     <div class="container">
       <b-alert v-if="errorMessage" show variant="danger" dismissible>{{errorMessage}}</b-alert>
       <router-view></router-view>
@@ -10,6 +10,12 @@
 <style>
 .mg-page-content {
   padding-top: 0 !important;
+}
+.app {
+    background-color: #f1f1de;
+}
+.container {
+  background-color: #fcfcf5;
 }
 </style>
 

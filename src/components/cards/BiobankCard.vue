@@ -9,11 +9,8 @@
           <div class="mb-2">
           <h5>
             <router-link :to="'/biobank/' + biobank.id">
-              <span
-                class="fa fa-table mr-2 icon-alignment"
-                aria-hidden="true"
-                aria-labelledby="biobank-name"
-              ></span>
+              <i v-if="biobank['ressource_types']['label'] == 'Biobank'" class="fa fa-table mr-1" style="color:green" aria-hidden="true" aria-labelledby="biobank-name"></i>
+              <i v-if="biobank['ressource_types']['label'] == 'Registry'" class="fa fa-table mr-1" style="color:blue" aria-hidden="true" aria-labelledby="biobank-name"></i>
             </router-link>
             <span id="biobank-name">{{ biobank.name }}</span>
           </h5>
@@ -39,19 +36,20 @@
         </div>
         <div class="col-md-6" v-if="!loading">
           <p>
-            <small class="mr-2">
-              <span class="font-weight-bold">Collection types:</span>
+            <!-- <small>
+              <b>Collection types:</b>
             </small>
             <small>{{ collectionTypes }}</small>
-            <br />
-            <small class="mr-2">
-              <span class="font-weight-bold">Juridical person:</span>
+            <br /> -->
+            <small>
+              <b>Ressource Type:</b>
             </small>
-            <small>{{ biobank['juridical_person'] }}</small>
+            <small>{{ biobank['ressource_types']['label'] }}</small>
+            <br />
             <template v-if="availableCovidTypes">
               <br />
-              <small class="mr-2">
-                <span class="font-weight-bold">Covid-19:</span>
+              <small>
+                <b>Covid-19:</b>
               </small>
               <small
                 :key="type + index"
@@ -65,23 +63,46 @@
             <span v-if="biobankInSelection" class="fa fa-check text-success" aria-hidden="true"></span>
         </div>
         <div v-else class="col-md-12 text-center">
-          <span class="fa fa-spinner fa-spin" aria-hidden="true"></span>
+          <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
         </div>
       </div>
     </div>
-    <div class="card-body table-card" v-if="!collapsed && !loading">
-      <collections-table
-        v-if="biobank.collections.length > 0"
-        :collections="sortedCollections"
-      ></collections-table>
-    </div>
+    <!-- <div class="card-body table-card" v-if="!collapsed && !loading">
+      <collections-table v-if="biobank.collections.length > 0" :collections="sortedCollections"></collections-table>
+    </div> -->
   </div>
 </template>
 
+<style>
+.table-card {
+  padding: 0.1rem;
+}
+
+.biobank-card {
+  margin-bottom: 1em;
+}
+
+.biobank-card-header {
+  background-color: #f5f5f5;
+}
+
+.biobank-card-header:hover {
+  cursor: pointer;
+  background-color: #e4e4e4;
+}
+.biobank-icon:hover {
+  cursor: pointer;
+}
+
+.covid-icon {
+  height: 1.5rem;
+  width: auto;
+}
+</style>
+
 <script>
-import CollectionSelector from '@/components/buttons/CollectionSelector'
-import CollectionsTable from '../tables/CollectionsTable.vue'
-import { mapGetters } from 'vuex'
+// import CollectionsTable from '../tables/CollectionsTable.vue'
+import { mapGetters, mapMutations } from 'vuex'
 import utils from '../../utils'
 import { sortCollectionsByName } from '../../utils/sorting'
 import QualityColumn from '../tables/QualityColumn'
@@ -90,9 +111,7 @@ import 'array-flat-polyfill'
 export default {
   name: 'biobank-card',
   components: {
-    CollectionsTable,
-    QualityColumn,
-    CollectionSelector
+    QualityColumn
   },
   props: {
     biobank: {
@@ -124,6 +143,19 @@ export default {
           biobankCollectionSelection.map((pc) => pc.value).includes(id)
         )
     },
+    getCollectionMag () {
+      // const collections = Object.keys(this.biobank.collections)
+      const collections = this.biobank.collections.filter(
+        collection => !collection.parent_collection
+      )
+      let numbers = 0
+      if (this.biobank.ressource_types.label === 'Registry') {
+        numbers = collections[0].order_of_magnitude_donors.size
+      } else if (this.biobank.ressource_types.label === 'Biobank') {
+        numbers = collections[0].size
+      }
+      return numbers
+    },
     sortedCollections () {
       return sortCollectionsByName(this.biobank.collections)
     },
@@ -151,6 +183,9 @@ export default {
           .join(', ')
       } else return ''
     }
+  },
+  methods: {
+    ...mapMutations(['AddCollectionToSelection', 'RemoveCollectionFromSelection'])
   }
 }
 </script>

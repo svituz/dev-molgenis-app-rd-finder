@@ -1,6 +1,6 @@
 <template>
   <div id="filter-container">
-    <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="!this.$store.state.route.query.search">
+    <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
       <StringFilter name="Search" v-model="search"></StringFilter>
     </FilterCard>
     <FilterCard
@@ -24,7 +24,6 @@
     </FilterCard>
   </div>
 </template>
-
 <script>
 /** Components used for filters */
 import CovidFilter from '../filters/CovidFilter'
