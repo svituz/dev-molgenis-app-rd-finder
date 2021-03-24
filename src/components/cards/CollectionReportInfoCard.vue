@@ -120,6 +120,9 @@ export default {
   },
   methods: {
     getUrls (url) {
+      if (!url) {
+        return ''
+      }
       var urls = url.split(',')
       return urls
     }
