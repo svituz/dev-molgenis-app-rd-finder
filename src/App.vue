@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div @click="$root.$emit('bv::hide::popover')">
     <div class="container">
       <b-alert v-if="errorMessage" show variant="danger" dismissible>{{errorMessage}}</b-alert>
       <router-view></router-view>
@@ -29,12 +29,14 @@ export default {
   methods: {
     ...mapActions([
       'GetNegotiatorType',
-      'GetNegotiatorEntities'
+      'GetNegotiatorEntities',
+      'GetQualityStandardInformation'
     ])
   },
   mounted () {
     this.GetNegotiatorType()
     this.GetNegotiatorEntities()
+    this.GetQualityStandardInformation()
   },
   name: 'biobank-explorer'
 }
