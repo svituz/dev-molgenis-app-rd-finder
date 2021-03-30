@@ -146,7 +146,6 @@ export default {
       if (code.length > 0) {
         code = String(subCollection.diagnosis_available[0].ontology).includes(type) ? subCollection.diagnosis_available[0].code : ''
       }
-      console.log(code)
       return code
     }
   },

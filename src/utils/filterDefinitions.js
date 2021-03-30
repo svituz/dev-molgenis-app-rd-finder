@@ -10,22 +10,19 @@ const filterDefinitions = (state) => [
     humanReadableString: 'Text search is',
     initiallyCollapsed: false
   },
-  // {
-  //   component: 'MultiFilter',
-  //   name: 'ressource_types',
-  //   label: 'Ressource Types',
-  //   type: 'multi-filter',
-  //   table: 'eu_bbmri_eric_ressource_types',
-  //   options: resscourceTypesAvailableFilterOptions('eu_bbmri_eric_ressource_types'),
-  //   // initiallyCollapsed: true,
-  //   filters: state.filters.selections.ressource_types,
-  //   maxVisibleOptions: 25,
-  //   humanReadableString: 'Ressource type(s):',
-  //   collapsed: false,
-  //   collapsable: false,
-  //   headerClass: 'bg-warning text-white',
-  //   all: true
-  // },
+  {
+    component: 'CheckboxFilter',
+    name: 'ressource_types',
+    label: 'Ressource Types',
+    type: 'checkbox-filter',
+    table: 'eu_bbmri_eric_ressource_types',
+    options: genericFilterOptions('eu_bbmri_eric_ressource_types'),
+    initiallyCollapsed: false,
+    filters: state.filters.selections.ressource_types,
+    maxVisibleOptions: 25,
+    humanReadableString: 'Ressource type(s):',
+    all: true
+  },
   // {
   //   headerClass: 'bg-warning text-white',
   //   component: 'CovidNetworkFilter',
