@@ -9,12 +9,12 @@
         <div class="col">
           <div class="container p-0">
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-7">
                 <!-- <report-description :description="collection.description" :maxLength="500"></report-description> -->
 
                 <div>
                   <b-card
-                    class="rounded-xl"
+                    class="rounded-xl shadow bb-card"
                     style="max-width: 50rem;"
                   >
                   <b-card-text>
@@ -22,9 +22,9 @@
                       <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
                       <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
                     </div>
-                    <div class="row">
+                    <div class="row card-head">
                       <div class="col-sm-2">
-                      <h2>
+                      <!-- <h2 class="card-head">
                         <b-badge
                           v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary"
                           >
@@ -35,14 +35,13 @@
                         >
                         {{collection.biobank.ressource_types.label}}
                         </b-badge>
-                      </h2>
+                      </h2> -->
                       </div>
-                      <div class="col-sm-8" style="text-align:center">
+                      <div class="col-sm-8 card-head" style="text-align:center">
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <h1 class="header"> {{collection.name}} </h1>
+                        <b class="header"> {{collection.name}} </b>
                       </div>
                     </div>
-                    <b> Description: </b>
                     {{getDescription}}
                   </b-card-text>
                   </b-card>
@@ -237,5 +236,14 @@ export default {
 }
 .header {
   color: #a6cc74
+}
+.card-head {
+  background-color: white;
+  font-size: 120%;
+}
+.bb-card {
+  position: relative;
+  margin-top: -70px;
+  border: none;
 }
 </style>

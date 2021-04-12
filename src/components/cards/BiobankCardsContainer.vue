@@ -18,6 +18,7 @@
 
       <div v-if="!loading && foundBiobanks > 0">
         <b-table
+        id="biobank-table"
         responsive
         hover
         :items="biobank_items"
@@ -30,7 +31,7 @@
             sortable: false,
           },
           {
-            key: 'Ressource',
+            key: 'Type',
             sortable: false
           },
           {
@@ -131,7 +132,7 @@ export default {
           Logo: 'placeHolder',
           Name: this.biobanksShown[key].name,
           id: this.biobanksShown[key].id,
-          Ressource: this.biobanksShown[key].ressource_types.label,
+          Type: this.biobanksShown[key].ressource_types.label,
           Number_of_cases: this.addNumberDonors(this.biobanksShown[key]),
           Country: this.biobanksShown[key].country.name
         })

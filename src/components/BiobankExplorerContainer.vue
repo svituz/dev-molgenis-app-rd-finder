@@ -1,9 +1,17 @@
 <template>
   <div class="row biobank-explorer-container">
+    <div class="background-hack">
+      <div class="background-hack-l">
+      </div>
+      <div class="background-hack-r">
+      </div>
+    </div>
+    <div class="row row-header">
+          <b>Linking up rare disease research across the world</b>
+      </div>
     <div class="col-md-3">
       <filter-container></filter-container>
     </div>
-
     <div class="col-md-9">
       <div class="row mb-3">
         <collection-select-all
@@ -347,5 +355,44 @@ export default {
 
 .collection-cart > div:last-child {
   border:none !important;
+}
+
+.background-hack {
+  height: 0px;
+}
+
+.background-hack-l {
+  height: 80px;
+  width: 50px;
+  position: relative;
+  left: -50px;
+  top: -16px;
+  background-color: #f4f4e1;
+}
+
+.background-hack-r {
+  height: 80px;
+  width: 50px;
+  position: relative;
+  left: 1130px;
+  top: -96px;
+  background-color: #f4f4e1;
+}
+
+.row-header {
+  text-align: left;
+  padding-top: 17px;
+  padding-left: 35px;
+  font-size: 150%;
+  height: 80px;
+  background-color: #f4f4e1;
+  width: 1140px;
+  position: relative;
+  left: 15px;
+  top: -16px;
+}
+.image {
+  position: relative;
+  margin-left: 80px;
 }
 </style>

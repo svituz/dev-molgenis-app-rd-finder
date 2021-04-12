@@ -1,10 +1,10 @@
 <template>
   <div class="col-md-4">
-    <div class="card">
+    <div class="card info">
       <div class="card-body">
         <div class="card-text">
           <template class="contact-info-box" v-if="info.biobank">
-            <h4 class="header">Host Institution</h4>
+            <b>Host Institution</b>
             <ul class="right-content-list">
               <li>
                 <div>
@@ -21,15 +21,6 @@
                     <span>View {{ info.biobank.name }}</span>
                   </router-link>
                 </div> -->
-                <div v-if="info.biobank.website">
-                <b>Website(s):</b>
-                </div>
-                <div v-for="(url) in getUrls(info.biobank.website)" :key="url">
-                  <span class="fa fa-fw fa-globe mr-2" aria-hidden="true"></span>
-                  <a :href="url" target="_blank" rel="noopener noreferrer">
-                    <span>{{url}}</span>
-                  </a>
-                </div>
               </li>
               <template v-if="info.contact">
             <h4 class="header">Personnel</h4>
@@ -47,14 +38,14 @@
               <li v-if="info.contact.email">
                 <span class="fa fa-fw fa-paper-plane mr-2" aria-hidden="true"></span>
                 <a :href="'mailto:' + info.contact.email">
-                  <span>Email</span>
+                  <span> {{info.contact.email}}</span>
                 </a>
-                <div v-if="info.contact.phone">
+                <!-- <div v-if="info.contact.phone">
                   <span class="fa fa-fw fa-phone mr-1" aria-hidden="true"></span>
                   <a :href="'tel:' + info.contact.phone">
                     <span> {{ info.contact.phone }}</span></a
                   >
-                </div>
+                </div> -->
               </li>
             </ul>
           </template>
@@ -159,5 +150,9 @@ export default {
 }
 .header {
   color: #a6cc74
+}
+.info {
+  background-color: white;
+  border: none;
 }
 </style>

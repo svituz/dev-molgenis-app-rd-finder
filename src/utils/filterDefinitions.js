@@ -13,7 +13,7 @@ const filterDefinitions = (state) => [
   {
     component: 'CheckboxFilter',
     name: 'ressource_types',
-    label: 'Ressource Types',
+    label: 'Type',
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_ressource_types',
     options: genericFilterOptions('eu_bbmri_eric_ressource_types'),
