@@ -421,9 +421,19 @@ def additional_organization_info(eric_data, rd_data):
         rd_id = int(biobank.split(":")[-1])
         description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+
+        # add urls and remove spaces
         urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
-        print(urls)
         eric_data["eu_bbmri_eric_biobanks"]["url"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ",".join(urls).replace(" ", "")
+
+        # add more general info as shown in tab "Overview"
+        type_of_host = rd_data["rd_core"]["Type_of_host_institution"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        source_of_funding = rd_data["rd_core"]["Source_of_funding"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        target_population = rd_data["rd_core"]["Target_population_of_the_registry"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        year_of_establishment = rd_data["rd_core"]["year_of_establishment"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        ontologies_used = rd_data["rd_core"]["Ontologies"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        imaging_available = rd_data["rd_core"]["Imaging_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        also_listed = rd_data["rd_core"]["The_registry_biobanks_is_listed_in_other_inventories_networks"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
@@ -442,6 +452,14 @@ def additional_organization_info(eric_data, rd_data):
         eric_data["eu_bbmri_eric_biobanks"]["description"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = description
         eric_data["eu_bbmri_eric_biobanks"]["acronym"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = acronym
         eric_data["eu_bbmri_eric_biobanks"]["logos"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "logos"
+        eric_data["eu_bbmri_eric_biobanks"]["type_of_host"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = type_of_host
+        eric_data["eu_bbmri_eric_biobanks"]["source_of_funding"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = source_of_funding
+        eric_data["eu_bbmri_eric_biobanks"]["target_population"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = target_population
+        eric_data["eu_bbmri_eric_biobanks"]["year_of_establishment"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = year_of_establishment
+        eric_data["eu_bbmri_eric_biobanks"]["ontologies_used"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ontologies_used
+        eric_data["eu_bbmri_eric_biobanks"]["imaging_available"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = imaging_available
+        eric_data["eu_bbmri_eric_biobanks"]["also_listed"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = also_listed
+
 
 
     add_geo_info(eric_data, rd_data)
@@ -536,7 +554,7 @@ def rename_packages(eric_data, package_name):
 if __name__ == "__main__":
     sub_collections = True
 
-    eric_name = "empty_eric_duo.xlsx"
+    eric_name = "empty_eric_ext.xlsx"
     rd_name = "rd_connect.xlsx"
     output_name = "rd_connect_catalogue.xlsx"
     package_name = "rd_connect"
@@ -555,5 +573,5 @@ if __name__ == "__main__":
     additional_organization_info(eric_data, rd_data)
 
     # change package name
-    eric_data = rename_packages(eric_data, package_name)
+    # eric_data = rename_packages(eric_data, package_name)
     write_excel(eric_data, output_name)
