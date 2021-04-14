@@ -573,5 +573,5 @@ if __name__ == "__main__":
     additional_organization_info(eric_data, rd_data)
 
     # change package name
-    # eric_data = rename_packages(eric_data, package_name)
+    eric_data = rename_packages(eric_data, package_name)
     write_excel(eric_data, output_name)
