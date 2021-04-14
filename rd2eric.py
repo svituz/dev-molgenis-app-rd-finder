@@ -441,6 +441,7 @@ def additional_organization_info(eric_data, rd_data):
 
         eric_data["eu_bbmri_eric_biobanks"]["description"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = description
         eric_data["eu_bbmri_eric_biobanks"]["acronym"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = acronym
+        eric_data["eu_bbmri_eric_biobanks"]["logos"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "logos"
 
 
     add_geo_info(eric_data, rd_data)
@@ -537,11 +538,11 @@ if __name__ == "__main__":
 
     eric_name = "empty_eric_duo.xlsx"
     rd_name = "rd_connect.xlsx"
-    output_name = "rd_connect_eric_format_V1.xlsx"
-    package_name = "rd_connect_v1"
+    output_name = "rd_connect_catalogue.xlsx"
+    package_name = "rd_connect"
 
     if sub_collections:
-        output_name = "rd_connect_eric_format_V2_urls.xlsx"
+        output_name = "rd_connect_catalogue.xlsx"
         package_name = "rd_connect"
 
     rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
@@ -554,5 +555,5 @@ if __name__ == "__main__":
     additional_organization_info(eric_data, rd_data)
 
     # change package name
-    # eric_data = rename_packages(eric_data, package_name)
+    eric_data = rename_packages(eric_data, package_name)
     write_excel(eric_data, output_name)
