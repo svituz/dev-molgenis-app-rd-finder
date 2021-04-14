@@ -47,16 +47,25 @@
                   </b-card>
                 </div>
                 <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
-                <div>
+                <div white-space:pre>
                   <h4 class="header">General Information</h4>
-                  <p>Type of Host Institution: <b>Test</b> <br />
-                  Source of funding:    <b>Test</b><br />
-                  Target population: <b>Test</b><br />
-                  Year of establishment: <b>Test</b>
-                  </p>
-                  <p>Ontologies used: <b>Test</b></p>
-                  <p>Imaging available: <b>Test</b></p>
-                  <p>Also listed in: <b>Test</b></p>
+                  <b-table
+                  class="info-table"
+                  sticky-header="true"
+                  no-border-collapse
+                  small
+                  borderless
+                  thead-class="d-none"
+                  :items=getInfoItems
+                  :fields="[
+                  {
+                    key: 'info_type'
+                  },
+                  {
+                    key: 'info_field'
+                  }
+                  ]">
+                  </b-table>
                 </div>
                 <!-- Recursive set of subcollections -->
           <!-- Right side card -->
@@ -193,6 +202,17 @@ export default {
         })
       }
       return items
+    },
+    getInfoItems () {
+      return [
+        { info_type: 'Type of host institution:', info_field: this.collection.biobank.type_of_host },
+        { info_type: 'Source of funding:', info_field: this.collection.biobank.source_of_funding },
+        { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
+        { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
+        { info_type: 'Ontologies used:', info_field: this.collection.biobank.ontologies_used },
+        { info_type: 'Imaging available:', info_field: this.collection.biobank.imaging_available },
+        { info_type: 'Also listed in:', info_field: this.collection.biobank.also_listed }
+      ]
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
@@ -235,5 +255,8 @@ export default {
   position: relative;
   margin-top: -70px;
   border: none;
+}
+.info-table {
+  font-size: 90%;
 }
 </style>
