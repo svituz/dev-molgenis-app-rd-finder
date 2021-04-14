@@ -6,15 +6,15 @@ import 'array-flat-polyfill'
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 
 /* API PATHS */
-const BIOBANK_API_PATH = '/api/v2/eu_bbmri_eric_biobanks'
-const COLLECTION_API_PATH = '/api/v2/eu_bbmri_eric_collections'
-const BIOBANK_QUALITY_STANDARDS = '/api/v2/eu_bbmri_eric_ops_standards'
-const COLLECTION_QUALITY_STANDARDS = '/api/v2/eu_bbmri_eric_lab_standards'
+const BIOBANK_API_PATH = '/api/v2/rd_connect_biobanks'
+const COLLECTION_API_PATH = '/api/v2/rd_connect_collections'
+const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
+const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
 
-export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_col_qual_info'
-export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_bio_qual_info'
+export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
+export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
 
-const NETWORK_API_PATH = '/api/v2/eu_bbmri_eric_networks'
+const NETWORK_API_PATH = '/api/v2/rd_connect_networks'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
 const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfig?attrs=*,biobankId(refEntityType)'
 /**/
@@ -80,7 +80,7 @@ export default {
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    let url = '/api/data/eu_bbmri_eric_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
+    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
     }
@@ -95,7 +95,7 @@ export default {
   },
   GetBiobankIds ({ commit, getters }) {
     commit('SetBiobankIds', undefined)
-    let url = '/api/data/eu_bbmri_eric_biobanks?filter=id&size=10000&sort=name'
+    let url = '/api/data/rd_connect_biobanks?filter=id&size=10000&sort=name'
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
@@ -154,7 +154,7 @@ export default {
   },
   GetPodiumCollections ({ state, commit }) {
     if (state.isPodium && state.podiumCollectionIds.length === 0) { // only fetch once.
-      api.get("/api/data/eu_bbmri_eric_collections?num=10000&filter=id&q=podium!=''").then(response => {
+      api.get("/api/data/rd_connect_collections?num=10000&filter=id&q=podium!=''").then(response => {
         commit('SetPodiumCollections', response)
       })
     }
