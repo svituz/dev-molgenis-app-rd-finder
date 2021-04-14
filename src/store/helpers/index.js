@@ -37,7 +37,8 @@ export const createBiobankRSQLQuery = (state) => transformToRSQL({
     createInQuery('country', state.filters.selections.country || []),
     createInQuery('id', state.biobankIdsWithSelectedQuality),
     createInQuery('network', state.filters.selections.biobank_network || []),
-    createComparisons('covid19biobank', state.filters.selections.covid19 || [])
+    createComparisons('covid19biobank', state.filters.selections.covid19 || []),
+    createInQuery('ressource_types', state.filters.selections.ressource_types || [])
   ])
 })
 
