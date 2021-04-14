@@ -47,26 +47,17 @@
                   </b-card>
                 </div>
                 <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
-                <!-- main collection information -->
-                <table class="mg-report-details-list mb-3">
-                  <!-- <tr>
-                    <th scope="row" class="pr-1">Id:</th>
-                    <td>{{ collection.id }}</td>
-                  </tr> -->
-                  <tr v-if="collection.url">
-                    <th scope="row" class="pr-1">Website:</th>
-                    <td>
-                      <span
-                        ><a target="_blank" :href="collection.url">{{ collection.url }}</a></span
-                      >
-                    </td>
-                  </tr>
-                  <report-list-row :data="mainContent.Size">Size:</report-list-row>
-                  <tr v-if="mainContent.Age && mainContent.Age.value">
-                    <th scope="row" class="pr-1">Age:</th>
-                    <td>{{ mainContent.Age.value }}</td>
-                  </tr>
-                </table>
+                <div>
+                  <h4 class="header">General Information</h4>
+                  <p>Type of Host Institution: <b>Test</b> <br />
+                  Source of funding:    <b>Test</b><br />
+                  Target population: <b>Test</b><br />
+                  Year of establishment: <b>Test</b>
+                  </p>
+                  <p>Ontologies used: <b>Test</b></p>
+                  <p>Imaging available: <b>Test</b></p>
+                  <p>Also listed in: <b>Test</b></p>
+                </div>
                 <!-- Recursive set of subcollections -->
           <!-- Right side card -->
           </div>
@@ -120,7 +111,7 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 // import ReportDescription from '@/components/report-components/ReportDescription'
 // import ReportTitle from '@/components/report-components/ReportTitle'
-import ReportListRow from '@/components/report-components/ReportListRow'
+// import ReportListRow from '@/components/report-components/ReportListRow'
 // import ReportSubCollection from '@/components/report-components/ReportSubCollection'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
 import moment from 'moment'
@@ -130,7 +121,6 @@ import { mapDetailsTableContent, mapCollectionsData, collectionReportInformation
 export default {
   name: 'CollectionReport',
   components: {
-    ReportListRow,
     Loading,
     CollectionSelector,
     CollectionReportInfoCard
