@@ -8,6 +8,8 @@ import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 /* API PATHS */
 const BIOBANK_API_PATH = '/api/v2/eu_bbmri_eric_biobanks'
 const COLLECTION_API_PATH = '/api/v2/eu_bbmri_eric_collections'
+const BIOBANK_QUALITY_STANDARDS = '/api/v2/eu_bbmri_eric_ops_standards'
+const COLLECTION_QUALITY_STANDARDS = '/api/v2/eu_bbmri_eric_lab_standards'
 
 export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_col_qual_info'
 export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/eu_bbmri_eric_bio_qual_info'
@@ -18,8 +20,8 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 /**/
 
 /* Query Parameters */
-export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,name,type,order_of_magnitude(*),size,sub_collections(*),parent_collection,quality(*),data_categories)'
-export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(id,name,juridical_person,country,url,contact),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials,data_categories)'
+export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
+export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(id,name,juridical_person,country,url,contact,ressource_types,description),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors),number_of_donors'
 /**/
 
 export default {
@@ -27,6 +29,13 @@ export default {
     api.get(NEGOTIATOR_CONFIG_API_PATH).then(response => {
       commit('SetNegotiatorEntities', response)
     })
+  },
+  async GetQualityStandardInformation ({ commit }) {
+    const biobankQualityInfo = api.get(`${BIOBANK_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
+    const collectionQualityInfo = api.get(`${COLLECTION_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
+    const response = await Promise.all([biobankQualityInfo, collectionQualityInfo])
+
+    commit('SetQualityStandardDictionary', response)
   },
   /*
    * Retrieves biobanks and stores them in the cache
@@ -71,7 +80,7 @@ export default {
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    let url = '/api/data/eu_bbmri_eric_collections?filter=id,biobank(id,name,label),name,label,commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
+    let url = '/api/data/eu_bbmri_eric_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
     }

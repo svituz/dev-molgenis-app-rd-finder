@@ -6,6 +6,11 @@
 
     <div class="col-md-9">
       <div class="row mb-3">
+        <collection-select-all
+          v-if="!loading && foundCollectionIds.length"
+          class="mt-1 ml-3"
+          router-enabled
+        />
         <div class="col-md-8">
           <div v-if="isIE11">
             <input
@@ -37,26 +42,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="col-md-4 text-right"
-          v-if="!loading && foundCollectionIds.length && (rsql.length || biobankRsql.length)"
-        >
-          <input
-            type="checkbox"
-            id="select-deselect-all"
-            class="add-to-cart"
-            @change="handleCollectionStatus"
-            :checked="allCollectionsSelected"
-            value="false"
-            hidden
-          />
-          <label class="add-to-cart-label btn btn-success" for="select-deselect-all"
-            >Select all collections <span class="ml-1 fa fa-plus"></span>
-          </label>
-          <label class="remove-from-cart-label btn btn-danger" for="select-deselect-all">
-            Deselect all collections <span class="ml-1 fa fa-times"></span>
-          </label>
-        </div>
+        <div class="col-md-4"></div>
       </div>
       <div class="row">
         <div class="col-md-12" v-if="!loading">
@@ -72,7 +58,12 @@
     </div>
 
     <cart-selection-toast
-      v-if="!loading && hasSelection && !collectionCartShown && this.foundCollectionIds.length"
+      v-if="
+        !loading &&
+        hasSelection &&
+        !collectionCartShown &&
+        this.foundCollectionIds.length
+      "
       :cartSelectionText="`${this.selectedCollections.length} collection(s) selected`"
       :clickHandler="showSelection"
       :title="negotiatorButtonText"
@@ -84,35 +75,48 @@
     <b-modal
       hide-header
       id="collectioncart-modal"
+      size="lg"
       scrollable
       centered
+      body-bg-variant="white"
       footer-bg-variant="warning"
       body-class="pb-0"
       @hide="closeModal"
     >
       <template v-if="collectionCart.length > 0">
-        <div :key="`${cart.biobankLabel}-${index}`" v-for="(cart, index) in collectionCart">
-          <h4 class="mt-2 ml-2">{{ cart.biobankLabel }}</h4>
-          <div
-            class="row ml-3 my-2"
-            :key="`${collection.label}-${index}`"
-            v-for="(collection, index) in cart.collections"
-          >
-            <div class="col-md-11 p-0">
-              <font-awesome-icon
-                title="Not available for commercial use"
-                v-if="isNonCommercialCollection(collection.value)"
-                class="text-danger non-commercial"
-                :icon="['fab', 'creative-commons-nc-eu']"
-              />
-              <span> {{ collection.label }}</span>
-            </div>
-            <div class="col-md-1">
-              <span
-                class="fa fa-times text-bold remove-collection"
-                title="Remove collection"
-                @click="RemoveCollectionFromSelection({ collection, router: $router })"
-              ></span>
+        <div
+          class="card mb-3 border"
+          :key="`${cart.biobankLabel}-${index}`"
+          v-for="(cart, index) in collectionCart"
+        >
+          <div class="card-header font-weight-bold">{{ cart.biobankLabel }}</div>
+          <div class="collection-cart">
+            <div
+              class="card-body d-flex border-bottom"
+              :key="`${collection.label}-${index}`"
+              v-for="(collection, index) in cart.collections"
+            >
+              <div>
+                <font-awesome-icon
+                  title="Not available for commercial use"
+                  v-if="isNonCommercialCollection(collection.value)"
+                  class="text-danger non-commercial mr-1"
+                  :icon="['fab', 'creative-commons-nc-eu']"
+                />
+                <span> {{ collection.label }}</span>
+              </div>
+              <div class="pl-3 ml-auto">
+                <span
+                  class="fa fa-times text-bold remove-collection"
+                  title="Remove collection"
+                  @click="
+                    RemoveCollectionsFromSelection({
+                      collections: [collection],
+                      router: $router,
+                    })
+                  "
+                ></span>
+              </div>
             </div>
           </div>
         </div>
@@ -121,25 +125,36 @@
         Sorry, none of the samples are currently in Podium.
       </p>
       <template v-slot:modal-footer>
-        <div class="mr-auto">
-          <span class="text-white font-weight-bold d-block">{{ modalFooterText }}</span>
-          <span class="text-white" v-if="selectedNonCommercialCollections > 0"
-            >
-            <font-awesome-icon
-                title="Not available for commercial use"
-                class="text-white non-commercial mr-1"
-                :icon="['fab', 'creative-commons-nc-eu']"
-              />
-              {{ selectedNonCommercialCollections }} are non-commercial only
-            </span>
-        </div>
-        <b-button class="btn btn-dark" @click="hideModal">Cancel</b-button>
-        <b-button
-          :disabled="(isPodium && !collectionsInPodium.length) || !selectedCollections.length"
-          class="btn btn-secondary"
-          @click="sendRequest"
-          >{{ negotiatorButtonText }}</b-button
+        <b-button class="btn btn-dark mr-auto" @click="removeAllCollections"
+          >Remove all</b-button
         >
+        <div>
+          <span class="text-white font-weight-bold d-block">{{
+            modalFooterText
+          }}</span>
+          <span class="text-white" v-if="selectedNonCommercialCollections > 0">
+            <font-awesome-icon
+              title="Not available for commercial use"
+              class="text-white non-commercial mr-1"
+              :icon="['fab', 'creative-commons-nc-eu']"
+            />
+            {{ selectedNonCommercialCollections }} are non-commercial only
+          </span>
+        </div>
+        <div class="ml-auto">
+          <b-button class="btn btn-dark mr-2" @click="hideModal"
+            >Cancel</b-button
+          >
+          <b-button
+            :disabled="
+              (isPodium && !collectionsInPodium.length) ||
+              !selectedCollections.length
+            "
+            class="btn btn-secondary ml-auto"
+            @click="sendRequest"
+            >{{ negotiatorButtonText }}</b-button
+          >
+        </div>
       </template>
     </b-modal>
   </div>
@@ -152,6 +167,7 @@ import FilterContainer from './filters/FilterContainer'
 import ResultHeader from './ResultHeader'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import { createBookmark } from '../utils/bookmarkMapper'
+import CollectionSelectAll from '@/components/buttons/CollectionSelectAll.vue'
 
 export default {
   name: 'biobank-explorer-container',
@@ -159,7 +175,8 @@ export default {
     BiobankCardsContainer,
     FilterContainer,
     ResultHeader,
-    CartSelectionToast
+    CartSelectionToast,
+    CollectionSelectAll
   },
   data: () => {
     return {
@@ -174,7 +191,6 @@ export default {
       'loading',
       'foundCollectionIds',
       'activeFilters',
-      'allCollectionsSelected',
       'collectionsInPodium',
       'selectedBiobankQuality',
       'selectedCollectionQuality',
@@ -183,7 +199,12 @@ export default {
       'foundCollectionsAsSelection',
       'selectedNonCommercialCollections'
     ]),
-    ...mapState(['isPodium', 'nonCommercialCollections', 'isIE11', 'ie11Bookmark']),
+    ...mapState([
+      'isPodium',
+      'nonCommercialCollections',
+      'isIE11',
+      'ie11Bookmark'
+    ]),
     modalFooterText () {
       const collectionCount = this.isPodium
         ? this.collectionsInPodium.length
@@ -198,9 +219,11 @@ export default {
     collectionCartShown () {
       return this.modalEnabled
     },
+    currentSelectedCollections () {
+      return this.isPodium ? this.collectionsInPodium : this.selectedCollections
+    },
     collectionCart () {
-      const collections = this.isPodium ? this.collectionsInPodium : this.selectedCollections
-      return this.groupCollectionsByBiobank(collections)
+      return this.groupCollectionsByBiobank(this.currentSelectedCollections)
     },
     hasSelection () {
       return this.selectedCollections.length > 0
@@ -229,11 +252,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([
-      'AddCollectionToSelection',
-      'RemoveCollectionFromSelection',
-      'MapQueryToState'
-    ]),
+    ...mapMutations(['RemoveCollectionsFromSelection', 'MapQueryToState']),
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
@@ -246,10 +265,10 @@ export default {
     },
     groupCollectionsByBiobank (collectionSelectionArray) {
       const biobankWithSelectedCollections = []
-      collectionSelectionArray.forEach(cs => {
+      collectionSelectionArray.forEach((cs) => {
         const biobankLabel = this.collectionBiobankDictionary[cs.value]
         const biobankPresent = biobankWithSelectedCollections.find(
-          bsc => bsc.biobankLabel === biobankLabel
+          (bsc) => bsc.biobankLabel === biobankLabel
         )
 
         if (biobankPresent) {
@@ -262,6 +281,13 @@ export default {
         }
       })
       return biobankWithSelectedCollections
+    },
+    removeAllCollections () {
+      this.hideModal()
+      this.RemoveCollectionsFromSelection({
+        collections: this.currentSelectedCollections,
+        router: this.$router
+      })
     },
     hideModal () {
       this.$bvModal.hide('collectioncart-modal')
@@ -278,26 +304,12 @@ export default {
       this.$bvModal.show('collectioncart-modal')
       this.modalEnabled = true
     },
-    handleCollectionStatus (event) {
-      const checkbox = event.target
-      if (checkbox.checked === true) {
-        this.AddCollectionToSelection({
-          collection: this.foundCollectionsAsSelection,
-          router: this.$router
-        })
-      } else {
-        this.RemoveCollectionFromSelection({
-          collection: this.foundCollectionsAsSelection,
-          router: this.$router
-        })
-      }
-    },
     applyIE11Bookmark () {
       const rawQuery = this.ie11BookmarkToApply.split('?')[1]
       const queryParts = rawQuery.split('&')
       const queryObject = {}
 
-      queryParts.forEach(part => {
+      queryParts.forEach((part) => {
         const propAndValue = part.split('=')
         queryObject[propAndValue[0]] = propAndValue[1]
       })
@@ -327,25 +339,13 @@ export default {
 .biobank-explorer-container {
   padding-top: 1rem;
 }
-#select-all-label {
-  line-height: 2;
-}
-
 .remove-collection:hover,
 .btn:hover,
 #select-all-label:hover {
   cursor: pointer;
 }
 
-.add-to-cart:checked ~ .add-to-cart-label {
-  display: none;
-}
-
-.remove-from-cart-label {
-  display: none;
-}
-
-.add-to-cart:checked ~ .remove-from-cart-label {
-  display: inline-block;
+.collection-cart > div:last-child {
+  border:none !important;
 }
 </style>

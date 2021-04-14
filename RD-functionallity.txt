@@ -1,0 +1,94 @@
+HEAD
+---- 
+RD-Connect Logo -> HOME|Home -> HOME|my organisations -> DropDown -> MYORG | [search -> RES] | User -> DropDown -> UserName/LogOut
+----
+
+
+HOME
+----
+Catalogue | Recent Activities | Propose | Search | Help Request
+[search-> RES]
+----
+
+    Catalogue
+    ---------
+    WIP
+    ---------
+
+    Recent Activities
+    -----------------
+    Show List of all -> SOMEORG | my organistations -> MYORG
+    -----------------
+
+    Propose
+    -------
+    Candidate Propose Formular
+    -------
+
+    search
+    ------
+    [search -> RES]
+    ------
+
+    Help
+    ----
+    Email Formular
+    ----
+
+
+MYORG
+-----
+Candidate List | Master List | REgistry Invitation | Biobank Assesment | Statistics | Test | Documents
+-----
+
+    Candidate List ???
+    --------------
+    [ search for RD's -> List with them]
+    start with predifned List
+    --------------
+
+    Master List ???
+    -----------
+    [ search -> List with them]
+    predifned Table
+    -----------
+
+    Registry Invitation
+    -------------------
+    (Add Invite) -> Automatisch generierte Email mit Form zum ausfüllen
+    Table with invitations ||Name|Status|Edited|NBR ges/acc/rej|(action->DD->edit/delet)
+    -------------------
+    
+    Biobank Assesment
+    -----------------
+    Same as Registry Invitation, just other Biobanks
+    -----------------
+
+    Statistics
+    ----------
+    User uses/id&day
+    Invitations
+    ----------
+
+    Test
+    ----
+    Many stuff
+    Austria Map
+    BBMRI-ERIC Map
+    SITE Map
+    Recommendation Organizations
+    Recent Activity
+    Organisation Lister
+    ----
+
+User
+----
+Edit Account
+----
+
+SOMEORG
+-------
+WIP
+-------
+
+

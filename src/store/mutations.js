@@ -77,13 +77,14 @@ export default {
   SetBiobankIds (state, biobankIds) {
     state.biobankIds = biobankIds
   },
+  // TODO name more specifically
   SetDictionaries (state, response) {
     const collections = response.items.map(item => (
       {
         id: item.data.id,
         label: item.data.label || item.data.name,
         biobankName: item.data.biobank.data.label || item.data.biobank.data.name,
-        commercialUse: item.data.commercial
+        commercialUse: item.data.collaboration_commercial
       }))
 
     collections.forEach(function (collection) {
@@ -93,6 +94,20 @@ export default {
 
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
+  },
+  SetQualityStandardDictionary (state, response) {
+    // Combine arrays from two tables and deduplicate
+    const allStandards = [...new Set(
+      response.map(response => response.items)
+        .reduce((prev, next) => prev.concat(next)))
+    ]
+    const qualityStandardsDictionary = {}
+
+    allStandards.forEach((standard) => {
+      qualityStandardsDictionary[standard.label] = standard.description || ''
+    })
+
+    state.qualityStandardsDictionary = qualityStandardsDictionary
   },
   SetCollectionInfo (state, response) {
     if (response === undefined) {
@@ -151,21 +166,18 @@ export default {
       state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
     }
   },
-  AddCollectionToSelection (state, { collection, router }) {
-    if (Array.isArray(collection)) {
-      const currentIds = state.selectedCollections.map(sc => sc.value)
-      const newCollections = collection.filter(cf => !currentIds.includes(cf.value))
-      state.selectedCollections = [...new Set(state.selectedCollections.concat(newCollections))]
-    } else {
-      state.selectedCollections.push(collection)
-    }
+  AddCollectionsToSelection (state, { collections, router }) {
+    const currentIds = state.selectedCollections.map(sc => sc.value)
+    const newCollections = collections.filter(cf => !currentIds.includes(cf.value))
+    state.selectedCollections = state.selectedCollections.concat(newCollections)
+
     if (router) {
       createBookmark(router, state.filters.selections, state.selectedCollections)
     }
   },
-  RemoveCollectionFromSelection (state, { collection, router }) {
-    const collectionsToRemove = Array.isArray(collection) ? collection.map(c => c.value) : [collection.value]
-    state.selectedCollections = [...new Set(state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value)))]
+  RemoveCollectionsFromSelection (state, { collections, router }) {
+    const collectionsToRemove = collections.map(c => c.value)
+    state.selectedCollections = state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value))
 
     if (router) {
       createBookmark(router, state.filters.selections, state.selectedCollections)

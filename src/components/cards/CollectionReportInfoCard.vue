@@ -3,8 +3,36 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text">
-          <template v-if="info.contact">
-            <h5>Contact Information</h5>
+          <template class="contact-info-box" v-if="info.biobank">
+            <h4 class="header">Host Institution</h4>
+            <ul class="right-content-list">
+              <li>
+                <div>
+                  Name: {{ info.biobank.juridical_person }}
+                </div>
+                <div>
+                  Country: {{ info.biobank.country }}
+                </div>
+              </li>
+              <li>
+                <!-- <div v-if="info.biobank.report">
+                  <span class="fa fa-fw fa-address-card mr-2" aria-hidden="true"></span>
+                  <router-link :to="info.biobank.report">
+                    <span>View {{ info.biobank.name }}</span>
+                  </router-link>
+                </div> -->
+                <div v-if="info.biobank.website">
+                <b>Website(s):</b>
+                </div>
+                <div v-for="(url) in getUrls(info.biobank.website)" :key="url">
+                  <span class="fa fa-fw fa-globe mr-2" aria-hidden="true"></span>
+                  <a :href="url" target="_blank" rel="noopener noreferrer">
+                    <span>{{url}}</span>
+                  </a>
+                </div>
+              </li>
+              <template v-if="info.contact">
+            <h4 class="header">Personnel</h4>
             <ul class="right-content-list">
               <template v-if="info.head">
                 <li>
@@ -13,7 +41,7 @@
                 </li>
               </template>
               <li v-if="info.contact.name">
-                <span class="font-weight-bold mr-1">Contact:</span>
+                <span class="font-weight-bold mr-1">Main Contact:</span>
                 <span>{{ info.contact.name }}</span>
               </li>
               <li v-if="info.contact.email">
@@ -30,56 +58,6 @@
               </li>
             </ul>
           </template>
-          <template v-if="info.biobank">
-            <h5>Biobank</h5>
-            <ul class="right-content-list">
-              <li>
-                <div>
-                  {{ info.biobank.name }}
-                </div>
-                <div>
-                  {{ info.biobank.juridical_person }}
-                </div>
-                <div>
-                  {{ info.biobank.country }}
-                </div>
-              </li>
-              <li>
-                <div v-if="info.biobank.report">
-                  <span class="fa fa-fw fa-address-card mr-2" aria-hidden="true"></span>
-                  <router-link :to="info.biobank.report">
-                    <span>View {{ info.biobank.name }}</span>
-                  </router-link>
-                </div>
-                <div v-if="info.biobank.website">
-                  <span class="fa fa-fw fa-globe mr-2" aria-hidden="true"></span>
-                  <a :href="info.biobank.website" target="_blank" rel="noopener noreferrer">
-                    <span>Website</span>
-                  </a>
-                </div>
-                <div v-if="info.biobank.email">
-                  <span class="fa fa-fw fa-paper-plane mr-2" aria-hidden="true"></span>
-                  <a :href="'mailto:' + info.biobank.email">
-                    <span>Email</span>
-                  </a>
-                </div>
-              </li>
-              <li>
-                <div class="container p-0">
-                  <div class="row">
-                    <div class="col pr-0">
-                      <span class="font-weight-bold">Partner charter:</span>
-                    </div>
-                    <div class="col p-0">
-                      <span class="badge badge-info"> {{ info.biobank.partnerCharter }}</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <span class="font-weight-bold mr-2">Biobank id:</span>
-                <span class="biobank-id">{{ info.biobank.id }}</span>
-              </li>
             </ul>
           </template>
           <template v-if="info.networks && info.networks.length > 0">
@@ -139,6 +117,15 @@ export default {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    getUrls (url) {
+      if (!url) {
+        return ''
+      }
+      var urls = url.split(',')
+      return urls
+    }
   }
 }
 </script>
@@ -166,5 +153,11 @@ export default {
 
 .cert-badge:not(:last-child) {
   margin-right: 1rem;
+}
+.content-info-box {
+  border-color: white;
+}
+.header {
+  color: #a6cc74
 }
 </style>

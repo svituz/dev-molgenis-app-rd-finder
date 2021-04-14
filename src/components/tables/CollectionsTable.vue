@@ -2,14 +2,7 @@
   <table class="table table-condensed table-responsive">
     <thead>
       <tr>
-        <th scope="col" class="pr-2">
-          <input
-            ref="header_checkbox"
-            type="checkbox"
-            v-model="selectedAllCollections"
-            :indeterminate.prop="someCollectionsSelected"
-          />
-        </th>
+        <th scope="col" class="pr-2"></th>
         <th scope="col">Collection</th>
         <th scope="col">Type</th>
         <th scope="col">Materials</th>
@@ -21,19 +14,18 @@
       <template v-for="(collection, index) in topLevelElements">
         <tr :key="index">
           <td class="pr-1">
-            <input
-              type="checkbox"
-              @change="handleCollectionStatus"
-              :checked="collectionSelected(collection.id)"
-              :value="{
-                label: collection.label || collection.name,
-                value: collection.id,
-              }"
-            />
+            <collection-selector
+              class="collection-selection-button"
+              :collectionData="collection"
+              icon-only
+              router-enabled
+            ></collection-selector>
           </td>
           <td
             :class="{
-              'table-text-content-columns-has-sub': hasSubCollections(collection),
+              'table-text-content-columns-has-sub': hasSubCollections(
+                collection
+              ),
               'table-text-content-columns': !hasSubCollections(collection),
             }"
             v-for="(column, index) in columns"
@@ -41,17 +33,28 @@
           >
             <span v-if="column === 'name'">
               <router-link :to="'/collection/' + collection['id']">
-                <button class="btn btn-link collection-link text-left pt-0 border-0">
+                <button
+                  class="btn btn-link collection-link text-left pt-0 border-0"
+                >
                   {{ collection[column] }}
                 </button>
               </router-link>
             </span>
             <span v-else-if="column === 'quality'">
-              <quality-column :qualities="collection[column]" :spacing="0"></quality-column>
+              <quality-column
+                :qualities="collection[column]"
+                :spacing="0"
+              ></quality-column>
             </span>
-            <span v-else-if="column === 'type'">{{ getCollectionType(collection) }}</span>
-            <span v-else-if="column === 'materials'">{{ getCollectionMaterials(collection) }}</span>
-            <span v-else-if="column === 'size'">{{ getCollectionSize(collection) }}</span>
+            <span v-else-if="column === 'type'">
+              {{ getCollectionType(collection) }}
+            </span>
+            <span v-else-if="column === 'materials'">
+              {{ getCollectionMaterials(collection) }}
+            </span>
+            <span v-else-if="column === 'size'">
+              {{ getCollectionSize(collection) }}
+            </span>
           </td>
         </tr>
         <tr v-if="hasSubCollections(collection)" :key="collection.id">
@@ -84,12 +87,14 @@ import utils from '../../utils'
 import SubCollectionsTable from './SubCollectionsTable'
 import { mapGetters, mapMutations } from 'vuex'
 import QualityColumn from './QualityColumn'
+import CollectionSelector from '@/components/buttons/CollectionSelector'
 
 export default {
   name: 'CollectionsTable',
   components: {
     SubCollectionsTable,
-    QualityColumn
+    QualityColumn,
+    CollectionSelector
   },
   props: {
     collections: {
@@ -133,10 +138,15 @@ export default {
       )
     },
     parentCollections () {
-      return this.topLevelElements.map(tle => ({ label: tle.label || tle.name, value: tle.id }))
+      return this.topLevelElements.map((tle) => ({
+        label: tle.label || tle.name,
+        value: tle.id
+      }))
     },
     topLevelElements () {
-      return this.collections.filter(collection => !collection.parent_collection)
+      return this.collections.filter(
+        (collection) => !collection.parent_collection
+      )
     }
   },
   data () {
@@ -165,13 +175,23 @@ export default {
       }
     },
     getCollectionMaterials (collection) {
-      return utils.getUniqueIdArray(collection.materials.map(material => material.label)).join(', ')
+      return utils
+        .getUniqueIdArray(
+          collection.materials.map((material) => material.label)
+        )
+        .join(', ')
     },
     getCollectionType (collection) {
-      return utils.getUniqueIdArray(collection.type.map(type => type.label)).join(', ')
+      return utils
+        .getUniqueIdArray(collection.type.map((type) => type.label))
+        .join(', ')
     },
     hasSubCollections (collection) {
-      return collection && collection.sub_collections && collection.sub_collections.length > 0
+      return (
+        collection &&
+        collection.sub_collections &&
+        collection.sub_collections.length > 0
+      )
     },
     getCollectionSize (collection) {
       return collection.size || collection.order_of_magnitude.size
@@ -181,6 +201,10 @@ export default {
 </script>
 
 <style>
+.collection-selection-button {
+  margin-left: 0.75rem;
+}
+
 .collapsed > .when-visible {
   display: none;
 }
