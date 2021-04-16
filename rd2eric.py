@@ -23,12 +23,16 @@ def add_code_to_types(eric_data, code, code_id, name):
     """
 
     index = eric_data['eu_bbmri_eric_disease_types'].index.max()+1
-    ontology = "orphanet"
-    url = "http://identifiers.org/icd/{0}".format(code_id)
-    if not "ORPHA" in code:
-        ontology = "ICD-10"
-        url = "https://identifiers.org/{0}".format(code_id)
 
+    if "urn" in code_id:
+        ontology = "ICD-10"
+        url = "https://identifiers.org/{0}".format(code_id.split(":")[-1])
+    elif "ORPHA" in code_id:
+        ontology = "orphanet"
+        url = "http://identifiers.org/orphanet:{0}".format(code_id.split(":")[-1])
+    elif "OMIM" in code_id:
+        ontology = "omim"
+        url = "https://www.omim.org/entry/{0}".format(code_id.split(":")[-1])
 
     eric_data['eu_bbmri_eric_disease_types'].at[index, "id"] = code_id
     eric_data['eu_bbmri_eric_disease_types'].at[index, "code"] = code
@@ -66,10 +70,15 @@ def check_disease_type(eric_data, rd_data, enum, name, rows, count):
 
     icd_code = rows.reset_index(drop=True).at[enum,'icd10']
     orpha_code = rows.reset_index(drop=True).at[enum,'orphacode']
+    omim_code = rows.reset_index(drop=True).at[enum,'omim']
+    synonyms = rows.reset_index(drop=True).at[enum,'synonym']
     code_frame = eric_data['eu_bbmri_eric_disease_types']['code'].values
     code_list = []
+    code_list_orpha = []
+    code_list_icd = []
+    code_list_omim = []
 
-    if pd.isnull(icd_code) and pd.isnull(orpha_code):
+    if pd.isnull(icd_code) and pd.isnull(orpha_code) and pd.isnull(omim_code) and pd.isnull(synonyms):
         return code_list
 
     if not pd.isnull(orpha_code):
@@ -83,10 +92,11 @@ def check_disease_type(eric_data, rd_data, enum, name, rows, count):
             else:
                 code_id = code
                 add_code_to_types(eric_data, code, code_id, name)
+                code_list.append(str(code))
 
         # make sure that codes occur only once
-        code_list = sorted(list(set(code_list)))
-        eric_data['eu_bbmri_eric_collections'].at[count,'diagnosis_available'] = ",".join(code_list)
+        code_list_orpha = sorted(list(set(code_list)))
+        # eric_data['eu_bbmri_eric_collections'].at[count,'diagnosis_available'] = ",".join(code_list)
 
     if not pd.isnull(icd_code):
         icd_no_space = icd_code.replace(" ", "")
@@ -97,19 +107,35 @@ def check_disease_type(eric_data, rd_data, enum, name, rows, count):
         rex = re.compile("^[A-Z]{1}[0-9]{2}[.][0-9]{1}$")
         for code in icd_codes:
             code = code.replace(" ", "")
+            code_id = "urn:miriam:icd:"+str(code)
             if code in code_frame:
-                code_list.append("urn:miriam:icd:"+str(code))
-
+                code_list.append(code_id)
             else:
                 if rex.match(code):
-                    code_id = "urn:miriam:icd:"+str(code)
                     add_code_to_types(eric_data, code, code_id, name)
-
+                    code_list.append(code_id)
         # make sure that codes occur only once
-        code_list = sorted(list(set(code_list)))
-        eric_data['eu_bbmri_eric_collections'].at[count,'diagnosis_available'] = ",".join(code_list)
+        code_list_icd = sorted(list(set(code_list)))
 
-        return code_list
+    if not pd.isnull(omim_code):
+        # split codes at spaces
+        code_list = []
+        omim_codes = list(set(omim_code.split(" ")))
+        for code in omim_codes:
+            if len(code) == 6:
+                code_id = "OMIM:" + code
+                if str(code) in code_frame:
+                    code_list.append(str(code_id))
+                else:
+                    add_code_to_types(eric_data, code, code_id, name)
+                    code_list.append(str(code_id))
+
+                
+        code_list_omim = sorted(list(set(code_list)))
+
+    code_list = code_list_icd + code_list_orpha + code_list_omim
+    eric_data['eu_bbmri_eric_collections'].at[count,'diagnosis_available'] = ",".join(code_list)
+    return code_list
 
 def get_material_type(eric_data, rd_materials):
     """[summary]
@@ -179,7 +205,6 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
         contact_row = eric_data['eu_bbmri_eric_persons'].loc[eric_data['eu_bbmri_eric_persons']['biobanks'] == biobank_id]['id']
         if len(contact_row) > 0 and not pd.isnull(contact_row.values[0]):
             contact_id = contact_row.values[0]
-            print(contact_id)
         rows = rd_data['rd_diseases'][m]
         #a = pd.concat([a,list(biobank_id + ':collection:' +rows['name'])])
         if sub_collections:
@@ -271,7 +296,6 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
             eric_data['eu_bbmri_eric_collections'].at[parent_mask, 'number_of_donors'] = total_size
             eric_data['eu_bbmri_eric_collections'].at[parent_mask, 'order_of_magnitude_donors'] = total_mag
             eric_data['eu_bbmri_eric_collections'].at[parent_mask, 'materials'] = material_types
-            print(codes)
             eric_data['eu_bbmri_eric_collections'].at[parent_mask, 'diagnosis_available'] = ",".join(set(codes))
 
 def get_country_code(eric_data, rd_data):
@@ -556,7 +580,7 @@ if __name__ == "__main__":
 
     eric_name = "empty_eric_ext.xlsx"
     rd_name = "rd_connect.xlsx"
-    output_name = "rd_connect_catalogue.xlsx"
+    output_name = "rd_connect_catalogue_debug.xlsx"
     package_name = "rd_connect"
 
     if sub_collections:
