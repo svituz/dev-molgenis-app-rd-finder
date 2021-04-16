@@ -90,7 +90,7 @@
                       sortable: true
                     },
                     {
-                      key: 'diagnosis',
+                      key: 'Gene',
                       sortable: true
                     },
                     {
@@ -99,6 +99,10 @@
                     },
                     {
                       key: 'ICD_10',
+                      sortable: true
+                    },
+                    {
+                      key: 'OMIM',
                       sortable: true
                     },
                     {
@@ -142,9 +146,13 @@ export default {
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
       if (code.length > 0) {
-        code = String(subCollection.diagnosis_available[0].ontology).includes(type) ? subCollection.diagnosis_available[0].code : ''
+        for (const diag in subCollection.diagnosis_available) {
+          code = String(subCollection.diagnosis_available[diag].ontology).includes(type) ? subCollection.diagnosis_available[diag].code : ''
+          if (code.length > 0) {
+            return code
+          }
+        }
       }
-      console.log(code)
       return code
     }
   },
@@ -195,10 +203,11 @@ export default {
         items.push({
           Name: this.collection.sub_collections[key].name,
           Number_of_patients: this.collection.sub_collections[key].number_of_donors,
-          diagnosis: (this.collection.sub_collections[key].diagnosis_available[0] === undefined) ? '' : this.collection.sub_collections[key].diagnosis_available[0].label,
+          Gene: this.collection.sub_collections[key].gene,
           ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
-          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet')
-
+          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet'),
+          OMIM: this.getCode(this.collection.sub_collections[key], 'omim'),
+          Synonyms: this.collection.sub_collections[key].description
         })
       }
       return items
