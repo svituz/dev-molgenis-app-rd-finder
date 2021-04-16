@@ -247,6 +247,7 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
             eric_data['eu_bbmri_eric_collections'].at[count,'type'] = 'RD'
             eric_data['eu_bbmri_eric_collections'].at[count,'contact_priority'] = 5
             eric_data['eu_bbmri_eric_collections'].at[count,'description'] = rows.reset_index(drop=True).at[enum,'synonym']
+            eric_data['eu_bbmri_eric_collections'].at[count,'gene'] = rows.reset_index(drop=True).at[enum,'gene']
             eric_data['eu_bbmri_eric_collections'].at[count,'timestamp'] = pd.to_datetime(rd_data['rd_basic_info']['lastactivities'][basic_info_mask].values[0])
 
             code_list = check_disease_type(eric_data, rd_data, enum, name, rows, count)
