@@ -22,7 +22,7 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 
 /* Query Parameters */
 export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
-export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(id,name,juridical_person,country,url,contact,ressource_types,description,logos(*)),logos(url),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors),number_of_donors'
+export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(id,name,juridical_person,country,url,contact,ressource_types,description,type_of_host,source_of_funding,target_population,year_of_establishment,ontologies_used,imaging_available,also_listed),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors,description,gene),number_of_donors'
 /**/
 
 export default {

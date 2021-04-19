@@ -47,26 +47,26 @@
                   </b-card>
                 </div>
                 <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
-                <!-- main collection information -->
-                <table class="mg-report-details-list mb-3">
-                  <!-- <tr>
-                    <th scope="row" class="pr-1">Id:</th>
-                    <td>{{ collection.id }}</td>
-                  </tr> -->
-                  <tr v-if="collection.url">
-                    <th scope="row" class="pr-1">Website:</th>
-                    <td>
-                      <span
-                        ><a target="_blank" :href="collection.url">{{ collection.url }}</a></span
-                      >
-                    </td>
-                  </tr>
-                  <report-list-row :data="mainContent.Size">Size:</report-list-row>
-                  <tr v-if="mainContent.Age && mainContent.Age.value">
-                    <th scope="row" class="pr-1">Age:</th>
-                    <td>{{ mainContent.Age.value }}</td>
-                  </tr>
-                </table>
+                <div white-space:pre>
+                  <h4 class="header">General Information</h4>
+                  <b-table
+                  class="info-table"
+                  sticky-header="true"
+                  no-border-collapse
+                  small
+                  borderless
+                  thead-class="d-none"
+                  :items=getInfoItems
+                  :fields="[
+                  {
+                    key: 'info_type'
+                  },
+                  {
+                    key: 'info_field'
+                  }
+                  ]">
+                  </b-table>
+                </div>
                 <!-- Recursive set of subcollections -->
           <!-- Right side card -->
           </div>
@@ -90,7 +90,7 @@
                       sortable: true
                     },
                     {
-                      key: 'diagnosis',
+                      key: 'Gene',
                       sortable: true
                     },
                     {
@@ -99,6 +99,10 @@
                     },
                     {
                       key: 'ICD_10',
+                      sortable: true
+                    },
+                    {
+                      key: 'OMIM',
                       sortable: true
                     },
                     {
@@ -120,7 +124,7 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 // import ReportDescription from '@/components/report-components/ReportDescription'
 // import ReportTitle from '@/components/report-components/ReportTitle'
-import ReportListRow from '@/components/report-components/ReportListRow'
+// import ReportListRow from '@/components/report-components/ReportListRow'
 // import ReportSubCollection from '@/components/report-components/ReportSubCollection'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
 import moment from 'moment'
@@ -130,7 +134,6 @@ import { mapDetailsTableContent, mapCollectionsData, collectionReportInformation
 export default {
   name: 'CollectionReport',
   components: {
-    ReportListRow,
     Loading,
     CollectionSelector,
     CollectionReportInfoCard
@@ -143,9 +146,13 @@ export default {
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
       if (code.length > 0) {
-        code = String(subCollection.diagnosis_available[0].ontology).includes(type) ? subCollection.diagnosis_available[0].code : ''
+        for (const diag in subCollection.diagnosis_available) {
+          code = String(subCollection.diagnosis_available[diag].ontology).includes(type) ? subCollection.diagnosis_available[diag].code : ''
+          if (code.length > 0) {
+            return code
+          }
+        }
       }
-      console.log(code)
       return code
     }
   },
@@ -196,13 +203,25 @@ export default {
         items.push({
           Name: this.collection.sub_collections[key].name,
           Number_of_patients: this.collection.sub_collections[key].number_of_donors,
-          diagnosis: (this.collection.sub_collections[key].diagnosis_available[0] === undefined) ? '' : this.collection.sub_collections[key].diagnosis_available[0].label,
+          Gene: this.collection.sub_collections[key].gene,
           ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
-          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet')
-
+          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet'),
+          OMIM: this.getCode(this.collection.sub_collections[key], 'omim'),
+          Synonyms: this.collection.sub_collections[key].description
         })
       }
       return items
+    },
+    getInfoItems () {
+      return [
+        { info_type: 'Type of host institution:', info_field: this.collection.biobank.type_of_host },
+        { info_type: 'Source of funding:', info_field: this.collection.biobank.source_of_funding },
+        { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
+        { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
+        { info_type: 'Ontologies used:', info_field: this.collection.biobank.ontologies_used },
+        { info_type: 'Imaging available:', info_field: this.collection.biobank.imaging_available },
+        { info_type: 'Also listed in:', info_field: this.collection.biobank.also_listed }
+      ]
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
@@ -245,5 +264,8 @@ export default {
   position: relative;
   margin-top: -70px;
   border: none;
+}
+.info-table {
+  font-size: 90%;
 }
 </style>
