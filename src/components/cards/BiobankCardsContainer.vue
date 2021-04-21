@@ -101,8 +101,11 @@ export default {
     addNumberDonors (biobank) {
       var sum = 0
       for (const key in biobank.collections) {
-        sum = sum + biobank.collections[key].number_of_donors
+        if (biobank.collections[key].parent_collection) {
+          sum = sum + biobank.collections[key].number_of_donors
+        }
       }
+
       return sum
     }
   },
