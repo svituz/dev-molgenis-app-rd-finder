@@ -50,7 +50,8 @@
           <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
         </template>
         <template v-slot:cell(Logo)="logo_link">
-          <img :src="logo_link">
+          <!-- {{logo_link.item.Logo}} -->
+          <img style="width:70%;min-width:10rem;" :src="logo_link.item.Logo">
         </template>
       </b-table>
       </div>
@@ -139,7 +140,7 @@ export default {
       const items = []
       for (const key in this.biobanksShown) {
         items.push({
-          Logo: this.biobanksShown[key].logos._href,
+          Logo: this.biobanksShown[key].logo_link,
           Name: this.biobanksShown[key].name,
           id: this.biobanksShown[key].id,
           Type: this.biobanksShown[key].ressource_types.label,
@@ -147,7 +148,7 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
-      console.log(items)
+      console.log('this', this.biobanksShown)
       return items
     }
   },
