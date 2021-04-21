@@ -15,6 +15,9 @@
         :biobank="biobank"
         :initCollapsed="(biobanksShown[0].id !== biobank.id || biobanksShown[0] !== biobank)">
       </biobank-card> -->
+      <img style="width:70%;min-width:40rem;" class="mx-auto d-block card-img-bottom"
+                                 src="https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/rd-finder-v0.1/rdconnectfrontagelogo.png"
+                                 alt="Screenshot"/>
 
       <div v-if="!loading && foundBiobanks > 0">
         <b-table
@@ -45,6 +48,9 @@
         ]">
         <template v-slot:cell(Name)="ressource">
           <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
+        </template>
+        <template v-slot:cell(Logo)="logo_link">
+          <img :src="logo_link">
         </template>
       </b-table>
       </div>
@@ -126,13 +132,14 @@ export default {
     },
     biobank_items () {
       // check if deeper objects (e.g.: ressource_types) can be loaded:
+      console.log(this.biobanksShown[0])
       if (!this.biobanksShown[0].ressource_types) {
         return []
       }
       const items = []
       for (const key in this.biobanksShown) {
         items.push({
-          Logo: 'placeHolder',
+          Logo: this.biobanksShown[key].logos._href,
           Name: this.biobanksShown[key].name,
           id: this.biobanksShown[key].id,
           Type: this.biobanksShown[key].ressource_types.label,
@@ -140,6 +147,7 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
+      console.log(items)
       return items
     }
   },

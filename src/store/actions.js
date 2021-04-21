@@ -10,6 +10,7 @@ const BIOBANK_API_PATH = '/api/v2/rd_connect_biobanks'
 const COLLECTION_API_PATH = '/api/v2/rd_connect_collections'
 const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
 const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
+// const FILEMETA_API_PATH = '/api/v2/rd_connect_fileMeta'
 
 export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
 export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
