@@ -47,10 +47,11 @@
                   </b-card>
                 </div>
                 <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
-                <div white-space:pre>
+                <div>
                   <h4 class="header">General Information</h4>
                   <b-table
-                  class="info-table"
+                  class = "info-table"
+                  id="general-info-table"
                   sticky-header="true"
                   no-border-collapse
                   small
@@ -268,4 +269,5 @@ export default {
 .info-table {
   font-size: 90%;
 }
+
 </style>
