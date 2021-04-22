@@ -15,10 +15,6 @@
         :biobank="biobank"
         :initCollapsed="(biobanksShown[0].id !== biobank.id || biobanksShown[0] !== biobank)">
       </biobank-card> -->
-      <img style="width:70%;min-width:40rem;" class="mx-auto d-block card-img-bottom"
-                                 src="https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/rd-finder-v0.1/rdconnectfrontagelogo.png"
-                                 alt="Screenshot"/>
-
       <div v-if="!loading && foundBiobanks > 0">
         <b-table
         id="biobank-table"
@@ -27,7 +23,8 @@
         :items="biobank_items"
         :fields="[
           {
-            key: 'Logo'
+            key: 'Logo',
+            'class': 'logo-col'
           },
           {
             key: 'Name',
@@ -50,8 +47,7 @@
           <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
         </template>
         <template v-slot:cell(Logo)="logo_link">
-          <!-- {{logo_link.item.Logo}} -->
-          <img style="width:70%;min-width:10rem;" :src="logo_link.item.Logo">
+          <img style="width:100%;" :src="logo_link.item.Logo">
         </template>
       </b-table>
       </div>
@@ -87,6 +83,9 @@
 
 .biobank-cards-container {
   width: 100%;
+}
+.logo-col {
+  max-width: 7rem;
 }
 </style>
 

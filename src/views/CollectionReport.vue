@@ -37,9 +37,10 @@
                         </b-badge>
                       </h2> -->
                       </div>
-                      <div class="col-sm-8 card-head" style="text-align:center">
+                      <div class="col-sm-8 card-head" style="text-align:left">
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <b class="header"> {{collection.name}} </b>
+                        <img style="width:60%;min-width:8rem;margin-left:-6rem;" :src="this.collection.biobank.logo_link">
+                        <b class="header top"> {{collection.name}} </b>
                       </div>
                     </div>
                     {{getDescription}}
@@ -256,6 +257,9 @@ export default {
 }
 .header {
   color: #a6cc74
+}
+.top {
+  font-size: 70%;
 }
 .card-head {
   background-color: white;
