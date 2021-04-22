@@ -369,7 +369,7 @@ def add_organization_info(eric_data, rd_data):
     bb_id = rd_data["rd_basic_info"]["OrganizationID"]
     bb_name = rd_data["rd_basic_info"]["name"]
     juridical = rd_data["rd_address"]["nameofhostinstitution"]
-
+     
     eric_data["eu_bbmri_eric_biobanks"]["country"] = get_country_code(eric_data, rd_data)
     eric_data["eu_bbmri_eric_biobanks"]["id"] = generate_bb_id(eric_data, bb_id) 
     eric_data["eu_bbmri_eric_biobanks"]["name"] = bb_name
@@ -476,7 +476,8 @@ def additional_organization_info(eric_data, rd_data):
 
         eric_data["eu_bbmri_eric_biobanks"]["description"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = description
         eric_data["eu_bbmri_eric_biobanks"]["acronym"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = acronym
-        eric_data["eu_bbmri_eric_biobanks"]["logos"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "logos"
+        eric_data["eu_bbmri_eric_biobanks"]["logo"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "img1e"
+        eric_data["eu_bbmri_eric_biobanks"]["logo_link"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/rd-finder-v0.1/rdconnectfrontagelogo.png"
         eric_data["eu_bbmri_eric_biobanks"]["type_of_host"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = type_of_host
         eric_data["eu_bbmri_eric_biobanks"]["source_of_funding"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = source_of_funding
         eric_data["eu_bbmri_eric_biobanks"]["target_population"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = target_population
@@ -581,7 +582,7 @@ if __name__ == "__main__":
 
     eric_name = "empty_eric_ext.xlsx"
     rd_name = "rd_connect.xlsx"
-    output_name = "rd_connect_catalogue_debug.xlsx"
+    output_name = "rd_connect_catalogue.xlsx"
     package_name = "rd_connect"
 
     if sub_collections:
@@ -590,6 +591,7 @@ if __name__ == "__main__":
 
     rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
     eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
+
 
     add_organization_info(eric_data, rd_data)
     add_persons(eric_data, rd_data)
