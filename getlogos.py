@@ -102,14 +102,12 @@ def get_files():
             file_type = info.get_content_type().split("/")[-1]
             file_ext = "." + file_type
         
-        if os.path.exists(file_name+file_ext):
-            print("Skip: ", file_name+file_ext)
-            continue
-        else:
-            print("Get: ", file_name+file_ext)
-            urllib.request.urlretrieve(link, file_name)
 
-            time.sleep(1.0)
+        file_name = file_name+file_ext
+        print("Get: ", file_name)
+        urllib.request.urlretrieve(link, file_name)
+
+        time.sleep(0.2)
         k+=1
 if __name__ == "__main__" :
     # get_links()
