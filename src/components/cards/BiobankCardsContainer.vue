@@ -47,6 +47,7 @@
           <router-link :to="'/collection/' + ressource.item.id + ':collection_pa'">{{ressource.value}}</router-link>
         </template>
         <template v-slot:cell(Logo)="logo_link">
+          <!-- {{ logo_link.item.Logo }} -->
           <img style="width:100%;" :src="logo_link.item.Logo">
         </template>
       </b-table>
@@ -85,7 +86,9 @@
   width: 100%;
 }
 .logo-col {
-  max-width: 7rem;
+  max-width: 5rem;
+  max-height: 100rem;
+  height: 100;
 }
 </style>
 

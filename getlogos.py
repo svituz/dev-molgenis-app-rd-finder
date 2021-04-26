@@ -44,6 +44,9 @@ import re
 import json
 import os
 import time
+import pandas as pd
+import xlsxwriter
+
 
 
 def get_links():
@@ -75,13 +78,17 @@ def get_links():
     #     file.write(driver.find_element_by_xpath('/html/body/div[1]/div[5]/div[2]/table[1]/tbody/tr/td[1]/a/div').screenshot_as_png)
 
 def get_files():
-    print("read")
+    
+    base_url = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/dev/logos/"
+
+
     with open("organisations.json") as f:
         organisations = json.load(f)
         
     link_mask = re.compile(r"OrganizationImageLink:\".*?\"")
     name_mask = re.compile(r"Name:\".*?\"")
 
+    df = pd.DataFrame(columns=(['Name', 'Url']))
     os.chdir("logos")
     k=1
     for org in organisations:
@@ -90,6 +97,7 @@ def get_files():
         # print("{0} : {1}".format(name_mask.findall(org)[0], img_url))
         link = "http://catalogue.rd-connect.eu" + img_url
         file_name = link.split("=")
+
         if len(file_name) > 1:
             file_name = file_name[-1]
         else:
@@ -107,8 +115,14 @@ def get_files():
         print("Get: ", file_name)
         urllib.request.urlretrieve(link, file_name)
 
-        time.sleep(0.2)
+        time.sleep(0.1)
         k+=1
+        df = df.append({'Name' : name[6:-1], 'Url' : base_url+file_name}, ignore_index=True)
+
+    print(df)
+    with pd.ExcelWriter("url_file.xlsx",engine='xlsxwriter') as writer:
+        df.to_excel(writer,index=False)
+
 if __name__ == "__main__" :
     # get_links()
     get_files()

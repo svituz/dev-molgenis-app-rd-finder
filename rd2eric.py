@@ -441,11 +441,30 @@ def additional_organization_info(eric_data, rd_data):
         dictionary that holds rd_connect information (with EMX package/entity/attribute names)
     """
 
+    url_data = pd.read_excel("url_file.xlsx", sheet_name=None, engine="openpyxl")
     # add additional information:
     for biobank in eric_data["eu_bbmri_eric_biobanks"]["id"]:
         rd_id = int(biobank.split(":")[-1])
         description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        rd_name = rd_data["rd_basic_info"]["name"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values[0]
+        print(rd_name)
+        street_name_one = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
+        street_name_two = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
+        city = rd_data["rd_address"]["city"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
+
+        if street_name_one or street_name_two:
+            street = str(street_name_one) + " - " + str(street_name_two)
+            eric_data["eu_bbmri_eric_biobanks"]["street"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = street
+
+        zip_code = rd_data["rd_address"]["zip"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
+        if zip_code:
+            eric_data["eu_bbmri_eric_biobanks"]["zip_code"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = zip_code
+        
+        if city:
+            eric_data["eu_bbmri_eric_biobanks"]["city"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = city
+        print(street, zip_code, city)
+
 
         # add urls and remove spaces
         urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
@@ -463,6 +482,16 @@ def additional_organization_info(eric_data, rd_data):
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
 
+        logo_link = url_data["Sheet1"][url_data["Sheet1"]["Name"] == rd_name]["Url"].values
+        if len(logo_link) > 0:
+            logo_link = logo_link[0]
+        else:
+            if organization_type[0] == 'biobank':
+                logo_link = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/dev/logos/Biobank.png"
+            else:
+                logo_link = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/dev/logos/Registry.png"
+
+
         if biobank in eric_data["eu_bbmri_eric_persons"]["biobanks"].values:
             person_id = eric_data["eu_bbmri_eric_persons"]["id"][eric_data["eu_bbmri_eric_persons"]["biobanks"] == biobank].values
             eric_data["eu_bbmri_eric_biobanks"]["contact"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = person_id
@@ -477,7 +506,7 @@ def additional_organization_info(eric_data, rd_data):
         eric_data["eu_bbmri_eric_biobanks"]["description"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = description
         eric_data["eu_bbmri_eric_biobanks"]["acronym"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = acronym
         eric_data["eu_bbmri_eric_biobanks"]["logo"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "img1e"
-        eric_data["eu_bbmri_eric_biobanks"]["logo_link"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/rd-finder-v0.1/rdconnectfrontagelogo.png"
+        eric_data["eu_bbmri_eric_biobanks"]["logo_link"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = logo_link
         eric_data["eu_bbmri_eric_biobanks"]["type_of_host"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = type_of_host
         eric_data["eu_bbmri_eric_biobanks"]["source_of_funding"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = source_of_funding
         eric_data["eu_bbmri_eric_biobanks"]["target_population"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = target_population

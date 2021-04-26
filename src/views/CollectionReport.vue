@@ -14,6 +14,7 @@
 
                 <div>
                   <b-card
+                    id="organisation-card"
                     class="rounded-xl shadow bb-card"
                     style="max-width: 50rem;"
                   >
@@ -23,8 +24,8 @@
                       <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
                     </div>
                     <div class="row card-head">
-                      <div class="col-sm-2">
-                      <!-- <h2 class="card-head">
+                      <!--<div class="col-sm-2">
+                       <h2 class="card-head">
                         <b-badge
                           v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary"
                           >
@@ -35,38 +36,43 @@
                         >
                         {{collection.biobank.ressource_types.label}}
                         </b-badge>
-                      </h2> -->
-                      </div>
-                      <div class="col-sm-8 card-head" style="text-align:left">
+                      </h2>
+                      </div>-->
+                      <div id="image-header" class="row-sm-8 card-head" style="text-align:left;margin-top:0.5rem;margin-bottom:0.5rem;" >
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <img style="width:60%;min-width:8rem;margin-left:-6rem;" :src="this.collection.biobank.logo_link">
+                        <div>
+                        </div>
+                        <img style="width:10%;min-width:8rem;margin: 0 15px;" :src="this.collection.biobank.logo_link">
                         <b class="header top"> {{collection.name}} </b>
                       </div>
                     </div>
-                    {{getDescription}}
+                    <div style="margin-top:2rem;">
+                      {{getDescription}}
+                    </div>
                   </b-card-text>
                   </b-card>
                 </div>
-                <collection-selector class="mb-2" v-if="isTopLevelCollection" :collection="collection" />
+                <collection-selector class="mb-2" style="margin-top:1rem;" v-if="isTopLevelCollection" :collection="collection" />
                 <div>
                   <h4 class="header">General Information</h4>
                   <b-table
-                  class = "info-table"
+                  class="info-table"
                   id="general-info-table"
-                  sticky-header="true"
-                  no-border-collapse
-                  small
                   borderless
                   thead-class="d-none"
                   :items=getInfoItems
                   :fields="[
                   {
-                    key: 'info_type'
+                    key: 'info_type',
+                    tdClass: 'info-field-cl'
                   },
                   {
                     key: 'info_field'
                   }
                   ]">
+                  <template v-slot:cell(info_field)="field">
+                    <b>{{ field.item.info_field }}</b>
+                  </template>
                   </b-table>
                 </div>
                 <!-- Recursive set of subcollections -->
@@ -74,9 +80,10 @@
           </div>
           <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
-        <div style="text-align:center" class="mt-2">
-                  <h2 class="header"><strong>Disease Matrix</strong></h2>
+        <div style="text-align:left" class="mt-2">
+                  <h2 style="text-align:center" class="header"><strong>Disease Matrix</strong></h2>
                   <b-table
+                  id="disease-table"
                   bordered
                   hover
                   small
@@ -272,6 +279,13 @@ export default {
 }
 .info-table {
   font-size: 90%;
+  padding: 0rem;
+}
+
+#general-info-table {
+  font-size: 90%;
+  border-collapse: separate;
+  border-spacing: 0px;
 }
 
 </style>

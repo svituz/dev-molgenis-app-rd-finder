@@ -17,10 +17,16 @@
             <ul class="right-content-list">
               <li>
                 <div>
-                  Name: {{ info.biobank.juridical_person }}
+                  {{ info.biobank.juridical_person }}
                 </div>
                 <div>
-                  Country: {{ info.biobank.country }}
+                  {{ this.checkStreetName(info.biobank.street) }}
+                </div>
+                <div>
+                  {{ info.biobank.zip_code }} {{info.biobank.city}}
+                </div>
+                <div>
+                  {{ info.biobank.country }}
                 </div>
               </li>
               <li>
@@ -32,6 +38,7 @@
                 </div> -->
               </li>
               <template v-if="info.contact">
+            <div style="position: absolute; margin-top:20%;">
             <h4 class="header">Personnel</h4>
             <ul class="right-content-list">
               <template v-if="info.head">
@@ -49,14 +56,9 @@
                 <a :href="'mailto:' + info.contact.email">
                   <span> {{info.contact.email}}</span>
                 </a>
-                <!-- <div v-if="info.contact.phone">
-                  <span class="fa fa-fw fa-phone mr-1" aria-hidden="true"></span>
-                  <a :href="'tel:' + info.contact.phone">
-                    <span> {{ info.contact.phone }}</span></a
-                  >
-                </div> -->
               </li>
             </ul>
+            </div>
           </template>
             </ul>
           </template>
@@ -90,6 +92,13 @@ export default {
       const code = countryCode.toLowerCase()
       var url = 'http://www.geonames.org/flags/x/' + code + '.gif'
       return url
+    },
+
+    checkStreetName (street) {
+      if (street === 'nan - nan') {
+        return 'not specified'
+      }
+      return street.split('-')[0]
     }
   }
 }
