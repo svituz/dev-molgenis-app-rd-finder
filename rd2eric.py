@@ -470,17 +470,82 @@ def additional_organization_info(eric_data, rd_data):
         urls = rd_data["rd_url"]["url"][rd_data["rd_url"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["url"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = ",".join(urls).replace(" ", "")
 
-        # add more general info as shown in tab "Overview"
-        type_of_host = rd_data["rd_core"]["Type_of_host_institution"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        source_of_funding = rd_data["rd_core"]["Source_of_funding"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        target_population = rd_data["rd_core"]["Target_population_of_the_registry"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        year_of_establishment = rd_data["rd_core"]["year_of_establishment"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        ontologies_used = rd_data["rd_core"]["Ontologies"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        imaging_available = rd_data["rd_core"]["Imaging_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        also_listed = rd_data["rd_core"]["The_registry_biobanks_is_listed_in_other_inventories_networks"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
-        
+        # get organization type "Biobank" or "Registry"
         organization_type = rd_data["rd_basic_info"]["type"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
+
+        # add more general info as shown in tab "Overview" for Registries
+
+        skip = False
+        if organization_type[0] == 'registry':
+            acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            type_of_host = rd_data["rd_core"]["Type_of_host_institution"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            source_of_funding = rd_data["rd_core"]["Source_of_funding"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            target_population = rd_data["rd_core"]["Target_population_of_the_registry"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            year_of_establishment = rd_data["rd_core"]["year_of_establishment"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            ontologies_used = rd_data["rd_core"]["Ontologies"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            imaging_available = rd_data["rd_core"]["Imaging_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            also_listed = rd_data["rd_core"]["The_registry_biobanks_is_listed_in_other_inventories_networks"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+
+            host_is = rd_data["rd_core"]["Host_institution_is_a"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            other_inventories = rd_data["rd_core"]["The_registry_biobanks_is_listed_in_other_inventories_networks"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            associated_data = rd_data["rd_core"]["Associated_data_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            additional_associated = rd_data["rd_core"]["Additional_Associated_data_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            additional_ontologies = rd_data["rd_core"]["Additional_Ontologies"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            text = rd_data["rd_core"]["Text5085"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            biomat_available_in_biobanks = rd_data["rd_core"]["Biomaterial_Available_in_biobanks"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            additional_networks = rd_data["rd_core"]["Additional_networks_inventories"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+            additional_imaging_available = rd_data["rd_core"]["Additional_Imaging_available"][rd_data["rd_core"]["OrganizationID"] == rd_id].values[0]
+
+            fields_display = rd_data["rd_core"]["_fieldsDisplay"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+
+            eric_data["eu_bbmri_eric_biobanks"]["other_inventories"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = other_inventories
+            eric_data["eu_bbmri_eric_biobanks"]["biomaterials_available_in_biobanks"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = biomat_available_in_biobanks
+
+
+        else:
+            description = rd_data["rd_bb_core"]["Description"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            acronym = rd_data["rd_bb_core"]["acronym"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            type_of_host = rd_data["rd_bb_core"]["Type_of_host_institution"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            imaging_available = rd_data["rd_bb_core"]["Imaging_available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            ontologies_used = rd_data["rd_bb_core"]["Ontologies"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            target_population = rd_data["rd_bb_core"]["Target_population_of_the_registry"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            text = rd_data["rd_bb_core"]["Text5085"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            also_listed = rd_data["rd_bb_core"]["The_registry_biobanks_is_listed_in_other_inventories_networks"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            year_of_establishment = rd_data["rd_bb_core"]["year_of_establishment"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+
+            associated_data = rd_data["rd_bb_core"]["Associated_data_available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_imaging_available = rd_data["rd_bb_core"]["Additional_Imaging_available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_associated = rd_data["rd_bb_core"]["Additional_Associated_data_available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            host_is = rd_data["rd_bb_core"]["Host_institution_is_a"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_networks = rd_data["rd_bb_core"]["Additional_networks_inventories"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_ontologies = rd_data["rd_bb_core"]["Additional_Ontologies"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            fields_display = rd_data["rd_bb_core"]["_fieldsDisplay"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+
+            additional_bio = rd_data["rd_bb_core"]["Additional_Biomaterial_available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_origin = rd_data["rd_bb_core"]["Additional_Origin_of_collection"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            how_many = rd_data["rd_bb_core"]["How_many_RD_are_in_the_registry_biobank"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            use_of_collection = rd_data["rd_bb_core"]["Use_of_collection"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            origin_colletion = rd_data["rd_bb_core"]["Origin_of_collection"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_biomat_prep = rd_data["rd_bb_core"]["Additional_Biomaterial_prepared"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            biomat_available = rd_data["rd_bb_core"]["Biomaterial_Available"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            percent = rd_data["rd_bb_core"]["Percentage_of_rare_diseases_in_your_registry_biobank"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            biomat_prep = rd_data["rd_bb_core"]["Biomaterial_prepared"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+            additional_use_of_collection = rd_data["rd_bb_core"]["Additional_Use_of_collection"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+
+            eric_data["eu_bbmri_eric_biobanks"]["additional_biomaterial_available"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_bio
+            eric_data["eu_bbmri_eric_biobanks"]["additional_origin_of_collection"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_origin
+            eric_data["eu_bbmri_eric_biobanks"]["how_many_rd_are_in_the_registry_biobank"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = how_many
+            eric_data["eu_bbmri_eric_biobanks"]["use_of_collection"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = use_of_collection
+            eric_data["eu_bbmri_eric_biobanks"]["origin_of_collection"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = origin_colletion
+            eric_data["eu_bbmri_eric_biobanks"]["additional_biomaterial_prepared"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_biomat_prep
+            eric_data["eu_bbmri_eric_biobanks"]["biomaterial_available"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = biomat_available
+            eric_data["eu_bbmri_eric_biobanks"]["percentage_of_rare_diseases_in_your_registry_biobank"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = percent
+            eric_data["eu_bbmri_eric_biobanks"]["biomaterial_prepared"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = biomat_prep
+            eric_data["eu_bbmri_eric_biobanks"]["additional_use_of_collection"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_use_of_collection
+
+
 
         logo_link = url_data["Sheet1"][url_data["Sheet1"]["Name"] == rd_name]["Url"].values
         if len(logo_link) > 0:
@@ -496,11 +561,11 @@ def additional_organization_info(eric_data, rd_data):
             person_id = eric_data["eu_bbmri_eric_persons"]["id"][eric_data["eu_bbmri_eric_persons"]["biobanks"] == biobank].values
             eric_data["eu_bbmri_eric_biobanks"]["contact"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = person_id
 
-        if pd.isnull(description) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
-            description = rd_data["rd_bb_core"]["Description"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
+        # if pd.isnull(description) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
+        #     description = rd_data["rd_bb_core"]["Description"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
 
-        if pd.isnull(acronym) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
-            acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
+        # if pd.isnull(acronym) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
+        #     acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
             
 
         eric_data["eu_bbmri_eric_biobanks"]["description"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = description
@@ -515,7 +580,14 @@ def additional_organization_info(eric_data, rd_data):
         eric_data["eu_bbmri_eric_biobanks"]["imaging_available"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = imaging_available
         eric_data["eu_bbmri_eric_biobanks"]["also_listed"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = also_listed
 
-
+        eric_data["eu_bbmri_eric_biobanks"]["associated_data"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = associated_data
+        eric_data["eu_bbmri_eric_biobanks"]["host_is"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = host_is
+        eric_data["eu_bbmri_eric_biobanks"]["additional_associated"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_associated
+        eric_data["eu_bbmri_eric_biobanks"]["additional_ontologies"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_ontologies
+        eric_data["eu_bbmri_eric_biobanks"]["text5085"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = text
+        eric_data["eu_bbmri_eric_biobanks"]["additional_networks_inventories"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_networks
+        eric_data["eu_bbmri_eric_biobanks"]["additional_imaging_available"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = additional_imaging_available
+        eric_data["eu_bbmri_eric_biobanks"]["fields_display"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = fields_display
 
     add_geo_info(eric_data, rd_data)
 
