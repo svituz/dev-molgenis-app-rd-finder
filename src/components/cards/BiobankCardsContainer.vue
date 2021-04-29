@@ -135,7 +135,6 @@ export default {
     },
     biobank_items () {
       // check if deeper objects (e.g.: ressource_types) can be loaded:
-      console.log(this.biobanksShown[0])
       if (!this.biobanksShown[0].ressource_types) {
         return []
       }
@@ -150,7 +149,6 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
-      console.log('this', this.biobanksShown)
       return items
     }
   },

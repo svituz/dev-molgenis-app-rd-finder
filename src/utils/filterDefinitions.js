@@ -4,6 +4,7 @@ import { genericFilterOptions } from './filterOptions'
 
 const filterDefinitions = (state) => [
   {
+    component: 'StringFilter',
     name: 'search',
     label: 'Search',
     type: 'multi-filter',
@@ -21,6 +22,7 @@ const filterDefinitions = (state) => [
     filters: state.filters.selections.ressource_types,
     maxVisibleOptions: 25,
     humanReadableString: 'Ressource type(s):',
+    optionsFilter: [],
     all: true
   },
   // {
@@ -89,7 +91,8 @@ const filterDefinitions = (state) => [
     filters: state.filters.selections.country,
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
-    initiallyCollapsed: false
+    initiallyCollapsed: false,
+    optionsFilter: []
   }
   // {
   //   component: 'CheckboxFilter',

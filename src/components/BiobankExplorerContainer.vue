@@ -1,24 +1,25 @@
 <template>
   <div class="row biobank-explorer-container">
-    <div class="background-hack">
-      <div class="background-hack-l">
-      </div>
-      <div class="background-hack-r">
-      </div>
-    </div>
     <div class="row row-header">
           <b>Linking up rare disease research across the world</b>
-      </div>
-    <div class="col-md-3">
-      <filter-container></filter-container>
     </div>
-    <div class="col-md-9">
-      <div class="row mb-3">
+            <div class="background-hack">
+          <div class="background-hack-l">
+          </div>
+          <div class="background-hack-r">
+          </div>
+    </div>
+    <div class="row explorer shadow">
+    <div class="col-md-3">
         <collection-select-all
           v-if="!loading && foundCollectionIds.length"
           class="mt-1 ml-3"
           router-enabled
         />
+      <filter-container></filter-container>
+    </div>
+    <div class="col-md-9">
+      <div class="row mb-3">
         <div class="col-md-8">
           <div v-if="isIE11">
             <input
@@ -57,12 +58,12 @@
           <result-header></result-header>
         </div>
       </div>
-
       <div class="row">
         <div class="col-md-12">
           <biobank-cards-container></biobank-cards-container>
         </div>
       </div>
+    </div>
     </div>
 
     <cart-selection-toast
@@ -359,10 +360,11 @@ export default {
 
 .background-hack {
   height: 0px;
-}
+  position: relative;
+} */
 
 .background-hack-l {
-  height: 80px;
+  height: 0px;
   width: 50px;
   position: relative;
   left: -50px;
@@ -381,18 +383,25 @@ export default {
 
 .row-header {
   text-align: left;
-  padding-top: 17px;
-  padding-left: 35px;
+  padding-top: 10px;
   font-size: 150%;
-  height: 80px;
+  height: 60px;
   background-color: #f4f4e1;
   width: 1140px;
   position: relative;
   left: 15px;
-  top: -16px;
+  margin-top: -40px
 }
 .image {
   position: relative;
   margin-left: 80px;
+}
+.explorer {
+  padding-top: 10px;
+  background-color: white;
+  width: 1160px;
+}
+.biobank-explorer-container {
+  margin-top: -20px;
 }
 </style>

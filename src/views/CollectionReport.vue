@@ -286,6 +286,7 @@ export default {
   font-size: 90%;
   border-collapse: separate;
   border-spacing: 0px;
+  max-width: 280px;
 }
 
 </style>

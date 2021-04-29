@@ -1,6 +1,6 @@
 <template>
   <div @click="$root.$emit('bv::hide::popover')">
-    <div class="container shadow">
+    <div class="container">
       <b-alert v-if="errorMessage" show variant="danger" dismissible>{{errorMessage}}</b-alert>
       <router-view></router-view>
     </div>
