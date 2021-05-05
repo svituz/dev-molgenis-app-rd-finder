@@ -120,15 +120,14 @@ def check_disease_type(eric_data, rd_data, enum, name, rows, count):
     if not pd.isnull(omim_code):
         # split codes at spaces
         code_list = []
-        omim_codes = list(set(omim_code.split(" ")))
+        omim_codes = list(set(omim_code.split(";")))
         for code in omim_codes:
-            if len(code) == 6:
-                code_id = "OMIM:" + code
-                if str(code) in code_frame:
-                    code_list.append(str(code_id))
-                else:
-                    add_code_to_types(eric_data, code, code_id, name)
-                    code_list.append(str(code_id))
+            code_id = "OMIM:" + code
+            if str(code) in code_frame:
+                code_list.append(str(code_id))
+            else:
+                add_code_to_types(eric_data, code, code_id, name)
+                code_list.append(str(code_id))
 
                 
         code_list_omim = sorted(list(set(code_list)))
@@ -475,8 +474,6 @@ def additional_organization_info(eric_data, rd_data):
         eric_data["eu_bbmri_eric_biobanks"]["ressource_types"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = organization_type[0].upper()
 
         # add more general info as shown in tab "Overview" for Registries
-
-        skip = False
         if organization_type[0] == 'registry':
             acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
             description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
@@ -504,6 +501,7 @@ def additional_organization_info(eric_data, rd_data):
             eric_data["eu_bbmri_eric_biobanks"]["biomaterials_available_in_biobanks"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = biomat_available_in_biobanks
 
 
+        # add infos of biobanks
         else:
             description = rd_data["rd_bb_core"]["Description"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values
             acronym = rd_data["rd_bb_core"]["acronym"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values

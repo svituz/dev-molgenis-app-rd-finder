@@ -42,7 +42,13 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
                         if len(entry[k]) > 255:
                             content = "none"
                         else:
-                            content = re.sub('[^A-Za-z0-9_@. ]+', '',entry[k])
+                            if "omim" in k:
+                                no_space_omim = re.sub('[^0-9*#+%]+', ';',entry[k])
+                                cleaned = no_space_omim.replace("*;", "*").replace("#;", "#").replace("+;", "+").replace("%;", "%")
+                                content = cleaned
+                            else:
+                                content = re.sub('[^A-Za-z0-9_@.*#+% ]+', '',entry[k])
+
                         
                         df.at[len(df[k].dropna()), k] = content
 
