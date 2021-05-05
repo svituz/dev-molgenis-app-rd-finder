@@ -37,7 +37,7 @@
                   </router-link>
                 </div> -->
               </li>
-              <template v-if="info.contact">
+              <!-- <template v-if="info.contact">
             <div style="position: absolute; margin-top:20%;">
             <h4 class="header">Personnel</h4>
             <ul class="right-content-list">
@@ -59,7 +59,7 @@
               </li>
             </ul>
             </div>
-          </template>
+          </template> -->
             </ul>
           </template>
         </div>
