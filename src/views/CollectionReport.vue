@@ -62,20 +62,33 @@
                   class="info-table"
                   id="general-info-table"
                   borderless
+                  fixed
+                  caption-top
                   thead-class="d-none"
                   :items=getInfoItems
                   :fields="[
                   {
                     key: 'info_type',
-                    tdClass: 'info-field-cl'
+                    tdClass: 'info-field-cl',
+                    position: sticky
                   },
                   {
                     key: 'info_field'
                   }
                   ]">
+                  <template #table-caption><b>{{collection.name}}</b></template>
                   <template v-slot:cell(info_field)="field">
                     <b>{{ field.item.info_field }}</b>
                   </template>
+                  <!-- :fields="[
+                  {
+                    key: 'info_field'
+                  }
+                  ]">
+                  <template v-slot:cell(info_field)="field">
+                    {{ field.item.info_type }}<b> {{ field.item.info_field }}</b>
+                  </template> -->
+
                   </b-table>
                 </div>
             </div>
@@ -370,6 +383,8 @@ export default {
   border-spacing: 0px;
   padding: 0px;
   max-width: 380px;
+  justify-content: center;
+  align-items: right;
 }
 
 .truncated-description {

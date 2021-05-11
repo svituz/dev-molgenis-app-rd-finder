@@ -20,10 +20,10 @@ const filterDefinitions = (state) => [
     options: genericFilterOptions('rd_connect_ressource_types'),
     initiallyCollapsed: false,
     filters: state.filters.selections.ressource_types,
-    maxVisibleOptions: 25,
+    maxVisibleOptions: 10,
     humanReadableString: 'Ressource type(s):',
-    optionsFilter: [],
-    all: true
+    optionsFilter: []
+    // all: true
   },
   // {
   //   headerClass: 'bg-warning text-white',
