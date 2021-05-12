@@ -70,13 +70,15 @@
                   {
                     key: 'info_type',
                     tdClass: 'info-field-cl',
-                    position: sticky
+                    position: sticky,
+                    // colspan: '0.5',
+                    // rowspan: '0.5'
                   },
                   {
                     key: 'info_field'
                   }
                   ]">
-                  <template #table-caption><b>{{collection.name}}</b></template>
+                  <template #table-caption><b><h4 class="header_disease"><strong>{{collection.name}}</strong></h4></b></template>
                   <template v-slot:cell(info_field)="field">
                     <b>{{ field.item.info_field }}</b>
                   </template>
@@ -407,6 +409,9 @@ export default {
 .header {
   color: #a6cc74
 }
+.header_disease {
+  color: #080808ee
+}
 .top {
   font-size: 70%;
 }
@@ -426,7 +431,7 @@ export default {
   border-spacing: 0px;
   padding: 0px;
   max-width: 380px;
-  justify-content: center;
+  justify-content: right;
   align-items: right;
 }
 
