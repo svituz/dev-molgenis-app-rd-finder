@@ -70,7 +70,6 @@
                   {
                     key: 'info_type',
                     tdClass: 'info-field-cl',
-                    position: sticky,
                     // colspan: '0.5',
                     // rowspan: '0.5'
                   },
@@ -104,28 +103,6 @@
                       <span> {{this.collection.contact.email}}</span>
               </a>
               </p>
-              <!-- <template v-if="info.contact">
-                <h4 class="header">Personnel</h4>
-                <ul class="right-content-list">
-                  <template v-if="info.head">
-                    <li>
-                      <span class="font-weight-bold mr-1">Head/PI:</span>
-                      <span>{{ info.head }}</span>
-                    </li>
-                  </template>
-                  <li v-if="info.contact.name">
-                    <span class="font-weight-bold mr-1">Main Contact:</span>
-                    <span>{{ info.contact.name }}</span>
-                  </li>
-                  <li v-if="info.contact.email">
-                    <span class="fa fa-fw fa-paper-plane mr-2" aria-hidden="true"></span>
-                    <a :href="'mailto:' + info.contact.email">
-                      <span> {{info.contact.email}}</span>
-                    </a>
-                  </li>
-                </ul>
-                </div>
-              </template> -->
             </div>
           </div>
         <div style="text-align:left" class="mt-2">
@@ -175,10 +152,14 @@
                   <hr>
                   <b-table
                   class="info-table"
+                  id="categories-table"
                   borderless
                   small
                   thead-class="d-none"
                   :items=showDiseaseAreas>
+                    <template v-slot:cell(field)="fields">
+                    <b>{{ fields.item.field }}</b>
+                  </template>
                   </b-table>
                 </div>
             </div>
@@ -231,7 +212,7 @@ export default {
           }
         }
       }
-      const codeString = String(codes)
+      const codeString = String(codes).replaceAll(',', '; ')
       return codeString
     },
     setTrunc () {
@@ -279,10 +260,13 @@ export default {
         Congenital_malformations__deformations_and_chromosomal_abnormalities__Q00_Q99_: 'Congenital malformations, deformations and chromosomal abnormalities (Q00-Q99)'
       }
       const shown = []
-      for (const area in this.collection) {
-        if (dict[area]) {
+      for (const area in dict) {
+        if (this.collection[area]) {
           shown.push({ field: dict[area] })
         }
+      }
+      if (this.collection.disease_area_other) {
+        shown.push({ field: this.collection.disease_area_other })
       }
       return shown
     },
@@ -366,10 +350,7 @@ export default {
       const reducedItems = []
       for (const item in allItems) {
         const field = allItems[item].info_type.split(':')[0].toUpperCase().replaceAll(' ', '_')
-        console.log(field)
-        console.log(fields)
         const found = fields.find(v => (v.toUpperCase().includes(field)))
-        console.log(found)
         if (found) {
           reducedItems.push(allItems[item])
         }

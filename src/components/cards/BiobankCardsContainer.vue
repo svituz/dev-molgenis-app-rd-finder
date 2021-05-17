@@ -3,23 +3,27 @@
     <div v-if="!loading && foundBiobanks > 0">
       <b-pagination
         v-if="foundBiobanks > pageSize"
-        size="md"
+        size="sm"
         align="center"
         :total-rows="foundBiobanks"
         v-model="currentPage"
         :per-page="pageSize"
-      ></b-pagination>
-      <!-- <biobank-card
-        v-for="biobank in biobanksShown"
-        :key="biobank.id || biobank"
-        :biobank="biobank"
-        :initCollapsed="(biobanksShown[0].id !== biobank.id || biobanksShown[0] !== biobank)">
-      </biobank-card> -->
+      >
+      <template v-if="busy" #last-text>
+        <span class="text-info">
+        <b-spinner style="width: 0.8rem; height: 0.8rem; margin-left: 0.2rem;" type="grow" label="Loading..."></b-spinner>
+        <b-spinner style="width: 0.8rem; height: 0.8rem; margin-left: 0.2rem;" type="grow" label="Loading..."></b-spinner>
+        <b-spinner style="width: 0.8rem; height: 0.8rem; margin-left: 0.2rem;" type="grow" label="Loading..."></b-spinner>
+        </span>
+      </template>
+      </b-pagination>
+
       <div v-if="!loading && foundBiobanks > 0">
         <b-table
         id="biobank-table"
         responsive
         hover
+        busy.sync="true"
         :items="biobank_items"
         :fields="[
           {
@@ -53,8 +57,8 @@
       </b-table>
       </div>
       <b-pagination
-        v-if="foundBiobanks > pageSize"
-        size="md"
+        v-if="foundBiobanks > pageSize & !busy"
+        size="sm"
         align="center"
         :total-rows="foundBiobanks"
         v-model="currentPage"
@@ -102,7 +106,8 @@ export default {
     return {
       currentPage: 1,
       pageSize: 10,
-      items: []
+      items: [],
+      busy: false
     }
   },
   methods: {
@@ -116,6 +121,9 @@ export default {
       }
 
       return sum
+    },
+    setBusy (value) {
+      this.busy = value
     }
   },
   computed: {
@@ -125,6 +133,7 @@ export default {
       'loading'
     ]),
     biobanksShown () {
+      // return this.loading ? [] : this.biobanks.slice(this.pageSize * (this.currentPage - 1), this.pageSize * this.currentPage)
       return this.loading ? [] : this.biobanks.slice(this.pageSize * (this.currentPage - 1), this.pageSize * this.currentPage)
     },
     biobankIds () {
@@ -134,6 +143,7 @@ export default {
       return this.biobanksShown.filter(it => typeof it === 'string')
     },
     biobank_items () {
+      this.setBusy(true)
       // check if deeper objects (e.g.: ressource_types) can be loaded:
       if (!this.biobanksShown[0].ressource_types) {
         return []
@@ -149,6 +159,7 @@ export default {
           Country: this.biobanksShown[key].country.name
         })
       }
+      this.setBusy(false)
       return items
     }
   },

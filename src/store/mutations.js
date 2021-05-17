@@ -73,7 +73,6 @@ export default {
     biobanks.forEach(biobank => {
       Vue.set(state.biobanks, biobank.id, fixCollectionTree(biobank))
     })
-    console.log(biobanks)
   },
   SetBiobankIds (state, biobankIds) {
     state.biobankIds = biobankIds

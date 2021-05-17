@@ -67,8 +67,6 @@ export default {
   methods: {
     ...mapMutations(['UpdateFilter']),
     filterChange (name, value) {
-      console.log(name, value)
-      console.log(this.filters)
       this.UpdateFilter({ name, value, router: this.$router })
     }
   }
