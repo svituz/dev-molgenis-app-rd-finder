@@ -173,3 +173,8 @@ export default {
       .then(helpers.setLocationHref, error => commit('SetError', error))
   }
 }
+// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-4.css
+// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-3.css
+//
+// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-4.css
+// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-3.css
