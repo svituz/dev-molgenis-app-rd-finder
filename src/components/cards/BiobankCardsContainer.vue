@@ -32,7 +32,7 @@
           },
           {
             key: 'Name',
-            sortable: false,
+            sortable: true,
           },
           {
             key: 'Type',
@@ -107,20 +107,26 @@ export default {
       currentPage: 1,
       pageSize: 10,
       items: [],
-      busy: false
+      busy: true
     }
   },
   methods: {
     ...mapActions(['GetBiobanks']),
     addNumberDonors (biobank) {
-      var sum = 0
+      // console.log(biobank.collections)
+      // var sum = 0
       for (const key in biobank.collections) {
         if (!biobank.collections[key].parent_collection) {
-          sum = biobank.collections[key].number_of_donors
+          return biobank.collections[key].number_of_donors
         }
       }
+      // var sumtotal = biobank.collections.reduce(function (prev, cur) {
+      //   return (prev + cur.number_of_donors)
+      // }, 0)
+      // console.log('Total Messages:', sumtotal)
+      // console.log('suj:', sum)
 
-      return sum
+      // return sum
     },
     setBusy (value) {
       this.busy = value

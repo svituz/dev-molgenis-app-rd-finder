@@ -56,7 +56,7 @@
         <div class="row">
           <div class="col-md7 info-box" style="width: 60%">
                 <div>
-                  <h4 class="header"><b>General Information</b></h4>
+                  <h4 class="header" ><b>General Information</b></h4>
                   <hr>
                   <b-table
                   class="info-table"
@@ -117,11 +117,11 @@
                   :items=getItemList
                   :fields="[
                     {
-                      key: 'Name',
+                      key: 'Disease_Name',
                       sortable: true
                     },
                     {
-                      key: 'Number_of_patients',
+                      key: 'Number_of_patients_Donors',
                       sortable: true
                     },
                     {
@@ -129,7 +129,7 @@
                       sortable: true
                     },
                     {
-                      key: 'ORPHA',
+                      key: 'ORPHA_Code',
                       sortable: true
                     },
                     {
@@ -314,11 +314,11 @@ export default {
       const items = []
       for (const key in this.collection.sub_collections) {
         items.push({
-          Name: this.collection.sub_collections[key].name,
-          Number_of_patients: this.collection.sub_collections[key].number_of_donors,
+          Disease_Name: this.collection.sub_collections[key].name,
+          Number_of_patients_Donors: this.collection.sub_collections[key].number_of_donors,
           Gene: this.collection.sub_collections[key].gene,
           ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
-          ORPHA: this.getCode(this.collection.sub_collections[key], 'orphanet'),
+          ORPHA_Code: this.getCode(this.collection.sub_collections[key], 'orphanet'),
           OMIM: this.getCode(this.collection.sub_collections[key], 'omim'),
           Synonyms: this.collection.sub_collections[key].description
         })
@@ -423,9 +423,11 @@ export default {
   border-collapse: separate;
   border-spacing: 0px;
   padding: 0px;
+  padding-top: 0em;
   max-width: 380px;
   justify-content: right;
   align-items: right;
+  margin-top: 0px;
 }
 
 .disease-table {
