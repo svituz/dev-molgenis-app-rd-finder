@@ -81,7 +81,7 @@ export default {
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
+    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
     }
@@ -96,7 +96,7 @@ export default {
   },
   GetBiobankIds ({ commit, getters }) {
     commit('SetBiobankIds', undefined)
-    let url = '/api/data/rd_connect_biobanks?filter=id&size=10000&sort=name'
+    let url = '/api/data/rd_connect_biobanks?filter=id&size=10000'
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
@@ -173,3 +173,8 @@ export default {
       .then(helpers.setLocationHref, error => commit('SetError', error))
   }
 }
+// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-4.css
+// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-3.css
+//
+// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-4.css
+// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-3.css

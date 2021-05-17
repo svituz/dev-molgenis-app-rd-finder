@@ -27,7 +27,7 @@ export const diagnosisAvailableFilterOptions = (tableName) => {
       if (queryType === 'in') {
         url = `${url}?q=${encodeRsqlValue(`id=in=(${query})`)}`
       } else if (isCodeRegex.test(query)) {
-        url = `${url}?q=${encodeRsqlValue(createDiagnosisCodeQuery(query))}&sort=code`
+        url = `${url}?q=${encodeRsqlValue(createDiagnosisCodeQuery(query))}`
       } else {
         url = `${url}?q=${encodeRsqlValue(createDiagnosisLabelQuery(query))}`
       }
