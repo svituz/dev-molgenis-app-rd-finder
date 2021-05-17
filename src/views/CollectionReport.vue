@@ -259,12 +259,18 @@ export default {
         Certain_conditions_originating_in_the_perinatal_period__P00_P96_: 'Certain conditions originating in the perinatal period (P00-P96)',
         Congenital_malformations__deformations_and_chromosomal_abnormalities__Q00_Q99_: 'Congenital malformations, deformations and chromosomal abnormalities (Q00-Q99)'
       }
+
+      const fieldsDisp = this.collection.disease_area_display
+      console.log(fieldsDisp)
       const shown = []
+
+      // check if fieldsDisplay contains any of the above diseae areas
       for (const area in dict) {
-        if (this.collection[area]) {
+        if (fieldsDisp.includes(area)) {
           shown.push({ field: dict[area] })
         }
       }
+      // add "other" if its not undefined
       if (this.collection.disease_area_other) {
         shown.push({ field: this.collection.disease_area_other })
       }
