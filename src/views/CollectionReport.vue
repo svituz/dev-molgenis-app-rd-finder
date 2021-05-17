@@ -132,6 +132,7 @@
                   <h2 style="text-align:center" class="header"><strong>Disease Matrix</strong></h2>
                   <b-table
                   id="disease-table"
+                  class="disease_table"
                   bordered
                   hover
                   small
@@ -167,6 +168,17 @@
                       sortable: true
                     }
                   ]">
+                  </b-table>
+                </div>
+                <div v-if="this.collection.biobank.ressource_types.label === 'Biobank'">
+                  <h2 style="text-align:left" class="header"><strong>ICD 10 Categories</strong></h2>
+                  <hr>
+                  <b-table
+                  class="info-table"
+                  borderless
+                  small
+                  thead-class="d-none"
+                  :items=showDiseaseAreas>
                   </b-table>
                 </div>
             </div>
@@ -207,18 +219,20 @@ export default {
     },
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
-      console.log(subCollection.diagnosis_available)
       var codes = []
       if (code.length > 0) {
         for (const diag in subCollection.diagnosis_available) {
-          code = String(subCollection.diagnosis_available[diag].ontology).includes(type) ? subCollection.diagnosis_available[diag].code : ''
-          console.log(subCollection.diagnosis_available)
-          if (code.length > 0) {
-            codes.push(code)
+          var tryCode = (subCollection.diagnosis_available[diag].code === undefined) ? '' : subCollection.diagnosis_available[diag].code
+          if (tryCode.length > 0) {
+            code = String(subCollection.diagnosis_available[diag].ontology).includes(type) ? subCollection.diagnosis_available[diag].code : ''
+            if (code.length > 0) {
+              codes.push(code)
+            }
           }
         }
       }
-      return String(codes)
+      const codeString = String(codes)
+      return codeString
     },
     setTrunc () {
       if (this.truncated) {
@@ -242,6 +256,35 @@ export default {
     },
     get_items () {
       return [{ id: 1, last_activation: 2 }]
+    },
+    showDiseaseAreas () {
+      // const mask = this.collection[0]
+      const dict = {
+        Boolean5173: 'Certain infectious and parasitic diseases (A00-B99)',
+        Boolean4958: 'Neoplasms (C00-D48)',
+        Boolean4743: 'Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism (D50-D89)',
+        Boolean4528: 'Endocrine, nutritional and metabolic diseases (E00-E90)',
+        Boolean2579: 'Mental and behavioural disorders (F00-F99)',
+        Boolean3227: 'Diseases of the nervous system (G00-G99)',
+        Boolean3012: 'Diseases of the eye and adnexa (H00-H59)',
+        Boolean2796: 'Diseases of the ear and mastoid process (H60-H95)',
+        Boolean3443: 'Diseases of the circulatory system (I00-I99)',
+        Boolean3659: 'Diseases of the respiratory system (J00-J99)',
+        Boolean3875: 'Diseases of the digestive system (K00-K93)',
+        Boolean4090: 'Diseases of the skin and subcutaneous tissue (L00-L99)',
+        Boolean4307: 'Diseases of the musculoskeletal system and connective tissue (M00-M99)',
+        Diseases_of_the_genitourinary_system__N00_N99_: 'Diseases of the genitourinary system (N00-N99)',
+        Pregnancy__childbirth_and_the_puerperium__O00_O99_: 'Pregnancy, childbirth and the puerperium (O00-O99)',
+        Certain_conditions_originating_in_the_perinatal_period__P00_P96_: 'Certain conditions originating in the perinatal period (P00-P96)',
+        Congenital_malformations__deformations_and_chromosomal_abnormalities__Q00_Q99_: 'Congenital malformations, deformations and chromosomal abnormalities (Q00-Q99)'
+      }
+      const shown = []
+      for (const area in this.collection) {
+        if (dict[area]) {
+          shown.push({ field: dict[area] })
+        }
+      }
+      return shown
     },
     subCollections () {
       return this.collection && this.collection.sub_collections && this.collection.sub_collections.length
@@ -392,12 +435,21 @@ export default {
   align-items: right;
 }
 
+.disease-table {
+  max-width: 80%;
+}
+
 .truncated-description {
   height: 4rem;
 }
 
 .table td{
   padding: 0px;
+}
+
+table.b-table[aria-busy='true'] {
+  opacity: 0.6;
+  color: #598c68;
 }
 
 .info-box {

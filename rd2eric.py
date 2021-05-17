@@ -200,28 +200,43 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
     for biobank_id in biobank_ids:
         m = rd_data['rd_diseases']['OrganizationID'] == int(biobank_id.split(':')[-1])
         basic_info_mask = rd_data['rd_basic_info']['OrganizationID'] == int(biobank_id.split(':')[-1])
-        
+
         contact_row = eric_data['eu_bbmri_eric_persons'].loc[eric_data['eu_bbmri_eric_persons']['biobanks'] == biobank_id]['id']
         if len(contact_row) > 0 and not pd.isnull(contact_row.values[0]):
             contact_id = contact_row.values[0]
         rows = rd_data['rd_diseases'][m]
         #a = pd.concat([a,list(biobank_id + ':collection:' +rows['name'])])
+
+        rd_org_id = rd_data['rd_basic_info']['OrganizationID'] == int(biobank_id.split(':')[-1])
+        rd_bb_mask = rd_data['rd_bb_core']['OrganizationID'] == int(biobank_id.split(':')[-1])
+        rd_disease_area_mask = rd_data['rd_DiseaseAreasICD10']['OrganizationID'] == int(biobank_id.split(':')[-1])
+
+        rd_materials = rd_data["rd_bb_core"]["Additional_Biomaterial_available"][rd_bb_mask]
+        org_type = rd_data["rd_basic_info"]["type"][rd_org_id].values[0]
+
         if sub_collections:
             collection_class = "_pa"
             parent_id = str(biobank_id) + ':collection{0}'.format(collection_class)
             eric_data['eu_bbmri_eric_collections'].at[count,'id'] = parent_id
             eric_data['eu_bbmri_eric_collections'].at[count,'contact'] = contact_id
+            eric_data['eu_bbmri_eric_collections'].at[count,'ressource_types'] = org_type.upper()
+            index = rd_data["rd_DiseaseAreasICD10"][rd_org_id].index
+
+            if sum(rd_disease_area_mask) > 0:
+                disease_areas = rd_data["rd_DiseaseAreasICD10"][rd_disease_area_mask].reset_index().loc[0, "Boolean4090":"Pregnancy__childbirth_and_the_puerperium__O00-O99_"].values
+                other = rd_data["rd_DiseaseAreasICD10"][rd_disease_area_mask].reset_index().loc[0, "others"]
+                disease_display = rd_data["rd_DiseaseAreasICD10"][rd_disease_area_mask].reset_index().loc[0, "_fieldsDisplay"]
+
+                eric_data['eu_bbmri_eric_collections'].at[count,'Boolean4090':"Pregnancy__childbirth_and_the_puerperium__O00_O99_"] = disease_areas
+                eric_data['eu_bbmri_eric_collections'].at[count,'disease_area_other'] = other
+                eric_data['eu_bbmri_eric_collections'].at[count,"disease_area_display"] = disease_display
+
             collection_class = "_ch"
             count += 1
-
-        rd_org_id = rd_data['rd_basic_info']['OrganizationID'] == int(biobank_id.split(':')[-1])
-        rd_bb_mask = rd_data['rd_bb_core']['OrganizationID'] == int(biobank_id.split(':')[-1])
-        rd_materials = rd_data["rd_bb_core"]["Additional_Biomaterial_available"][rd_bb_mask]
 
         if len(rd_materials) > 0 and not pd.isnull(rd_materials.values[0]):
             material_types = get_material_type(eric_data, rd_materials)
 
-        org_type = rd_data["rd_basic_info"]["type"][rd_org_id].values[0]
         
         total_size = 0
         codes = []
