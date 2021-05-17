@@ -8,12 +8,12 @@ import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 /* API PATHS */
 const BIOBANK_API_PATH = '/api/v2/rd_connect_biobanks'
 const COLLECTION_API_PATH = '/api/v2/rd_connect_collections'
-const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
-const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
+// const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
+// const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
 // const FILEMETA_API_PATH = '/api/v2/rd_connect_fileMeta'
 
-export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
-export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
+// export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
+// export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
 
 const NETWORK_API_PATH = '/api/v2/rd_connect_networks'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
@@ -21,7 +21,7 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 /**/
 
 /* Query Parameters */
-export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,biobank(logos),diagnosis_available,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
+export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,biobank(logos),name,type,number_of_donors,sub_collections(id))'
 export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(*),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors,description,gene,timestamp),number_of_donors'
 /**/
 
@@ -31,13 +31,13 @@ export default {
       commit('SetNegotiatorEntities', response)
     })
   },
-  async GetQualityStandardInformation ({ commit }) {
-    const biobankQualityInfo = api.get(`${BIOBANK_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
-    const collectionQualityInfo = api.get(`${COLLECTION_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
-    const response = await Promise.all([biobankQualityInfo, collectionQualityInfo])
+  // async GetQualityStandardInformation ({ commit }) {
+  //   const biobankQualityInfo = api.get(`${BIOBANK_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
+  //   const collectionQualityInfo = api.get(`${COLLECTION_QUALITY_STANDARDS}?num=10000&attrs=label`)
+  //   const response = await Promise.all([biobankQualityInfo, collectionQualityInfo])
 
-    commit('SetQualityStandardDictionary', response)
-  },
+  //   commit('SetQualityStandardDictionary', response)
+  // },
   /*
    * Retrieves biobanks and stores them in the cache
    */
@@ -51,31 +51,31 @@ export default {
       })
   },
   // We need to get id's to use in RSQL later, because we can't do a join on this table
-  GetCollectionIdsForQuality ({ state, commit }) {
-    const collectionQuality = state.route.query.collection_quality ? state.route.query.collection_quality : null
-    const qualityIds = state.filters.selections.collection_quality ?? collectionQuality
+  // GetCollectionIdsForQuality ({ state, commit }) {
+  //   const collectionQuality = state.route.query.collection_quality ? state.route.query.collection_quality : null
+  //   const qualityIds = state.filters.selections.collection_quality ?? collectionQuality
 
-    if (qualityIds && qualityIds.length > 0) {
-      api.get(`${COLLECTION_QUALITY_INFO_API_PATH}?attrs=collection(id)&q=assess_level_col=in=(${qualityIds})`).then(response => {
-        commit('SetCollectionIdsWithSelectedQuality', response)
-      })
-    } else {
-      commit('SetCollectionIdsWithSelectedQuality', [])
-    }
-  },
+  //   if (qualityIds && qualityIds.length > 0) {
+  //     api.get(`${COLLECTION_QUALITY_INFO_API_PATH}?attrs=collection(id)&q=assess_level_col=in=(${qualityIds})`).then(response => {
+  //       commit('SetCollectionIdsWithSelectedQuality', response)
+  //     })
+  //   } else {
+  //     commit('SetCollectionIdsWithSelectedQuality', [])
+  //   }
+  // },
   // Same as collections above
-  GetBiobankIdsForQuality ({ state, commit }) {
-    const biobankQuality = state.route.query.biobank_quality ? state.route.query.biobank_quality : null
-    const qualityIds = state.filters.selections.biobank_quality ?? biobankQuality
+  // GetBiobankIdsForQuality ({ state, commit }) {
+  //   const biobankQuality = state.route.query.biobank_quality ? state.route.query.biobank_quality : null
+  //   const qualityIds = state.filters.selections.biobank_quality ?? biobankQuality
 
-    if (qualityIds && qualityIds.length > 0) {
-      api.get(`${BIOBANK_QUALITY_INFO_API_PATH}?attrs=biobank(id)&q=assess_level_bio=in=(${qualityIds})`).then(response => {
-        commit('SetBiobankIdsWithSelectedQuality', response)
-      })
-    } else {
-      commit('SetBiobankIdsWithSelectedQuality', [])
-    }
-  },
+  //   if (qualityIds && qualityIds.length > 0) {
+  //     api.get(`${BIOBANK_QUALITY_INFO_API_PATH}?attrs=biobank(id)&q=assess_level_bio=in=(${qualityIds})`).then(response => {
+  //       commit('SetBiobankIdsWithSelectedQuality', response)
+  //     })
+  //   } else {
+  //     commit('SetBiobankIdsWithSelectedQuality', [])
+  //   }
+  // },
   /*
    * Retrieves all collection identifiers matching the collection filters, and their biobanks
    */

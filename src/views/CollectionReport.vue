@@ -260,8 +260,10 @@ export default {
         Congenital_malformations__deformations_and_chromosomal_abnormalities__Q00_Q99_: 'Congenital malformations, deformations and chromosomal abnormalities (Q00-Q99)'
       }
 
-      const fieldsDisp = this.collection.disease_area_display
-      console.log(fieldsDisp)
+      var fieldsDisp = this.collection.disease_area_display
+      if (fieldsDisp === undefined) {
+        fieldsDisp = ' '
+      }
       const shown = []
 
       // check if fieldsDisplay contains any of the above diseae areas
@@ -327,7 +329,7 @@ export default {
       const allItems = [
         { info_type: 'Acronym:', info_field: this.collection.biobank.acronym },
         { info_type: 'Type of host institution:', info_field: this.collection.biobank.host_is },
-        { info_type: 'Source of funding:', info_field: this.collection.biobank.source_of_funding },
+        { info_type: 'Source of funding:', info_field: this.collection.biobank.text5085 ? this.collection.biobank.text5085 : this.collection.biobank.source_of_funding },
         { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
         { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
         { info_type: 'Ontologies used:', info_field: this.collection.biobank.ontologies_used },
@@ -355,10 +357,14 @@ export default {
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
       const reducedItems = []
       for (const item in allItems) {
-        const field = allItems[item].info_type.split(':')[0].toUpperCase().replaceAll(' ', '_')
-        const found = fields.find(v => (v.toUpperCase().includes(field)))
-        if (found) {
+        if (item === String(2) && this.collection.biobank.fields_display.includes('Text5085')) {
           reducedItems.push(allItems[item])
+        } else {
+          const field = allItems[item].info_type.split(':')[0].toUpperCase().replaceAll(' ', '_')
+          const found = fields.find(v => (v.toUpperCase().includes(field)))
+          if (found) {
+            reducedItems.push(allItems[item])
+          }
         }
       }
       return reducedItems

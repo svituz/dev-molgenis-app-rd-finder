@@ -95,20 +95,20 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
-  SetQualityStandardDictionary (state, response) {
-    // Combine arrays from two tables and deduplicate
-    const allStandards = [...new Set(
-      response.map(response => response.items)
-        .reduce((prev, next) => prev.concat(next)))
-    ]
-    const qualityStandardsDictionary = {}
+  // SetQualityStandardDictionary (state, response) {
+  //   // Combine arrays from two tables and deduplicate
+  //   const allStandards = [...new Set(
+  //     response.map(response => response.items)
+  //       .reduce((prev, next) => prev.concat(next)))
+  //   ]
+  //   const qualityStandardsDictionary = {}
 
-    allStandards.forEach((standard) => {
-      qualityStandardsDictionary[standard.label] = standard.description || ''
-    })
+  //   allStandards.forEach((standard) => {
+  //     qualityStandardsDictionary[standard.label] = standard.description || ''
+  //   })
 
-    state.qualityStandardsDictionary = qualityStandardsDictionary
-  },
+  //   state.qualityStandardsDictionary = qualityStandardsDictionary
+  // },
   SetCollectionInfo (state, response) {
     if (response === undefined) {
       state.collectionInfo = response
@@ -144,28 +144,28 @@ export default {
     state.networkReport.biobanks = biobanks
   },
   // methods for rehydrating bookmark
-  SetCollectionIdsWithSelectedQuality (state, response) {
-    if (response.items && response.items.length > 0) {
-      state.collectionIdsWithSelectedQuality = []
-      state.collectionIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.collection.id))]
-    } else {
-      const collectionQualityFilter = state.filters.selections.collection_quality
-      const isCollectionQualityFilterActive = (collectionQualityFilter && collectionQualityFilter.length > 0) || state.route.query.collection_quality
+  // SetCollectionIdsWithSelectedQuality (state, response) {
+  //   if (response.items && response.items.length > 0) {
+  //     state.collectionIdsWithSelectedQuality = []
+  //     state.collectionIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.collection.id))]
+  //   } else {
+  //     const collectionQualityFilter = state.filters.selections.collection_quality
+  //     const isCollectionQualityFilterActive = (collectionQualityFilter && collectionQualityFilter.length > 0) || state.route.query.collection_quality
 
-      state.collectionIdsWithSelectedQuality = isCollectionQualityFilterActive ? ['no-collection-found'] : []
-    }
-  },
-  SetBiobankIdsWithSelectedQuality (state, response) {
-    if (response.items && response.items.length > 0) {
-      state.biobankIdsWithSelectedQuality = []
-      state.biobankIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.biobank.id))]
-    } else {
-      const biobankQualityFilter = state.filters.selections.biobank_quality
-      const isBiobankQualityFilterActive = (biobankQualityFilter && biobankQualityFilter.length > 0) || state.route.query.biobank_quality
+  //     state.collectionIdsWithSelectedQuality = isCollectionQualityFilterActive ? ['no-collection-found'] : []
+  //   }
+  // },
+  // SetBiobankIdsWithSelectedQuality (state, response) {
+  //   if (response.items && response.items.length > 0) {
+  //     state.biobankIdsWithSelectedQuality = []
+  //     state.biobankIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.biobank.id))]
+  //   } else {
+  //     const biobankQualityFilter = state.filters.selections.biobank_quality
+  //     const isBiobankQualityFilterActive = (biobankQualityFilter && biobankQualityFilter.length > 0) || state.route.query.biobank_quality
 
-      state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
-    }
-  },
+  //     state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
+  //   }
+  // },
   AddCollectionsToSelection (state, { collections, router }) {
     const currentIds = state.selectedCollections.map(sc => sc.value)
     const newCollections = collections.filter(cf => !currentIds.includes(cf.value))

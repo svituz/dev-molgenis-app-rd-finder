@@ -43,8 +43,8 @@
                       <h5 v-if="networks && networks.length > 0">Networks</h5>
                       <report-details-list :reportDetails="network" v-for="network in networks"
                                            :key="network.id"></report-details-list>
-                      <h5 v-if="quality && quality.Certification && quality.Certification.value.length > 0">Quality</h5>
-                      <report-details-list :reportDetails="quality"></report-details-list>
+                      <!-- <h5 v-if="quality && quality.Certification && quality.Certification.value.length > 0">Quality</h5> -->
+                      <!-- <report-details-list :reportDetails="quality"></report-details-list> -->
                     </div>
                   </div>
                 </div>

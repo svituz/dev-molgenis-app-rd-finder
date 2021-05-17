@@ -19,43 +19,6 @@
               </router-link>
               <span id="biobank-name">{{ biobank.name }}</span>
             </h5>
-
-            <small v-if="biobank.quality && biobank.quality.length > 0">
-              <div @click.stop="">
-                <div class="d-flex">
-                  <span
-                    class="fa fa-question-circle text-info mr-1 popover-trigger-area"
-                    aria-hidden="true"
-                    :id="`qm-${biobank.id}`"
-                  ></span>
-                  <b-popover
-                    :target="`qm-${biobank.id}`"
-                    triggers="hover click"
-                    placement="top"
-                    custom-class="quality-marks-popover"
-                  >
-                    <table>
-                      <tbody>
-                        <tr
-                          :key="`${biobank.id}-${quality.label}`"
-                          v-for="quality in biobank.quality"
-                        >
-                          <td class="text-nowrap align-top font-weight-bold p-2">{{ quality.label }}</td>
-                          <td class="py-2">
-                            {{ qualityStandardsDictionary[quality.label] }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </b-popover>
-                  <b>Quality mark(s):</b>
-                </div>
-                <quality-column
-                  :qualities="biobank.quality"
-                  :spacing="0"
-                ></quality-column>
-              </div>
-            </small>
             <span v-if="availableCovidTypes">
               <b-img
                 class="biobank-icon covid-icon"
@@ -136,19 +99,17 @@
 
 <script>
 // import CollectionsTable from '../tables/CollectionsTable.vue'
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 // import CollectionSelector from '@/components/buttons/CollectionSelector'
 // import CollectionsTable from '../tables/CollectionsTable.vue'
 import utils from '../../utils'
 import { sortCollectionsByName } from '../../utils/sorting'
-import QualityColumn from '../tables/QualityColumn'
+// import QualityColumn from '../tables/QualityColumn'
 import 'array-flat-polyfill'
 
 export default {
   name: 'biobank-card',
   components: {
-    QualityColumn
-  },
   props: {
     biobank: {
       type: [Object, String]
@@ -166,7 +127,6 @@ export default {
     }
   },
   computed: {
-    ...mapState(['qualityStandardsDictionary']),
     ...mapGetters(['selectedCollections']),
     biobankInSelection () {
       if (!this.biobank.collections) return false

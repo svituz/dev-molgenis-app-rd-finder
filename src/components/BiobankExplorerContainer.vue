@@ -201,8 +201,6 @@ export default {
       'foundCollectionIds',
       'activeFilters',
       'collectionsInPodium',
-      'selectedBiobankQuality',
-      'selectedCollectionQuality',
       'selectedCollections',
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
@@ -239,14 +237,6 @@ export default {
     }
   },
   watch: {
-    selectedBiobankQuality: {
-      immediate: true,
-      handler: 'GetBiobankIdsForQuality'
-    },
-    selectedCollectionQuality: {
-      immediate: true,
-      handler: 'GetCollectionIdsForQuality'
-    },
     rsql: {
       immediate: true,
       handler: 'GetCollectionInfo'
@@ -265,9 +255,7 @@ export default {
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
-      'GetPodiumCollections',
-      'GetBiobankIdsForQuality',
-      'GetCollectionIdsForQuality'
+      'GetPodiumCollections'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0
