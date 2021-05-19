@@ -24,14 +24,15 @@
                       <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
                     </div>
                     <div class="row card-head">
-                      <div id="image-header" class="row card-head" style="text-align:left;margin:12px 6px 8px 8px;height:95px;" >
+
+                      <div id="image-header" class="row" style="text-align:left;height:95px;display: inline-table;" >
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <div class="col-sm-4" style="margin: 0 0;">
-                        <img style="max-width:265px; max-height: 115px" :src="this.collection.biobank.logo_link">
-                        </div>
+                        <a href="#">
+                        <img style="max-width:250px; max-height: 85px;height: auto;margin-top:20px;margin-left:26px;margin-right:20px;float:left;" :src="this.collection.biobank.logo_link">
+                        </a>
                         <!-- <div class="col-sm-2"></div> -->
-                        <div class="col-sm-6" style="margin: 25px 0 auto 100px; max-width:230px">
-                            <b class="header top"> {{collection.name}} </b>
+                        <div style="font-size: 18px;font-weight: bold;color: #8bbf39;width: 100%;height: 116px;display: table-cell;vertical-align: middle;padding-right:15px;">
+                            {{collection.name}}
                         </div>
                       </div>
                     </div>
@@ -339,14 +340,14 @@ export default {
         { info_type: 'Source of funding:', info_field: this.collection.biobank.text5085 ? this.collection.biobank.text5085 : this.collection.biobank.source_of_funding },
         { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
         { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
-        { info_type: 'Ontologies used:', info_field: this.collection.biobank.ontologies_used },
+        { info_type: 'Ontologies:', info_field: this.collection.biobank.ontologies_used },
         { info_type: 'Additional Ontologies:', info_field: this.collection.biobank.additional_ontologies },
         { info_type: 'Biomaterial available:', info_field: this.collection.biobank.biomaterial_available },
         { info_type: 'Additional Biomaterial available:', info_field: this.collection.biobank.additional_biomaterial_available },
         { info_type: 'Imaging available:', info_field: this.collection.biobank.imaging_available },
-        { info_type: 'Additional Imaging Data available:', info_field: this.collection.biobank.additional_imaging_available },
-        { info_type: 'Also listed in:', info_field: this.collection.biobank.also_listed },
-        { info_type: 'Additional Networks listed:', info_field: this.collection.biobank.additional_networks_inventories }
+        { info_type: 'Additional Imaging available:', info_field: this.collection.biobank.additional_imaging_available },
+        { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.collection.biobank.also_listed },
+        { info_type: 'Additional_networks_inventories:', info_field: this.collection.biobank.additional_networks_inventories }
       ]
 
       if (this.collection.biobank.fields_display === undefined) {
@@ -362,14 +363,25 @@ export default {
         return minimal
       }
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
+      console.log(fields)
       const reducedItems = []
-      for (const item in allItems) {
-        if (item === String(2) && this.collection.biobank.fields_display.includes('Text5085')) {
-          reducedItems.push(allItems[item])
-        } else {
-          const field = allItems[item].info_type.split(':')[0].toUpperCase().replaceAll(' ', '_')
-          const found = fields.find(v => (v.toUpperCase().includes(field)))
-          if (found) {
+      for (const field in fields) {
+        const displayItem = String(fields[field]).slice(4).replaceAll('_', ' ').toUpperCase()
+        if (displayItem === 'NYM') {
+          reducedItems.push(allItems[0])
+        }
+        if (field === String(2)) {
+          if (this.collection.biobank.fields_display.includes('Text5085')) {
+            reducedItems.push(allItems[2])
+          } else {
+            if (this.collection.biobank.fields_display.includes('Source of funding')) {
+              reducedItems.push(allItems[2])
+            }
+          }
+        }
+        for (const item in allItems) {
+          const checkItem = allItems[item].info_type.split(':')[0].toUpperCase()
+          if (checkItem === displayItem) {
             reducedItems.push(allItems[item])
           }
         }
