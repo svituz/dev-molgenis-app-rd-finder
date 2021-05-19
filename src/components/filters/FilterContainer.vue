@@ -1,8 +1,8 @@
 <template>
   <div id="filter-container">
-    <!-- <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
+    <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
       <StringFilter name="Search" v-model="search"></StringFilter>
-    </FilterCard> -->
+    </FilterCard>
     <FilterCard
       v-for="filter in filters"
       :key="filter.name"
