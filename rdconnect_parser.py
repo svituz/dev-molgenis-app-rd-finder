@@ -48,6 +48,8 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
                         elif "name" in k:
                             content = re.sub('[^A-Za-z0-9_@.*#+% ]+-()', '',entry[k])
                             # print("name:", content)
+                        elif "gene" in k:
+                            content = str(entry[k])
                         else:
                             content = re.sub('[^A-Za-z0-9_@.*#+% ]+', '',entry[k])
 
