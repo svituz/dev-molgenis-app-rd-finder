@@ -1,19 +1,28 @@
 <template>
-  <div class="col-md-4">
+  <div class="col-md-5">
     <div class="card info">
       <div class="card-body">
         <div class="card-text">
           <template class="contact-info-box" v-if="info.biobank">
-            <div v-if="getCountryUrl(info.biobank.country_code)">
+            <div class="row" >
+            <div v-if="getCountryUrl(info.biobank.country)">
               <!-- <p> {{ getCountryUrl(info.biobank.country_code) }} </p> -->
+              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
               <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
+              <a :href="link" target="_blank" rel="noopener noreferrer" >
+                <span style="position: absolute; margin-left:5%;"> {{link}} </span>
+              </a>
             </div>
-            <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
+            </div>
+            <!-- <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
               <a :href="link" target="_blank" rel="noopener noreferrer">
                 <span> {{link}} </span>
               </a>
+            </div> -->
             </div>
-            <b>Host Institution</b>
+
+            <div style="position: absolute; margin-top:7%;">
+            <b style="margin-left: -1.0rem;" >Host Institution</b>
             <ul class="right-content-list">
               <li>
                 <div>
@@ -61,6 +70,7 @@
             </div>
           </template> -->
             </ul>
+          </div>
           </template>
         </div>
       </div>
@@ -111,7 +121,9 @@ export default {
 
 .right-content-list {
   list-style-type: none;
-  margin-left: -2.5rem;
+  font-size: 15px;
+  /* font-weight: bold; */
+  margin-left: -3.5rem;
 }
 .right-content-list:not(:last-child) {
   margin-bottom: 1.5rem;
