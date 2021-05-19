@@ -113,13 +113,13 @@ export default {
   methods: {
     ...mapActions(['GetBiobanks']),
     addNumberDonors (biobank) {
-      // console.log(biobank.collections)
-      // var sum = 0
+      var sum = 0
       for (const key in biobank.collections) {
         if (!biobank.collections[key].parent_collection) {
-          return biobank.collections[key].number_of_donors
+          sum += biobank.collections[key].number_of_donors
         }
       }
+      return sum
       // var sumtotal = biobank.collections.reduce(function (prev, cur) {
       //   return (prev + cur.number_of_donors)
       // }, 0)

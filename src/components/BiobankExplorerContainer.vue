@@ -166,6 +166,17 @@
         </div>
       </template>
     </b-modal>
+    <div class="row-footer">
+      <p class="footer-p">
+        Linking up rare disease resarch across the world
+      </p>
+      <p class="footer-p footer-link">
+        <a href="www.rd-connect.eu">RD-Connect</a>
+      </p>
+      <p class="footer-p footer-link">
+        <a href="http://catalogue.rd-connect.eu/web/guest/data-protection-statement"> Data Protection statement</a>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -375,10 +386,19 @@ export default {
   font-size: 150%;
   height: 60px;
   background-color: #f4f4e1;
-  width: 1140px;
+  width: 1160px;
   position: relative;
   left: 15px;
   margin-top: -40px
+}
+.row-footer {
+  background-color: #f4f4e1;
+  position: relative;
+  width: 1160px;
+  height: 125px;
+  padding-top: 15px;
+  text-align: center;
+  z-index: 99;
 }
 .image {
   position: relative;
@@ -388,8 +408,16 @@ export default {
   padding-top: 10px;
   background-color: white;
   width: 1160px;
+  min-height: 800px;
+  z-index: 900;
 }
 .biobank-explorer-container {
   margin-top: -20px;
+}
+.footer-p {
+  margin-bottom: 0rem;
+}
+.footer-link {
+  font-size: 120%;
 }
 </style>

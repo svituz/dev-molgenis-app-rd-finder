@@ -23,6 +23,11 @@ def add_code_to_types(eric_data, code, code_id, name):
     """
 
     index = eric_data['eu_bbmri_eric_disease_types'].index.max()+1
+    name=str(name)
+    if len(name) > 255 and len(name.split(";")) > 0:
+        name = name.split(";")[0]
+    else:
+        name = name[:250]
 
     if "urn" in code_id:
         ontology = "ICD-10"
@@ -242,7 +247,7 @@ def add_collections_info(eric_data, rd_data, sub_collections=True):
         codes = []
         for enum,name in enumerate(rows['name'].values):
             ids.append(str(biobank_id) + ':collection:' +str(name))
-            eric_data['eu_bbmri_eric_collections'].at[count,'id'] = str(biobank_id) + ':collection{0}:'.format(collection_class) + str(enum+1) + ":" + str(name)
+            eric_data['eu_bbmri_eric_collections'].at[count,'id'] = str(biobank_id) + ':collection{0}:'.format(collection_class) + str(enum+1)
             #split_id = str(str(biobank_id) + ':collection:' +str(r)).str.split(pat=":")
             eric_data['eu_bbmri_eric_collections'].at[count,'country']  = biobank_id.split(':')[2]
             eric_data['eu_bbmri_eric_collections'].at[count,'biobank']  = str(biobank_id)

@@ -1,9 +1,9 @@
 <template>
   <!-- <div class="container mg-collection-report-card"> -->
-    <div class="container-fluid">
+    <div class="container-flex">
       <loading :active="isLoading" loader="dots" :is-full-page="true" color="#598c68" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
-      <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
+      <!-- <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button> -->
 
       <div class="row" v-if="this.collection && !this.isLoading">
         <div class="col">
@@ -16,29 +16,27 @@
                   <b-card
                     id="organisation-card"
                     class="rounded-xl shadow bb-card"
-                    style="max-width: 50rem;"
+                    style="width: 545px; height: 325px; margin-top:-30px"
                   >
                   <b-card-text>
                     <div class="row" style="height: 40px;">
-                      <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
+                      <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{getCollectionID}}</div>
                       <div class="col-sm-6" style="text-align:right"> <b>Last Activity: </b>{{getActivity}}</div>
                     </div>
                     <div class="row card-head">
-                      <div id="image-header" class="row card-head" style="text-align:left;margin:0.5rem;" >
+                      <div id="image-header" class="row card-head" style="text-align:left;margin:12px 6px 8px 8px;height:95px;" >
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
-                        <div class="col-sm-2" style="width:50%;min-width:10rem;margin: 0 15px;">
-                        <img style="max-width:10rem;" :src="this.collection.biobank.logo_link">
+                        <div class="col-sm-4" style="margin: 0 0;">
+                        <img style="max-width:265px; max-height: 115px" :src="this.collection.biobank.logo_link">
                         </div>
-                        <div class="col-sm-2" style="margin: 1 1rem;min-width:25rem;">
+                        <!-- <div class="col-sm-2"></div> -->
+                        <div class="col-sm-6" style="margin: 25px 0 auto 100px; max-width:230px">
                             <b class="header top"> {{collection.name}} </b>
                         </div>
                       </div>
                     </div>
                     <div class="truncated-description" style="margin-top:2rem;" v-if="this.truncated && this.collection.biobank.description">
-                      {{getDescriptionTrunc}} ... <a href="#" v-bind:class="setTrunc" @click="setTrunc"> ShowMore </a>
-                    </div>
-                    <div style="margin-top:2rem;" v-else-if="this.collection.biobank.description">
-                      {{getDescription}} <a href="#" v-bind:class="setTrunc" @click="setTrunc"> ShowLess </a>
+                      {{getDescriptionTrunc}} ...
                     </div>
                     <div style="margin-top:2rem;" v-else>
                     </div>
@@ -46,7 +44,7 @@
                   </b-card>
                   </div>
                 </div>
-                <collection-selector class="mb-2" style="margin-top:1rem;" v-if="isTopLevelCollection" :collection="collection" />
+                <collection-selector class="mb-2" style="margin-top:1rem;margin-left:20px;" v-if="isTopLevelCollection" :collection="collection" />
                 </div>
                 <!-- Recursive set of subcollections -->
           <!-- Right side card -->
@@ -54,7 +52,7 @@
             <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
         <div class="row">
-          <div class="col-md7 info-box" style="width: 60%">
+          <div class="col-md-7 info-box">
                 <div>
                   <h4 class="header" ><b>General Information</b></h4>
                   <hr>
@@ -70,8 +68,6 @@
                   {
                     key: 'info_type',
                     tdClass: 'info-field-cl',
-                    // colspan: '0.5',
-                    // rowspan: '0.5'
                   },
                   {
                     key: 'info_field'
@@ -105,6 +101,13 @@
               </p>
             </div>
           </div>
+        <div class="row">
+          <div class="col-md-7">
+          <p>
+            {{ this.collection.biobank.description }}
+          </p>
+          </div>
+        </div>
         <div style="text-align:left" class="mt-2">
                   <h2 style="text-align:center" class="header"><strong>Disease Matrix</strong></h2>
                   <b-table
@@ -295,12 +298,16 @@ export default {
     },
     getActivity () {
       if (this.collection.sub_collections.length) {
-        const date = moment(this.collection.sub_collections[0].timestamp).format('MM/DD/YYYY hh:mm')
+        const date = moment(this.collection.sub_collections[0].timestamp).format('MM/DD/YYYY')
         return date
       } else {
         const date = 'N/A'
         return date
       }
+    },
+    getCollectionID () {
+      const id = this.collection.biobank.id.split(':')[3]
+      return id
     },
     getDescription () {
       return this.collection.biobank.description
@@ -413,9 +420,9 @@ export default {
   font-size: 120%;
 }
 .bb-card {
-  position: relative;
   margin-top: -70px;
   border: none;
+  margin-left: 20px;
 }
 
 #general-info-table {
