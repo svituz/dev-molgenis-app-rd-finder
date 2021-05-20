@@ -6,12 +6,11 @@
           <template class="contact-info-box" v-if="info.biobank">
             <div class="row" >
             <div v-if="getCountryUrl(info.biobank.country)">
-              <!-- <p> {{ getCountryUrl(info.biobank.country_code) }} </p> -->
-              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
               <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
-              <a :href="link" target="_blank" rel="noopener noreferrer" >
-                <span style="position: absolute; margin-left:5%;"> {{link}} </span>
-              </a>
+              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
+                <a :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span> {{link}} </span>
+                </a>
             </div>
             </div>
             <!-- <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">

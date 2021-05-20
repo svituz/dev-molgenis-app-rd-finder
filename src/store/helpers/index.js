@@ -24,7 +24,7 @@ export const createRSQLQuery = (state) => transformToRSQL({
     createInQuery('network', state.filters.selections.collection_network || []),
     state.filters.selections.search ? [{
       operator: 'OR',
-      operands: ['id', 'acronym', 'biobank.name', 'biobank.id', 'biobank.acronym']
+      operands: ['biobank.name', 'biobank.id', 'biobank.acronym']
         .map(attr => ({ selector: attr, comparison: '=like=', arguments: state.filters.selections.search || '' }))
     }] : []
   ])

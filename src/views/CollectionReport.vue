@@ -25,23 +25,25 @@
                     </div>
                     <div class="row card-head">
 
-                      <div id="image-header" class="row" style="text-align:left;height:95px;display: inline-table;" >
+                      <div id="image-header" class="row" style="text-align:left;height:95px;display: inline-table;margin-left:10px;margin-right:10px" >
                         <!-- <report-title type="Collection" :name="collection.name"></report-title> -->
                         <a href="#">
                         <img style="max-width:250px; max-height: 85px;height: auto;margin-top:20px;margin-left:26px;margin-right:20px;float:left;" :src="this.collection.biobank.logo_link">
                         </a>
                         <!-- <div class="col-sm-2"></div> -->
-                        <div style="font-size: 18px;font-weight: bold;color: #8bbf39;width: 100%;height: 116px;display: table-cell;vertical-align: middle;padding-right:15px;">
+                        <div style="font-size: 18px;font-weight: bold;color: #8bbf39;width: 95%;height: 116px;display: table-cell;vertical-align: middle;padding-right:15px;">
                             {{collection.name}}
                         </div>
                       </div>
                     </div>
-                    <div class="truncated-description" style="margin-top:2rem;" v-if="this.truncated && this.collection.biobank.description">
-                      {{getDescriptionTrunc}} ...
+                    <div class="truncated-description" style="margin-top:2rem;" v-if="this.collection.biobank.description">
+                      <td v-html="formatString(getDescriptionTrunc)"></td>
                     </div>
                     <div style="margin-top:2rem;" v-else>
                     </div>
                   </b-card-text>
+                    <!-- <a class="head-button" href="#" v-bind:class="toggleOverview" @click="toggleOverview"> Overview </a> -->
+                    <!-- <a class="head-button" href="#" v-bind:class="toggleDiseaseMatrix" @click="toggleDiseaseMatrix"> Diseases </a> -->
                   </b-card>
                   </div>
                 </div>
@@ -52,10 +54,10 @@
           <!-- </div> -->
             <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
-        <div class="row">
+        <div class="row" v-if="this.show_gi">
           <div class="col-md-7 info-box">
                 <div>
-                  <h4 class="header" ><b>General Information</b></h4>
+                  <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
                   <b-table
                   class="info-table"
@@ -91,7 +93,7 @@
                 </div>
             </div>
             <div class="col-md-3 info-box">
-              <h4 class="header"><b>Personnel</b></h4>
+              <h4 class="header" style="margin-bottom:-10px"><b>Personnel</b></h4>
               <hr>
               <h5><b>Main Contact</b></h5>
               <p> </p>
@@ -102,15 +104,15 @@
               </p>
             </div>
           </div>
-        <div class="row">
-          <div class="col-md-7">
-          <p>
-            {{ this.collection.biobank.description }}
-          </p>
+        <div class="row" v-if="this.show_gi">
+          <div class="col-md-7 info-box">
+            <td v-html="formatString(getDescription)"></td>
           </div>
         </div>
-        <div style="text-align:left" class="mt-2">
-                  <h2 style="text-align:center" class="header"><strong>Disease Matrix</strong></h2>
+        <div class="row" v-if="this.show_disease">
+        <div style="text-align:left" class="mt-2 info-box">
+                  <h2 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h2>
+                  <hr>
                   <b-table
                   id="disease-table"
                   class="disease_table"
@@ -151,7 +153,7 @@
                   ]">
                   </b-table>
                 </div>
-                <div v-if="this.collection.biobank.ressource_types.label === 'Biobank'">
+                <div v-if="this.collection.biobank.ressource_types.label === 'Biobank' & this.show_disease">
                   <h2 style="text-align:left" class="header"><strong>ICD 10 Categories</strong></h2>
                   <hr>
                   <b-table
@@ -165,6 +167,7 @@
                     <b>{{ fields.item.field }}</b>
                   </template>
                   </b-table>
+                </div>
                 </div>
             </div>
       </div>
@@ -194,13 +197,27 @@ export default {
   },
   data () {
     return {
-      truncated: true
+      truncated: true,
+      show_disease: true,
+      show_gi: true
     }
   },
   methods: {
     ...mapActions(['GetCollectionReport']),
     back () {
       this.$router.go(-1)
+    },
+    toggleOverview () {
+      this.show_gi = true
+      this.show_disease = false
+      console.log(this.show_gi)
+      console.log(this.show_disease)
+    },
+    toggleDiseaseMatrix () {
+      this.show_disease = true
+      this.show_gi = false
+      console.log(this.show_gi)
+      console.log(this.show_disease)
     },
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
@@ -225,6 +242,12 @@ export default {
       } else {
         this.truncated = true
       }
+    },
+    formatString (stringDisp) {
+      if (String(stringDisp).includes('undefined')) {
+        return ''
+      }
+      return String(stringDisp).replace(/\]|\[|"/g, '')
     }
   },
 
@@ -315,14 +338,21 @@ export default {
     },
     getDescriptionTrunc () {
       const truncate = 200
-      const truncated = this.collection.biobank.description.substring(0, truncate)
-      return truncated
+      var temporalDivElement = document.createElement('div')
+      temporalDivElement.innerHTML = this.collection.biobank.description
+      var truncated = temporalDivElement.innerText.substring(0, truncate)
+      // const truncated = this.collection.biobank.description.substring(0, truncate)
+      console.log(temporalDivElement)
+      if (truncated.length > 6) {
+        return truncated + '...'
+      }
+      return ''
     },
     getItemList () {
       const items = []
       for (const key in this.collection.sub_collections) {
         items.push({
-          Disease_Name: this.collection.sub_collections[key].name,
+          Disease_Name: this.collection.sub_collections[key].name === 'nan' ? '' : this.collection.sub_collections[key].name,
           Number_of_patients_Donors: this.collection.sub_collections[key].number_of_donors,
           Gene: this.collection.sub_collections[key].gene,
           ICD_10: this.getCode(this.collection.sub_collections[key], 'ICD'),
@@ -333,51 +363,48 @@ export default {
       }
       return items
     },
+    checkFunding () {
+      if (this.collection.biobank.source_of_funding !== undefined) {
+        return this.collection.biobank.source_of_funding.includes('Other') ? this.collection.biobank.text5085 : this.collection.biobank.source_of_funding
+      }
+      return ''
+    },
     getInfoItems () {
       const allItems = [
-        { info_type: 'Acronym:', info_field: this.collection.biobank.acronym },
-        { info_type: 'Type of host institution:', info_field: this.collection.biobank.host_is },
-        { info_type: 'Source of funding:', info_field: this.collection.biobank.text5085 ? this.collection.biobank.text5085 : this.collection.biobank.source_of_funding },
-        { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
-        { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
-        { info_type: 'Ontologies:', info_field: this.collection.biobank.ontologies_used },
-        { info_type: 'Additional Ontologies:', info_field: this.collection.biobank.additional_ontologies },
-        { info_type: 'Biomaterial available:', info_field: this.collection.biobank.biomaterial_available },
-        { info_type: 'Additional Biomaterial available:', info_field: this.collection.biobank.additional_biomaterial_available },
-        { info_type: 'Imaging available:', info_field: this.collection.biobank.imaging_available },
-        { info_type: 'Additional Imaging available:', info_field: this.collection.biobank.additional_imaging_available },
-        { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.collection.biobank.also_listed },
-        { info_type: 'Additional_networks_inventories:', info_field: this.collection.biobank.additional_networks_inventories }
+        { info_type: 'Acronym:', info_field: this.formatString(this.collection.biobank.acronym) },
+        { info_type: 'Type of host institution:', info_field: this.formatString(this.collection.biobank.host_is) },
+        { info_type: 'Source of funding:', info_field: this.formatString(this.checkFunding) },
+        { info_type: 'Target population:', info_field: this.formatString(this.collection.biobank.target_population) },
+        { info_type: 'Year of establishment:', info_field: this.formatString(this.collection.biobank.year_of_establishment) },
+        { info_type: 'Ontologies:', info_field: this.formatString(this.collection.biobank.ontologies_used) },
+        { info_type: 'Biomaterial available:', info_field: this.formatString(this.collection.biobank.biomaterial_available) },
+        { info_type: 'Additional Biomaterial available:', info_field: this.formatString(this.collection.biobank.additional_biomaterial_available) },
+        { info_type: 'Imaging available:', info_field: this.formatString(this.collection.biobank.imaging_available) },
+        { info_type: 'Additional Imaging available:', info_field: this.formatString(this.collection.biobank.additional_imaging_available) },
+        { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.formatString(this.collection.biobank.also_listed) },
+        { info_type: 'Additional_networks_inventories:', info_field: this.formatString(this.collection.biobank.additional_networks_inventories) }
       ]
 
       if (this.collection.biobank.fields_display === undefined) {
         const minimal = [
-          { info_type: 'Type of host institution:', info_field: this.collection.biobank.host_is },
-          { info_type: 'Source of funding:', info_field: this.collection.biobank.source_of_funding },
-          { info_type: 'Target population:', info_field: this.collection.biobank.target_population },
-          { info_type: 'Year of establishment:', info_field: this.collection.biobank.year_of_establishment },
-          { info_type: 'Ontologies used:', info_field: this.collection.biobank.ontologies_used },
-          { info_type: 'Imaging available:', info_field: this.collection.biobank.imaging_available },
-          { info_type: 'Also listed in:', info_field: this.collection.biobank.additional_networks_inventories }
+          { info_type: 'Type of host institution:', info_field: this.formatString(this.collection.biobank.host_is) },
+          { info_type: 'Source of funding:', info_field: this.formatString(this.checkFunding) },
+          { info_type: 'Target population:', info_field: this.formatString(this.collection.biobank.target_population) },
+          { info_type: 'Year of establishment:', info_field: this.formatString(this.collection.biobank.year_of_establishment) },
+          { info_type: 'Ontologies used:', info_field: this.formatString(this.collection.biobank.ontologies_used) },
+          { info_type: 'Imaging available:', info_field: this.formatString(this.collection.biobank.imaging_available) },
+          { info_type: 'Also listed in:', info_field: this.formatString(this.collection.biobank.also_listed) }
         ]
         return minimal
       }
+
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
-      console.log(fields)
+      console.log(this.collection.biobank.fields_display)
       const reducedItems = []
       for (const field in fields) {
-        const displayItem = String(fields[field]).slice(4).replaceAll('_', ' ').toUpperCase()
-        if (displayItem === 'NYM') {
+        const displayItem = String(fields[field]).slice(5).replaceAll('_', ' ').toUpperCase()
+        if (displayItem === 'YM') {
           reducedItems.push(allItems[0])
-        }
-        if (field === String(2)) {
-          if (this.collection.biobank.fields_display.includes('Text5085')) {
-            reducedItems.push(allItems[2])
-          } else {
-            if (this.collection.biobank.fields_display.includes('Source of funding')) {
-              reducedItems.push(allItems[2])
-            }
-          }
         }
         for (const item in allItems) {
           const checkItem = allItems[item].info_type.split(':')[0].toUpperCase()
@@ -450,7 +477,7 @@ export default {
 }
 
 .disease-table {
-  max-width: 80%;
+  max-width: 100%;
 }
 
 .truncated-description {
@@ -469,6 +496,10 @@ table.b-table[aria-busy='true'] {
 .info-box {
   margin-left: 1rem;
   margin-right: 1rem;
+}
+
+.head-button {
+  margin-right: 100px;
 }
 
 hr {

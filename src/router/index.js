@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import BiobankExplorerContainer from '../components/BiobankExplorerContainer'
 import BiobankReportCard from '../components/cards/BiobankReportCard'
 import CollectionReport from '../views/CollectionReport'
+import DataProtectionStatement from '../views/dataStatement.vue'
 import NetworkReportCard from '../components/cards/NetworkReportCard'
 import { INITIAL_STATE } from '../store/state'
 
@@ -37,6 +38,11 @@ export default new VueRouter({
     {
       path: '/',
       component: BiobankExplorerContainer
+    },
+    {
+      path: '/dataprotectionstatement',
+      name: DataProtectionStatement,
+      component: DataProtectionStatement
     }
   ]
 })

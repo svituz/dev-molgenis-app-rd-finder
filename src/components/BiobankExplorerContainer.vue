@@ -8,7 +8,7 @@
           </div>
           <div class="background-hack-r">
           </div>
-    </div>
+          </div>
     <div class="row explorer shadow">
     <div class="col-md-3">
         <collection-select-all
@@ -168,13 +168,13 @@
     </b-modal>
     <div class="row-footer">
       <p class="footer-p">
-        Linking up rare disease resarch across the world
+      Linking up rare disease resarch across the world
       </p>
       <p class="footer-p footer-link">
-        <a href="www.rd-connect.eu">RD-Connect</a>
+        <a :href="getUrl">RD-Connect</a>
       </p>
       <p class="footer-p footer-link">
-        <a href="http://catalogue.rd-connect.eu/web/guest/data-protection-statement"> Data Protection statement</a>
+        <router-link :to="'/dataprotectionstatement'">Data Protection statement </router-link>
       </p>
     </div>
   </div>
@@ -188,6 +188,7 @@ import ResultHeader from './ResultHeader'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import { createBookmark } from '../utils/bookmarkMapper'
 import CollectionSelectAll from '@/components/buttons/CollectionSelectAll.vue'
+// import { INITIAL_STATE } from '../store/state'
 
 export default {
   name: 'biobank-explorer-container',
@@ -245,6 +246,9 @@ export default {
     },
     hasSelection () {
       return this.selectedCollections.length > 0
+    },
+    getUrl () {
+      return 'http://molgenis-rd-connect.silicolab.bibbox.org/menu/main/home'
     }
   },
   watch: {
