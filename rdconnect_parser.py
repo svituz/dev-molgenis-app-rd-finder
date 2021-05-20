@@ -71,7 +71,7 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
                 if "contact" in key:
                     df.at[len(df[k].dropna()), "main"] = main
                     
-                content = re.sub('[^A-Za-z0-9_@. ]+', '',list_like[k])
+                content = re.sub('[^A-Za-z0-9_@. ]+/äöü', '',list_like[k])
 
                 if "others" in k:
                     content = re.sub('[^A-Za-z0-9_@. ]+-()', '',list_like[k])
