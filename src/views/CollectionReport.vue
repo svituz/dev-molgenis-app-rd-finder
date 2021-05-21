@@ -111,7 +111,7 @@
         </div>
         <div class="row" v-if="this.show_disease">
         <div style="text-align:left" class="mt-2 info-box">
-                  <h2 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h2>
+                  <h4 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h4>
                   <hr>
                   <b-table
                   id="disease-table"
@@ -153,8 +153,9 @@
                   ]">
                   </b-table>
                 </div>
-                <div v-if="this.collection.biobank.ressource_types.label === 'Biobank' & this.show_disease">
-                  <h2 style="text-align:left" class="header"><strong>ICD 10 Categories</strong></h2>
+                <div class="row" v-if="this.collection.biobank.ressource_types.label === 'Biobank' & this.show_disease">
+                <div style="text-align:left; margin-left: 31px;" class="mt-2 info-box">
+                  <h4 style="text-align:left" class="header"><strong>ICD 10 Categories</strong></h4>
                   <hr>
                   <b-table
                   class="info-table"
@@ -167,6 +168,7 @@
                     <b>{{ fields.item.field }}</b>
                   </template>
                   </b-table>
+                </div>
                 </div>
                 </div>
             </div>
@@ -381,12 +383,19 @@ export default {
       }
       return ''
     },
+    checkHost () {
+      console.log(this.collection.biobank)
+      if (this.collection.biobank.host_is !== undefined) {
+        return this.collection.biobank.host_is.includes('Other') ? this.collection.biobank.type_of_host : this.collection.biobank.host_is
+      }
+      return ''
+    },
     getInfoItems () {
       const allItems = [
         { info_type: 'Acronym:', info_field: this.formatString(this.collection.biobank.acronym) },
-        { info_type: 'Type of host institution:', info_field: this.formatString(this.collection.biobank.host_is) },
+        { info_type: 'Type of host institution:', info_field: this.formatString(this.checkHost) },
         { info_type: 'Source of funding:', info_field: this.formatString(this.checkFunding) },
-        { info_type: 'Target population:', info_field: this.formatString(this.collection.biobank.target_population) },
+        { info_type: 'Target population of the registry:', info_field: this.formatString(this.collection.biobank.target_population) },
         { info_type: 'Year of establishment:', info_field: this.formatString(this.collection.biobank.year_of_establishment) },
         { info_type: 'Ontologies:', info_field: this.formatString(this.collection.biobank.ontologies_used) },
         { info_type: 'Biomaterial available:', info_field: this.formatString(this.collection.biobank.biomaterial_available) },
@@ -394,7 +403,7 @@ export default {
         { info_type: 'Imaging available:', info_field: this.formatString(this.collection.biobank.imaging_available) },
         { info_type: 'Additional Imaging available:', info_field: this.formatString(this.collection.biobank.additional_imaging_available) },
         { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.formatString(this.collection.biobank.also_listed) },
-        { info_type: 'Additional_networks_inventories:', info_field: this.formatString(this.collection.biobank.additional_networks_inventories) }
+        { info_type: 'Additional networks inventories:', info_field: this.formatString(this.collection.biobank.additional_networks_inventories) }
       ]
 
       if (this.collection.biobank.fields_display === undefined) {
@@ -410,8 +419,8 @@ export default {
         return minimal
       }
 
+      var toPush
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
-      console.log(this.collection.biobank.fields_display)
       const reducedItems = []
       for (const field in fields) {
         const displayItem = String(fields[field]).slice(5).replaceAll('_', ' ').toUpperCase()
@@ -421,7 +430,21 @@ export default {
         for (const item in allItems) {
           const checkItem = allItems[item].info_type.split(':')[0].toUpperCase()
           if (checkItem === displayItem) {
-            reducedItems.push(allItems[item])
+            if (checkItem.includes('REGISTRY BIOBANKS')) {
+              toPush = allItems[item]
+              toPush.info_type = 'Also listed in:'
+              reducedItems.push(toPush)
+            } else if (checkItem.includes('POPULATION OF THE REGISTRY')) {
+              toPush = allItems[item]
+              toPush.info_type = 'Target population:'
+              reducedItems.push(toPush)
+            } else if (checkItem.includes('ADDITIONAL NETWORKS INVENTORIES')) {
+              toPush = allItems[item]
+              toPush.info_type = 'Additional networks listed:'
+              reducedItems.push(toPush)
+            } else {
+              reducedItems.push(allItems[item])
+            }
           }
         }
       }
@@ -525,10 +548,10 @@ hr {
 }
 
 #disease-table {
-  width: 1000px;
+  width: 1080px;
 }
 #categories-table {
-  width: 1000px;
+  width: 1080px;
 }
 
 .container, .container-sm, .container-md {
