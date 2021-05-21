@@ -4,19 +4,21 @@
       <div class="card-body">
         <div class="card-text">
           <template  v-if="info.biobank">
-            <div class="row" height="80px">
+            <div class="row" height="100px">
               <div v-if="getCountryUrl(info.biobank.country)">
-                <div>
-                  <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
+                <div class="col-2">
+                  <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" style="margin-left: -18px"/>
                 </div>
               </div>
                 <!-- <a :href="link" target="_blank" rel="noopener noreferrer" >
                   <span style="position: aboslute;margin-top:0%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
                   <span style="position: aboslute;margin-top:4%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
                 </a> -->
+                <div class="col-9" style="float: right">
                 <a v-for="link in getUrls(info.biobank.website)" :key="`${link}`" :href="link" target="_blank" rel="noopener noreferrer" >
-                  <span style=" position: absolute; margin-top:0%;margin-left: 20px"> {{link}} </span>
+                  <span> {{link}} </span>
                 </a>
+                </div>
             </div>
 
 <!--             <div v-if="getCountryUrl(info.biobank.country)">
