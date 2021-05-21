@@ -7,12 +7,12 @@
 
       <div class="row" v-if="this.collection && !this.isLoading">
         <div class="col">
-          <div class="container p-0">
+          <div class="container p-0 coll-report">
             <div class="row">
-              <div class="col-md-7">
+              <div class="col-7">
                 <!-- <report-description :description="collection.description" :maxLength="500"></report-description> -->
                 <div class="row">
-                <div class="column-md-5">
+                <div class="column-5">
                   <b-card
                     id="organisation-card"
                     class="rounded-xl shadow bb-card"
@@ -55,7 +55,7 @@
             <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
         <div class="row" v-if="this.show_gi">
-          <div class="col-md-7 info-box">
+          <div class="col-7 info-box">
                 <div>
                   <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
@@ -92,7 +92,7 @@
                   </b-table>
                 </div>
             </div>
-            <div class="col-md-3 info-box">
+            <div class="col-3 info-box">
               <h4 class="header" style="margin-bottom:-10px"><b>Personnel</b></h4>
               <hr>
               <h5><b>Main Contact</b></h5>
@@ -105,7 +105,7 @@
             </div>
           </div>
         <div class="row" v-if="this.show_gi">
-          <div class="col-md-7 info-box">
+          <div class="col-7 info-box">
             <td v-html="formatString(getDescription)"></td>
           </div>
         </div>
@@ -172,6 +172,17 @@
             </div>
       </div>
     </div>
+      <div class="row-footer2" v-if="!this.isLoading">
+      <p class="footer-p">
+        Linking up rare disease resarch across the world
+      </p>
+      <p class="footer-p footer-link" >
+        <a :href="geturl">RD-Connect</a>
+      </p>
+      <p class="footer-p footer-link">
+        <router-link :to="'/dataprotectionstatement'">Data Protection statement </router-link>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -199,7 +210,8 @@ export default {
     return {
       truncated: true,
       show_disease: true,
-      show_gi: true
+      show_gi: true,
+      geturl: 'https://rd-connect.eu/'
     }
   },
   methods: {
@@ -510,6 +522,18 @@ hr {
   /* color:#fff; */
   /* background-color:#fff; */
   height:1px;
+}
+
+#disease-table {
+  width: 1000px;
+}
+#categories-table {
+  width: 1000px;
+}
+
+.container, .container-sm, .container-md {
+  min-width: 1100px;
+  max-width: 1100px;
 }
 
 </style>

@@ -248,7 +248,7 @@ export default {
       return this.selectedCollections.length > 0
     },
     getUrl () {
-      return 'http://molgenis-rd-connect.silicolab.bibbox.org/menu/main/home'
+      return 'https://rd-connect.eu/'
     }
   },
   watch: {
@@ -396,13 +396,18 @@ export default {
   margin-top: -40px
 }
 .row-footer {
-  background-color: #f4f4e1;
-  position: relative;
-  width: 1160px;
-  height: 125px;
-  padding-top: 15px;
-  text-align: center;
-  z-index: 99;
+    background-color: #F4F4E1;
+    position: relative;
+    min-width: 1900px;
+    height: 85px;
+    margin-top: 0px;
+    margin-left: 0;
+    text-align: center;
+    z-index: 109;
+    padding-left: -50px;
+    left: -350px;
+    border-top: 1px solid black;
+    background-color: #fafaf0;
 }
 .image {
   position: relative;
@@ -411,7 +416,8 @@ export default {
 .explorer {
   padding-top: 10px;
   background-color: white;
-  width: 1160px;
+  width:1140px;
+  min-width:1160px;
   min-height: 800px;
   z-index: 900;
 }
