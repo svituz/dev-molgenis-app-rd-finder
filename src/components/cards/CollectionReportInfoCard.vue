@@ -3,22 +3,36 @@
     <div class="card info">
       <div class="card-body">
         <div class="card-text">
-          <template class="contact-info-box" v-if="info.biobank">
-            <div class="row" >
-            <div v-if="getCountryUrl(info.biobank.country)">
-              <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
-              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
-                <a :href="link" target="_blank" rel="noopener noreferrer" >
-                  <span> {{link}} </span>
+          <template  v-if="info.biobank">
+            <div class="row" height="80px">
+              <div v-if="getCountryUrl(info.biobank.country)">
+                <div>
+                  <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
+                </div>
+              </div>
+                <!-- <a :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span style="position: aboslute;margin-top:0%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
+                  <span style="position: aboslute;margin-top:4%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
+                </a> -->
+                <a v-for="link in getUrls(info.biobank.website)" :key="`${link}`" :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span style=" position: absolute; margin-top:0%;margin-left: 20px"> {{link}} </span>
                 </a>
             </div>
-            </div>
+
+<!--             <div v-if="getCountryUrl(info.biobank.country)">
+              <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
+              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`"> -->
+<!--                 <a  v-for="link in getUrls(info.biobank.website)" :key="`${link}`" :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span style=" position: relative; margin-top:7%;margin-left: 20px"> {{link}} </span>
+                </a> -->
+            <!-- </div> -->
+            <!-- </div> -->
             <!-- <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
               <a :href="link" target="_blank" rel="noopener noreferrer">
                 <span> {{link}} </span>
               </a>
             </div> -->
-            </div>
+            <!-- </div> -->
 
             <div style="position: absolute; margin-top:7%;">
             <b style="margin-left: -1.0rem;" >Host Institution</b>
