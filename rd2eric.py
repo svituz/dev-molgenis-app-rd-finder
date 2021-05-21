@@ -367,6 +367,7 @@ def generate_bb_id(eric_data, bb_id):
 
     id_list = ["rd_connect:ID:{0}:{1}".format(eric_data["eu_bbmri_eric_biobanks"]["country"].iloc[i],k) for i, k in enumerate(bb_id)]
     id_frame = pd.DataFrame(id_list)
+    print(id_list[300:])
 
     return id_frame
 
@@ -467,7 +468,6 @@ def additional_organization_info(eric_data, rd_data):
         description = rd_data["rd_core"]["Description"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         rd_name = rd_data["rd_basic_info"]["name"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values[0]
-        print(rd_name)
         street_name_one = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
         street_name_two = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
         city = rd_data["rd_address"]["city"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
@@ -482,7 +482,6 @@ def additional_organization_info(eric_data, rd_data):
         
         if city:
             eric_data["eu_bbmri_eric_biobanks"]["city"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = city
-        print(street, zip_code, city)
 
 
         # add urls and remove spaces
@@ -575,8 +574,10 @@ def additional_organization_info(eric_data, rd_data):
                 logo_link = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/dev/logos/Registry.png"
 
 
+        print(biobank)
         if biobank in eric_data["eu_bbmri_eric_persons"]["biobanks"].values:
             person_id = eric_data["eu_bbmri_eric_persons"]["id"][eric_data["eu_bbmri_eric_persons"]["biobanks"] == biobank].values
+            print(person_id)
             eric_data["eu_bbmri_eric_biobanks"]["contact"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = person_id
 
         # if pd.isnull(description) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
