@@ -12,11 +12,12 @@
     <div class="row explorer shadow">
     <div class="col-md-3">
         <collection-select-all
+        style="padding-top: 12px;"
           v-if="!loading && foundCollectionIds.length"
           class="mt-1 ml-3"
           router-enabled
         />
-      <filter-container></filter-container>
+      <filter-container style="position: absolute; top: 75px;"></filter-container>
     </div>
     <div class="col-md-9">
       <div class="row mb-3">

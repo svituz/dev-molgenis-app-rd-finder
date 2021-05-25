@@ -36,7 +36,7 @@
             </div> -->
             <!-- </div> -->
 
-            <div style="position: absolute; margin-top:7%;">
+            <div style="position: absolute; margin-top:7%; width:280px;">
             <b style="margin-left: -1.0rem;" >Host Institution</b>
             <ul class="right-content-list">
               <li>

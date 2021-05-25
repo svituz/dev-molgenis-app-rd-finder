@@ -59,21 +59,24 @@
                 <div>
                   <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
-                  <b-table
+                  <div style="margin-left: 6px;">
+                  <td v-if="checkInfoLengths(getInfoItems)" v-html="getInfoItemsText(getInfoItems)"></td>
+                  </div>
+                  <b-table v-if="!checkInfoLengths(getInfoItems)"
                   class="info-table"
                   id="general-info-table"
-                  borderless
                   fixed
+                  borderless
                   caption-top
                   thead-class="d-none"
                   :items=getInfoItems
                   :fields="[
                   {
                     key: 'info_type',
-                    tdClass: 'info-field-cl',
                   },
                   {
-                    key: 'info_field'
+                    key: 'info_field',
+                    tdClass: 'info-field-cl',
                   }
                   ]">
                   <template #table-caption><b><h4 class="header_disease"><strong>{{collection.name}}</strong></h4></b></template>
@@ -105,7 +108,7 @@
             </div>
           </div>
         <div class="row" v-if="this.show_gi">
-          <div class="col-7 info-box">
+          <div class="col-7 info-box" style="margin-left: 21px; margin-top: 15px;">
             <td v-html="formatString(getDescription)"></td>
           </div>
         </div>
@@ -213,6 +216,7 @@ export default {
       truncated: true,
       show_disease: true,
       show_gi: true,
+      make_table: true,
       geturl: 'https://rd-connect.eu/'
     }
   },
@@ -224,14 +228,10 @@ export default {
     toggleOverview () {
       this.show_gi = true
       this.show_disease = false
-      console.log(this.show_gi)
-      console.log(this.show_disease)
     },
     toggleDiseaseMatrix () {
       this.show_disease = true
       this.show_gi = false
-      console.log(this.show_gi)
-      console.log(this.show_disease)
     },
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
@@ -262,6 +262,34 @@ export default {
         return ''
       }
       return String(stringDisp).replace(/\]|\[|"/g, '')
+    },
+    getInfoItemsText (infoItems) {
+      var text = ''
+      for (const item in infoItems) {
+        var line = infoItems[item].info_type + ' ' + '<b>' + infoItems[item].info_field + '</b> <br>'
+        text = text.concat(line)
+      }
+      return text
+    },
+    checkInfoLengths (infoItems) {
+      // for (const item in infoItems) {
+      //   if (infoItems[item].info_type.length > 26 || infoItems[item].info_field.length > 27) {
+      //     this.make_table = false
+      //     return true
+      //   }
+      // }
+      if (this.collection.biobank.ressource_types.label === 'Biobank') {
+        return true
+      }
+      return false
+    },
+    removeEmptyItems (reducedItems) {
+      for (const item in reducedItems) {
+        if (reducedItems[item].info_field.length === 0) {
+          reducedItems.splice(item, 1)
+        }
+      }
+      return reducedItems
     }
   },
 
@@ -356,9 +384,10 @@ export default {
       temporalDivElement.innerHTML = this.collection.biobank.description
       var truncated = temporalDivElement.innerText.substring(0, truncate)
       // const truncated = this.collection.biobank.description.substring(0, truncate)
-      console.log(temporalDivElement)
-      if (truncated.length > 6) {
+      if (truncated.length === truncate) {
         return truncated + '...'
+      } else if (truncated.length > 6) {
+        return truncated
       }
       return ''
     },
@@ -384,7 +413,6 @@ export default {
       return ''
     },
     checkHost () {
-      console.log(this.collection.biobank)
       if (this.collection.biobank.host_is !== undefined) {
         return this.collection.biobank.host_is.includes('Other') ? this.collection.biobank.type_of_host : this.collection.biobank.host_is
       }
@@ -394,7 +422,7 @@ export default {
       const allItems = [
         { info_type: 'Acronym:', info_field: this.formatString(this.collection.biobank.acronym) },
         { info_type: 'Type of host institution:', info_field: this.formatString(this.checkHost) },
-        { info_type: 'Source of funding:', info_field: this.formatString(this.checkFunding) },
+        { info_type: 'Source of funding:', info_field: this.formatString(this.collection.biobank.text5085 ? this.collection.biobank.text5085 : this.checkFunding) },
         { info_type: 'Target population of the registry:', info_field: this.formatString(this.collection.biobank.target_population) },
         { info_type: 'Year of establishment:', info_field: this.formatString(this.collection.biobank.year_of_establishment) },
         { info_type: 'Ontologies:', info_field: this.formatString(this.collection.biobank.ontologies_used) },
@@ -402,8 +430,8 @@ export default {
         { info_type: 'Additional Biomaterial available:', info_field: this.formatString(this.collection.biobank.additional_biomaterial_available) },
         { info_type: 'Imaging available:', info_field: this.formatString(this.collection.biobank.imaging_available) },
         { info_type: 'Additional Imaging available:', info_field: this.formatString(this.collection.biobank.additional_imaging_available) },
-        { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.formatString(this.collection.biobank.also_listed) },
-        { info_type: 'Additional networks inventories:', info_field: this.formatString(this.collection.biobank.additional_networks_inventories) }
+        { info_type: 'The registry biobanks is listed in other inventories networks:', info_field: this.formatString(this.collection.biobank.also_listed === '["not specified"]' ? this.collection.biobank.additional_networks_inventories : this.collection.biobank.also_listed) },
+        { info_type: 'Additional networks inventories:', info_field: this.formatString(this.collection.biobank.also_listed !== '["not specified"]' ? this.collection.biobank.additional_networks_inventories : '') }
       ]
 
       if (this.collection.biobank.fields_display === undefined) {
@@ -416,16 +444,21 @@ export default {
           { info_type: 'Imaging available:', info_field: this.formatString(this.collection.biobank.imaging_available) },
           { info_type: 'Also listed in:', info_field: this.formatString(this.collection.biobank.also_listed) }
         ]
-        return minimal
+        return this.removeEmptyItems(minimal)
       }
 
       var toPush
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
+      console.log(fields)
+      console.log(this.collection.biobank)
       const reducedItems = []
       for (const field in fields) {
-        const displayItem = String(fields[field]).slice(5).replaceAll('_', ' ').toUpperCase()
+        var displayItem = String(fields[field]).slice(5).replaceAll('_', ' ').toUpperCase()
         if (displayItem === 'YM') {
           reducedItems.push(allItems[0])
+        }
+        if (displayItem === 'TEXT5085' && !this.collection.biobank.fields_display.includes('Source_of_funding')) {
+          displayItem = 'SOURCE OF FUNDING'
         }
         for (const item in allItems) {
           const checkItem = allItems[item].info_type.split(':')[0].toUpperCase()
@@ -448,7 +481,7 @@ export default {
           }
         }
       }
-      return reducedItems
+      return this.removeEmptyItems(reducedItems)
     }
   },
   // needed because if we route back the component is not destroyed but its props are updated for other collection
@@ -500,15 +533,16 @@ export default {
 }
 
 #general-info-table {
-  font-size: 90%;
   border-collapse: separate;
   border-spacing: 0px;
   padding: 0px;
   padding-top: 0em;
-  max-width: 380px;
-  justify-content: right;
-  align-items: right;
+  max-width: 470px;
   margin-top: 0px;
+  margin-left: 6px;
+}
+.info-table thead {
+  width: 150px;
 }
 
 .disease-table {
@@ -557,6 +591,10 @@ hr {
 .container, .container-sm, .container-md {
   min-width: 1100px;
   max-width: 1100px;
+}
+
+.info-field-cl {
+  width: 40px;
 }
 
 </style>
