@@ -123,7 +123,9 @@ export default {
       if (street === 'nan - nan') {
         return 'not specified'
       }
-      return street.split('-')[0]
+      var streetReplaced = street.replaceAll('- nan', '')
+      streetReplaced = streetReplaced.replaceAll('nan -', '')
+      return streetReplaced
     }
   }
 }
