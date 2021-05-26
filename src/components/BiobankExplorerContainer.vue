@@ -11,13 +11,15 @@
           </div>
     <div class="row explorer shadow">
     <div class="col-md-3">
+    <div style="height: 80px;">
         <collection-select-all
         style="padding-top: 12px;"
           v-if="!loading && foundCollectionIds.length"
           class="mt-1 ml-3"
           router-enabled
         />
-      <filter-container style="position: absolute; top: 75px;"></filter-container>
+      </div>
+      <filter-container style="position: relative; top: 20px; margin-bottom: 25px;"></filter-container>
     </div>
     <div class="col-md-9">
       <div class="row mb-3">

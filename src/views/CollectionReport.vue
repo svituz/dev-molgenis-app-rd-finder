@@ -42,8 +42,14 @@
                     <div style="margin-top:2rem;" v-else>
                     </div>
                   </b-card-text>
-                    <a class="head-button" style="position: absolute; top: 290px; left: 25px;" href="#" v-bind:class="toggleOverview" @click="toggleOverview"> Overview </a>
-                    <a class="head-button" style="position: absolute; top: 290px; left: 195px;" href="#" v-bind:class="toggleDiseaseMatrix" @click="toggleDiseaseMatrix"> Diseases [{{this.collection.sub_collections.length}}] </a>
+                  <div class="card-button" style="position: absolute; top: 277px; left: 25px;padding-top:2px">
+                    <a class="head-button" href="#" v-bind:class="toggleOverview" @click="toggleOverview"> Overview </a>
+                    <p style="margin-bottom:-4px;"> [{{getInfoItems.length}}]</p>
+                  </div>
+                  <div class="card-button" style="position: absolute; top: 277px; left: 195px;padding-top:2px">
+                    <a class="head-button"  href="#" v-bind:class="toggleDiseaseMatrix" @click="toggleDiseaseMatrix"> Diseases </a>
+                    <p style="margin-bottom:-4px;">[{{this.collection.sub_collections.length}}]</p>
+                  </div>
                   </b-card>
                   </div>
                 </div>
@@ -60,7 +66,7 @@
                 <div>
                   <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
-                  <div style="padding-left: 6px;">
+                  <div style="margin-left: 6px;">
                   <td v-if="checkInfoLengths(getInfoItems)" v-html="getInfoItemsText(getInfoItems)"></td>
                   </div>
                   <b-table v-if="!checkInfoLengths(getInfoItems)"
@@ -122,6 +128,8 @@
                   id="disease-table"
                   class="disease_table"
                   bordered
+                  show-empty
+                  fixed
                   hover
                   small
                   striped
@@ -166,6 +174,7 @@
                   class="info-table"
                   id="categories-table"
                   borderless
+                  fixed
                   small
                   thead-class="d-none"
                   :items=showDiseaseAreas>
@@ -217,7 +226,7 @@ export default {
   data () {
     return {
       truncated: true,
-      show_disease: true,
+      show_disease: false,
       show_gi: true,
       make_table: true,
       geturl: 'https://rd-connect.eu/'
@@ -382,7 +391,7 @@ export default {
       return this.collection.biobank.description
     },
     getDescriptionTrunc () {
-      const truncate = 200
+      const truncate = 190
       var temporalDivElement = document.createElement('div')
       temporalDivElement.innerHTML = this.collection.biobank.description
       var truncated = temporalDivElement.innerText.substring(0, truncate)
@@ -599,6 +608,13 @@ hr {
 .container, .container-sm, .container-md {
   min-width: 1100px;
   max-width: 1100px;
+}
+
+.card-button {
+  background-color: #f4f4e1;
+  padding-left: 5px;
+  padding-bottom: 2px;
+  width: 160px;
 }
 
 .info-field-cl {
