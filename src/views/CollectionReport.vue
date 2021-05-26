@@ -54,9 +54,9 @@
           <!-- </div> -->
             <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
-        <div class="row" style="width:1100px;">
-        <div class="row" v-if="this.show_gi">
-          <div class="col-7 info-box">
+        <div class="row" style="width:940px;">
+        <div class="row" style="width:940px;" v-if="this.show_gi">
+          <div class="col-8 info-box">
                 <div>
                   <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
@@ -114,7 +114,7 @@
           </div>
         </div>
         <div class="row" v-if="this.show_disease">
-          <div style="text-align:left" class="col-11 info-box">
+          <div style="text-align:left" class="col-12 info-box">
                   <h4 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h4>
                   <hr>
                   <b-table
@@ -539,7 +539,7 @@ export default {
   border-spacing: 0px;
   padding: 0px;
   padding-top: 0em;
-  max-width: 470px;
+  width: 600px;
   margin-top: 0px;
   margin-left: 6px;
 }
@@ -578,13 +578,14 @@ hr {
   border-top:1px dotted #000;
   align-content: flex-start;
   margin-left: 0%;
+  width: 97%;
   /* color:#fff; */
   /* background-color:#fff; */
   height:1px;
 }
 
 #disease-table {
-  width: 1080px;
+  width: 940px;
 }
 #categories-table {
   width: 1080px;
