@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="container mg-collection-report-card"> -->
-    <div class="container-flex">
+    <div class="container-flex" style="width:940px">
       <loading :active="isLoading" loader="dots" :is-full-page="true" color="#598c68" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
       <!-- <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button> -->
@@ -36,7 +36,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="truncated-description" style="margin-top:2rem;" v-if="this.collection.biobank.description">
+                    <div class="truncated-description" style="margin-top:10px;" v-if="this.collection.biobank.description">
                       <td v-html="formatString(getDescriptionTrunc)"></td>
                     </div>
                     <div style="margin-top:2rem;" v-else>
@@ -60,13 +60,14 @@
                 <div>
                   <h4 class="header" style="margin-bottom:-10px"><b>General Information</b></h4>
                   <hr>
-                  <div style="margin-left: 6px;">
+                  <div style="padding-left: 6px;">
                   <td v-if="checkInfoLengths(getInfoItems)" v-html="getInfoItemsText(getInfoItems)"></td>
                   </div>
                   <b-table v-if="!checkInfoLengths(getInfoItems)"
                   class="info-table"
                   id="general-info-table"
                   fixed
+                  small
                   borderless
                   caption-top
                   thead-class="d-none"
@@ -116,7 +117,7 @@
         <div class="row" v-if="this.show_disease">
           <div style="text-align:left" class="col-12 info-box">
                   <h4 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h4>
-                  <hr>
+                  <hr class="long-hr">
                   <b-table
                   id="disease-table"
                   class="disease_table"
@@ -158,9 +159,9 @@
                   </b-table>
                 </div>
                 <div class="row" v-if="this.collection.biobank.ressource_types.label === 'Biobank' & this.show_disease">
-                <div style="text-align:left; margin-left: 31px;" class="mt-2 info-box">
-                  <h4 style="text-align:left" class="header"><strong>ICD 10 Categories</strong></h4>
-                  <hr>
+                <div style="text-align:left; margin-left: 31px;" class="col-12 info-box">
+                  <h4 style="text-align:left; margin-bottom:-10px" class="header"><strong>ICD 10 Categories</strong></h4>
+                  <hr class="long-hr">
                   <b-table
                   class="info-table"
                   id="categories-table"
@@ -562,6 +563,10 @@ export default {
 table.b-table[aria-busy='true'] {
   opacity: 0.6;
   color: #598c68;
+}
+
+.long-hr {
+  width: 940px;
 }
 
 .info-box {
