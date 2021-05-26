@@ -42,8 +42,8 @@
                     <div style="margin-top:2rem;" v-else>
                     </div>
                   </b-card-text>
-                    <!-- <a class="head-button" href="#" v-bind:class="toggleOverview" @click="toggleOverview"> Overview </a> -->
-                    <!-- <a class="head-button" href="#" v-bind:class="toggleDiseaseMatrix" @click="toggleDiseaseMatrix"> Diseases </a> -->
+                    <a class="head-button" style="position: absolute; top: 290px; left: 25px;" href="#" v-bind:class="toggleOverview" @click="toggleOverview"> Overview </a>
+                    <a class="head-button" style="position: absolute; top: 290px; left: 195px;" href="#" v-bind:class="toggleDiseaseMatrix" @click="toggleDiseaseMatrix"> Diseases [{{this.collection.sub_collections.length}}] </a>
                   </b-card>
                   </div>
                 </div>
@@ -54,6 +54,7 @@
           <!-- </div> -->
             <collection-report-info-card :info="info"></collection-report-info-card>
         </div>
+        <div class="row" style="width:1100px;">
         <div class="row" v-if="this.show_gi">
           <div class="col-7 info-box">
                 <div>
@@ -108,12 +109,12 @@
             </div>
           </div>
         <div class="row" v-if="this.show_gi">
-          <div class="col-7 info-box" style="margin-left: 21px; margin-top: 15px;">
+          <div class="col-7 info-box" style="margin-left: 21px; margin-top: 15px; margin-bottom:35px;">
             <td v-html="formatString(getDescription)"></td>
           </div>
         </div>
         <div class="row" v-if="this.show_disease">
-        <div style="text-align:left" class="mt-2 info-box">
+          <div style="text-align:left" class="col-11 info-box">
                   <h4 style="text-align:left; margin-bottom:-10px" class="header"><strong>Disease Matrix</strong></h4>
                   <hr>
                   <b-table
@@ -175,6 +176,7 @@
                 </div>
                 </div>
             </div>
+          </div>
       </div>
     </div>
       <div class="row-footer2" v-if="!this.isLoading">
