@@ -469,7 +469,7 @@ def additional_organization_info(eric_data, rd_data):
         acronym = rd_data["rd_core"]["acronym"][rd_data["rd_core"]["OrganizationID"] == rd_id].values
         rd_name = rd_data["rd_basic_info"]["name"][rd_data["rd_basic_info"]["OrganizationID"] == rd_id].values[0]
         street_name_one = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
-        street_name_two = rd_data["rd_address"]["street1"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
+        street_name_two = rd_data["rd_address"]["street2"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
         city = rd_data["rd_address"]["city"][rd_data["rd_address"]["OrganizationID"] == rd_id].values[0]
 
         if street_name_one or street_name_two:
