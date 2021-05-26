@@ -102,7 +102,7 @@
               <hr>
               <h5><b>Main Contact</b></h5>
               <p> </p>
-              <p>{{ this.collection.contact.first_name }} {{ this.collection.contact.last_name }}
+              <p>{{ this.collection.contact.first_name }} {{ this.collection.contact.last_name }} <br>
               <a :href="'mailto:' + this.collection.contact.email">
                       <span> {{this.collection.contact.email}}</span>
               </a>
@@ -570,8 +570,8 @@ table.b-table[aria-busy='true'] {
 }
 
 .info-box {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: 20px;
+  margin-right: 10px;
 }
 
 .head-button {
