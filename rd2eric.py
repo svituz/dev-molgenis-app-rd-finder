@@ -335,6 +335,7 @@ def get_country_code(eric_data, rd_data):
         data frame countaining country codes of all countries. if no country specified: "ZZ"
     """
     bb_country = rd_data["rd_address"]["country"]
+
     codes = list(eric_data["eu_bbmri_eric_countries"]["name"].values)
 
     code_frame = bb_country
@@ -697,6 +698,23 @@ def rename_packages(eric_data, package_name):
 
     return new_dict
 
+def add_correct_countries(eric_data, rd_data):
+
+    i = 2
+    for biobank in eric_data["eu_bbmri_eric_biobanks"]["id"]:
+        rd_id = int(biobank.split(":")[-1])
+        country = rd_data["rd_core"]["countryCode"][rd_data["rd_core"]["OrganizationID"] == rd_id].values[0]
+        if pd.isnull(country):
+            country = rd_data["rd_bb_core"]["countryCode"][rd_data["rd_bb_core"]["OrganizationID"] == rd_id].values[0]
+            if pd.isnull(country):
+                country = "Unknown"
+
+        country_code = eric_data["eu_bbmri_eric_countries"]["id"][eric_data["eu_bbmri_eric_countries"]["name"] == country].values[0]
+        i+=1
+        print(i, country_code)
+        eric_data["eu_bbmri_eric_biobanks"]["country"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = country_code
+    
+
 if __name__ == "__main__":
     sub_collections = True
 
@@ -720,5 +738,6 @@ if __name__ == "__main__":
     additional_organization_info(eric_data, rd_data)
 
     # change package name
+
     eric_data = rename_packages(eric_data, package_name)
     write_excel(eric_data, output_name)
