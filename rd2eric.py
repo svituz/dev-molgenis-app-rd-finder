@@ -368,7 +368,7 @@ def generate_bb_id(eric_data, bb_id):
 
     id_list = ["rd_connect:ID:{0}:{1}".format(eric_data["eu_bbmri_eric_biobanks"]["country"].iloc[i],k) for i, k in enumerate(bb_id)]
     id_frame = pd.DataFrame(id_list)
-    print(id_list[300:])
+    # print(id_list[300:])
 
     return id_frame
 
@@ -575,10 +575,10 @@ def additional_organization_info(eric_data, rd_data):
                 logo_link = "https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/dev/logos/Registry.png"
 
 
-        print(biobank)
+        # print(biobank)
         if biobank in eric_data["eu_bbmri_eric_persons"]["biobanks"].values:
             person_id = eric_data["eu_bbmri_eric_persons"]["id"][eric_data["eu_bbmri_eric_persons"]["biobanks"] == biobank].values
-            print(person_id)
+            # print(person_id)
             eric_data["eu_bbmri_eric_biobanks"]["contact"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = person_id
 
         # if pd.isnull(description) and biobank in rd_data["rd_bb_core"]["OrganizationID"].values:
@@ -711,33 +711,111 @@ def add_correct_countries(eric_data, rd_data):
 
         country_code = eric_data["eu_bbmri_eric_countries"]["id"][eric_data["eu_bbmri_eric_countries"]["name"] == country].values[0]
         i+=1
-        print(i, country_code)
+        # print(i, country_code)
         eric_data["eu_bbmri_eric_biobanks"]["country"].at[eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank] = country_code
     
+def build_starmodel(eric_data_star):
+    selected_entities = ['eu_bbmri_eric_facts','eu_bbmri_eric_biobanks','eu_bbmri_eric_collections','eu_bbmri_eric_ressource_types','eu_bbmri_eric_body_parts','eu_bbmri_eric_countries','eu_bbmri_eric_data_types', 'eu_bbmri_eric_disease_types','eu_bbmri_eric_material_types']
+    #selected_entities = ['ontology_terms','body_parts', 'data_types', 'biobanks', 'collections', 'country', 'disease_types', 'material_types', 'ressource_types']
+    # data types -> data_categories
+    star_eric_data = { your_key: eric_data_star[your_key] for your_key in selected_entities}
+
+    count = 0
+    for biobank in star_eric_data["eu_bbmri_eric_biobanks"]["id"]:
+        # print(biobank)
+        collectiondata_for_biobank= star_eric_data["eu_bbmri_eric_collections"][star_eric_data["eu_bbmri_eric_collections"]["biobank"] == biobank]
+        biobankdata_for_biobank= star_eric_data["eu_bbmri_eric_biobanks"][star_eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank]
+
+        for index, collectiondata_row in collectiondata_for_biobank.iterrows():
+            # print(biobankdata_for_biobank['country'].values[0])
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+
+            nr_materials = collectiondata_row['materials'].split(",")
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = nr_materials[0]
+            nr_data_categories = collectiondata_row['data_categories'].split(",")
+            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = nr_data_categories[0]
+
+            if len(nr_materials) > 1:
+                for material in nr_materials[1:]:
+                    count += 1
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = material
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = nr_data_categories[0]
+
+            if len(nr_data_categories) > 1:
+                for data_categories in nr_data_categories[1:]:
+                    count += 1
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = data_categories
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = nr_materials[0]
+
+            count += 1
+
+            # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = collectiondata_for_biobank['data_categories'].values[0]
+            # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = collectiondata_for_biobank['diagnosis_available'].values[0]
+            #body_part_examined
+
+
+        # nr_collections = star_eric_data["eu_bbmri_eric_collections"]["biobank"] == biobank
+        # nr_datatypes = nr_collections["data_types"]
+        # # nr_bodyparts = nr_collections["body_parts_examined"]
+        # nr_materials =nr_collections["materials"]   #material_types
+        # nr_biobanks = star_eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank
+        # nr_recource = nr_biobanks["ressource_types"]
+        # biobank_count = len(nr_collections) + len(nr_datatypes) #TODO
+    return star_eric_data  
+
 
 if __name__ == "__main__":
     sub_collections = True
 
     eric_name = "empty_eric_ext.xlsx"
+    eric_name_star = "empty_eric_ext_star.xlsx"
     rd_name = "rd_connect.xlsx"
     output_name = "rd_connect_catalogue.xlsx"
+    output_name_starmodel = "starmodel_rd_connect_catalogue.xlsx"
     package_name = "rd_connect"
 
-    if sub_collections:
-        output_name = "rd_connect_catalogue.xlsx"
-        package_name = "rd_connect"
+    # if sub_collections:
+    #     output_name = "rd_connect_catalogue.xlsx"
+    #     package_name = "rd_connect"
 
+    # rd_data : EMX file format with data from RD Connect json
     rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
+    # eric_data: empty eric (empty bbmri format sheets) , gets filled with RD data
     eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
+    eric_data_star = pd.read_excel(eric_name_star, sheet_name=None, engine="openpyxl")
 
 
-    add_organization_info(eric_data, rd_data)
-    add_persons(eric_data, rd_data)
-    add_collections_info(eric_data, rd_data, sub_collections)
 
-    additional_organization_info(eric_data, rd_data)
+    # add_organization_info(eric_data, rd_data)
+    # add_persons(eric_data, rd_data)
+    # add_collections_info(eric_data, rd_data, sub_collections)
+    # additional_organization_info(eric_data, rd_data)
+
+    add_organization_info(eric_data_star, rd_data)
+    add_persons(eric_data_star, rd_data)
+    add_collections_info(eric_data_star, rd_data, sub_collections)
+    additional_organization_info(eric_data_star, rd_data)
+
+    data_starmodel = build_starmodel(eric_data_star)
+
 
     # change package name
 
     eric_data = rename_packages(eric_data, package_name)
-    write_excel(eric_data, output_name)
+    #write_excel(eric_data, output_name)
+    write_excel(data_starmodel, output_name_starmodel)
+
