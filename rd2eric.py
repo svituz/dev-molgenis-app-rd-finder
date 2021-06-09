@@ -727,41 +727,67 @@ def build_starmodel(eric_data_star):
         biobankdata_for_biobank= star_eric_data["eu_bbmri_eric_biobanks"][star_eric_data["eu_bbmri_eric_biobanks"]["id"] == biobank]
 
         for index, collectiondata_row in collectiondata_for_biobank.iterrows():
+            if collectiondata_row['id'][-3:] == '_pa':
+                continue
             # print(biobankdata_for_biobank['country'].values[0])
             star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
-            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+            # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
             star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
             star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
-            star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+            # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
 
             nr_materials = collectiondata_row['materials'].split(",")
             star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = nr_materials[0]
             nr_data_categories = collectiondata_row['data_categories'].split(",")
             star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = nr_data_categories[0]
+            if not pd.isnull(collectiondata_row['diagnosis_available']):
+                #print(collectiondata_row['diagnosis_available'])
+                nr_disease_types = str(collectiondata_row['diagnosis_available']).split(",")
+                star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = nr_disease_types[0]
+            else:
+                nr_disease_types = ['']
 
             if len(nr_materials) > 1:
                 for material in nr_materials[1:]:
                     count += 1
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
-                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
-                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = material
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = nr_data_categories[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = nr_disease_types[0]
 
             if len(nr_data_categories) > 1:
                 for data_categories in nr_data_categories[1:]:
                     count += 1
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
-                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
-                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = data_categories
                     star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = nr_materials[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = nr_disease_types[0]
+                    
+            if len(nr_disease_types) > 1:
+                for disease_type in nr_disease_types[1:]:
+                    count += 1
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'PK'] = count
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_biobanks'] = biobankdata_for_biobank['id'].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_ressource_types'] = biobankdata_for_biobank["ressource_types"].values[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_countries'] = biobankdata_for_biobank['country'].values[0]
+                    # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_collections'] = collectiondata_row['id']
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = nr_data_categories[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_material_types'] = nr_materials[0]
+                    star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = disease_type
 
             count += 1
+
+    df = star_eric_data["eu_bbmri_eric_facts"].drop_duplicates(subset = ['eu_bbmri_eric_disease_types','eu_bbmri_eric_material_types','eu_bbmri_eric_data_types','eu_bbmri_eric_ressource_types','eu_bbmri_eric_countries'])    
+
+
 
             # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_data_types'] = collectiondata_for_biobank['data_categories'].values[0]
             # star_eric_data["eu_bbmri_eric_facts"].at[count,'eu_bbmri_eric_disease_types'] = collectiondata_for_biobank['diagnosis_available'].values[0]
