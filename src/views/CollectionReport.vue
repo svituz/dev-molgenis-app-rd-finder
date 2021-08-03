@@ -123,7 +123,7 @@ import ReportListRow from '@/components/report-components/ReportListRow'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
 import moment from 'moment'
 import CollectionSelector from '@/components/filters/CollectionSelector'
-import { mapCollectionsData, collectionReportInformation } from '@/utils/templateMapper'
+import { mapCollectionsDetailsTableContent, collectionReportInformation } from '@/utils/templateMapper'
 
 export default {
   name: 'CollectionReport',
@@ -149,16 +149,17 @@ export default {
   },
   computed: {
     ...mapState({ collection: 'collectionReport', isLoading: 'isLoading' }),
+    mainContent () {
+      return this.collection ? mapCollectionsDetailsTableContent(this.collection) : {}
+    },
+    isTopLevelCollection () {
+      return this.collection.parent_collection === undefined
+    },
     info () {
       return collectionReportInformation(this.collection)
     },
     get_items () {
       return [{ id: 1, last_activation: 2 }]
-    },
-    subCollections () {
-      return this.collection && this.collection.sub_collections && this.collection.sub_collections.length
-        ? mapCollectionsData(this.collection.sub_collections)
-        : []
     },
     collectionId () {
       const splittedUrl = this.$route.fullPath.split('/')
