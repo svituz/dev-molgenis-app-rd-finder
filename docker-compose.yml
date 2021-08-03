@@ -102,3 +102,4 @@ services:
           - ./data/home/molgenis:/home/molgenis
           - ./data/minio/data:/data
         command: chmod -R 777 /usr/share/elasticsearch/data
+        command: chmod -R 777 /home/molgenis
