@@ -123,7 +123,7 @@ import ReportListRow from '@/components/report-components/ReportListRow'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
 import moment from 'moment'
 import CollectionSelector from '@/components/filters/CollectionSelector'
-import { mapDetailsTableContent, mapCollectionsData, collectionReportInformation } from '@/utils/templateMapper'
+import { mapCollectionsData, collectionReportInformation } from '@/utils/templateMapper'
 
 export default {
   name: 'CollectionReport',
