@@ -10,6 +10,7 @@
       :label="filter.label"
       :headerClass="filter.headerClass"
       :collapsed="filter.initiallyCollapsed"
+      :optionsFilter='filter.name'
     >
       <component
         v-if="bookmarkMappedToState"
@@ -60,6 +61,9 @@ export default {
     filters () {
       return this.filterDefinitions.filter((facet) => {
         // config option showCountryFacet is used to toggle Country facet
+        console.log('ee')
+        console.log(facet.optionsFilter)
+        // facet.optionsFilter = ['Austria']
         return !(this.showCountryFacet === false && facet.name === 'country')
       }).filter((item) => item.component)
     }
