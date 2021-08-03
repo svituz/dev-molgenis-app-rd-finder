@@ -7,8 +7,8 @@
         align="center"
         :total-rows="foundBiobanks"
         v-model="currentPage"
-        :per-page="pageSize"
-      ></b-pagination>
+        :per-page="pageSize">
+      </b-pagination>
       <!-- <biobank-card
         v-for="biobank in biobanksShown"
         :key="biobank.id || biobank"
@@ -53,8 +53,7 @@
         align="center"
         :total-rows="foundBiobanks"
         v-model="currentPage"
-        :per-page="pageSize"
-      ></b-pagination>
+        :per-page="pageSize"></b-pagination>
     </div>
 
     <div v-else-if="!loading && foundBiobanks === 0" class="status-text">

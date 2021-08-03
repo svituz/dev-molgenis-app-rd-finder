@@ -8,16 +8,14 @@
       @change.prevent="handleCollectionStatus"
       :checked="checkboxState"
       :value="false"
-      hidden
-    />
+      hidden/>
     <label class="add-to-cart-label btn btn-outline-secondary" :for="checkboxIdentifier">
       <span v-if="!iconOnly" class="mr-2">Add to selection</span>
       <span class="fa fa-plus"></span>
     </label>
     <label
       class="btn btn-secondary remove-from-cart-label"
-      :for="checkboxIdentifier"
-    >
+      :for="checkboxIdentifier">
       <span v-if="!iconOnly" class="mr-2">Remove from selection</span>
       <span class="fa fa-minus"></span>
     </label>
@@ -39,7 +37,7 @@ export default {
       required: false,
       default: false
     },
-    routerEnabled: {
+    bookmark: {
       type: Boolean,
       required: false,
       default: false
@@ -59,11 +57,7 @@ export default {
     handleCollectionStatus (event) {
       const { checked } = event.target
 
-      const collectionData = { collections: this.collections }
-      // when it's required to be on the bookmark, we pass the router
-      if (this.routerEnabled) {
-        collectionData.router = this.$router
-      }
+      const collectionData = { collections: this.collections, bookmark: this.bookmark }
 
       if (checked) {
         this.AddCollectionsToSelection(collectionData)

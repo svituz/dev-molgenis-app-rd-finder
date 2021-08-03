@@ -8,6 +8,9 @@ import { mockState } from '../../mockData'
 const getInitialState = () => {
   return mockState()
 }
+
+const getFilterDefinitions = filterDefinitions(mockState())
+
 let state
 
 describe('store', () => {
@@ -136,10 +139,10 @@ describe('store', () => {
       })
 
       it('should create a query with only a disease type filter', () => {
-        state.filters.selections.diagnosis_available = ['urn:miriam:id:disease-1', 'urn:miriam:id:disease-2', 'urn:miriam:id:disease-3']
+        state.filters.selections.diagnosis_available = ['G71', 'ORPHA:10', 'ORPHA:100']
 
         const actual = helpers.createRSQLQuery(state)
-        const expected = 'diagnosis_available=in=(urn:miriam:id:disease-1,urn:miriam:id:disease-2,urn:miriam:id:disease-3)'
+        const expected = 'diagnosis_available.code=in=(G71,ORPHA:10,ORPHA:100)'
 
         expect(actual).toBe(expected)
       })
@@ -166,6 +169,95 @@ describe('store', () => {
 
         const actual = helpers.createRSQLQuery(state)
         const expected = 'country=in=(NL,BE);(name=q=\'test search\',id=q=\'test search\',acronym=q=\'test search\',biobank.name=q=\'test search\',biobank.id=q=\'test search\',biobank.acronym=q=\'test search\')'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a query with only a disease type filter', () => {
+        state.filters.selections.diagnosis_available = ['G71', 'ORPHA:10', 'ORPHA:100']
+
+        const actual = helpers.createRSQLQuery(state)
+        const expected = 'diagnosis_available.code=in=(G71,ORPHA:10,ORPHA:100)'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a query with disease type filter enabling satisfy all and a country, not supporting it', () => {
+        state.filters.selections.diagnosis_available = ['G71', 'ORPHA:10', 'ORPHA:100']
+        state.filters.satisfyAll = ['diagnosis_available']
+        state.filters.selections.country = ['NL', 'BE']
+
+        const actual = helpers.createRSQLQuery(state)
+        const expected = 'country=in=(NL,BE);diagnosis_available.code==G71;diagnosis_available.code==ORPHA:10;diagnosis_available.code==ORPHA:100'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a query with disease type and collection quality filters, both with the satisfyAll option enabled', () => {
+        state.filters.selections.diagnosis_available = ['G71', 'ORPHA:10', 'ORPHA:100']
+        state.filters.selections.collection_quality = ['collection1', 'collection2']
+        state.collectionIdsWithSelectedQuality = ['collection1', 'collection2']
+        state.filters.satisfyAll = ['diagnosis_available', 'collection_quality']
+
+        const actual = helpers.createRSQLQuery(state)
+        const expected = 'diagnosis_available.code==G71;diagnosis_available.code==ORPHA:10;diagnosis_available.code==ORPHA:100;id==collection1;id==collection2'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a query with materials and type, the first with the satisfyAll flag enabled and the second not', () => {
+        state.filters.selections.materials = ['cDNA', 'mRNA', 'Cells']
+        state.filters.satisfyAll = ['materials']
+        state.filters.selections.type = ['Cohort', 'Longitudinal']
+
+        const actual = helpers.createRSQLQuery(state)
+        const expected = 'materials==cDNA;materials==mRNA;materials==Cells;type=in=(Cohort,Longitudinal)'
+
+        expect(actual).toBe(expected)
+      })
+    })
+
+    describe('createBiobankRSQLQuery', () => {
+      afterEach(() => { state = getInitialState() })
+      it('should create a Biobank query with a covid19 filter and the satisfy all flag enabled', () => {
+        state.filters.selections.covid19 = ['covid_1', 'covid_2']
+        state.filters.satisfyAll = ['covid19']
+
+        const actual = helpers.createBiobankRSQLQuery(state)
+        const expected = 'covid19biobank==covid_1;covid19biobank==covid_2'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a Biobank query with a covid19 filter and a network filter, both with the satisfy all flag enabled', () => {
+        state.filters.selections.covid19 = ['covid_1', 'covid_2']
+        state.filters.selections.biobank_network = ['network_1', 'network_2']
+        state.filters.satisfyAll = ['covid19', 'biobank_network']
+
+        const actual = helpers.createBiobankRSQLQuery(state)
+        const expected = 'network==network_1;network==network_2;covid19biobank==covid_1;covid19biobank==covid_2'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a Biobank query with a covid19 filter and a network filter, the first with satisfyAll flag enabled, the second not', () => {
+        state.filters.selections.covid19 = ['covid_1', 'covid_2']
+        state.filters.selections.biobank_network = ['network_1', 'network_2']
+        state.filters.satisfyAll = ['covid19']
+
+        const actual = helpers.createBiobankRSQLQuery(state)
+        const expected = 'network=in=(network_1,network_2);covid19biobank==covid_1;covid19biobank==covid_2'
+
+        expect(actual).toBe(expected)
+      })
+
+      it('should create a Biobank query with a covid19 filter and country filter. For country, satisfyAll is not supported', () => {
+        state.filters.selections.covid19 = ['covid_1', 'covid_2']
+        state.filters.satisfyAll = ['covid19']
+        state.filters.selections.country = ['NL', 'BE']
+
+        const actual = helpers.createBiobankRSQLQuery(state)
+        const expected = 'country=in=(NL,BE);covid19biobank==covid_1;covid19biobank==covid_2'
 
         expect(actual).toBe(expected)
       })
@@ -201,7 +293,7 @@ describe('store', () => {
         const getters = {
           rsql: 'country=in=(NL,BE);name=q=\'free text search\'',
           biobankRsql: 'name=q=\'free text search\'',
-          filterDefinitions: filterDefinitions(state),
+          getFilterDefinitions,
           selectedCollections: [{ label: 'Collection A', value: 'collection1' }, { text: 'Collection B', value: 'collection4' }],
           activeFilters: () => state.filters.selections
         }
@@ -209,7 +301,7 @@ describe('store', () => {
         const actual = await helpers.createNegotiatorQueryBody(state, getters, 'http://test.com?id=1&nToken=2837538B50189SR237489X14098A2374')
         const expected = {
           URL: 'http://test.com?id=1',
-          humanReadable: 'Text search is free text search and Countries: Netherlands,Belgium and Material type(s): RNA and Collection quality mark(s): eric and Collection type(s): type and Data type(s): dataType and Disease type(s): small disease,medium disease,big disease and Covid-19 service(s): covid19 and with custom collection selection.',
+          humanReadable: 'Text search is free text search and Countries: Netherlands, Belgium and Material type(s): RNA and Collection quality mark(s): eric and Collection type(s): type and Data type(s): dataType and Disease type(s): small disease, medium disease, big disease and Covid-19 service(s): covid19 and with custom collection selection.',
           nToken: state.nToken,
           entityId: 'eu_bbmri_eric_collections',
           rsql: 'id=in=(collection1,collection4)'
@@ -226,7 +318,7 @@ describe('store', () => {
 
         const getters = {
           rsql: 'materials=in=(RNA)',
-          filterDefinitions: filterDefinitions(state),
+          getFilterDefinitions,
           activeFilters: () => state.filters.selections,
           selectedCollections: [{ label: 'Collection A', value: 'collection1' }, { text: 'Collection B', value: 'collection4' }]
         }
@@ -254,15 +346,15 @@ describe('store', () => {
         state.filters.selections.search = ['this is a free text search']
         state.filters.selections.materials = ['PLASMA', 'RNA']
         getters = {
-          filterDefinitions: filterDefinitions(state),
+          getFilterDefinitions,
           activeFilters: () => state.filters.selections,
           selectedCollections: [{ label: 'Collection A', value: 'collection1' }, { text: 'Collection B', value: 'collection4' }]
         }
       })
 
       it('should generate a human readable string based on the filters', async () => {
-        const actual = await helpers.getHumanReadableString(state, getters)
-        const expected = 'Text search is this is a free text search and Material type(s): PLASMA, RNA'
+        const actual = helpers.getHumanReadableString(state, getters)
+        const expected = 'Text search is this is a free text search and Material type(s): PLASMA,  RNA'
 
         expect(actual).toBe(expected)
       })

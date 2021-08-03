@@ -18,8 +18,7 @@
               class="collection-selection-button"
               :collectionData="collection"
               icon-only
-              router-enabled
-            ></collection-selector>
+              bookmark></collection-selector>
           </td>
           <td
             :class="{
@@ -29,13 +28,11 @@
               'table-text-content-columns': !hasSubCollections(collection),
             }"
             v-for="(column, index) in columns"
-            :key="index"
-          >
+            :key="index">
             <span v-if="column === 'name'">
               <router-link :to="'/collection/' + collection['id']">
                 <button
-                  class="btn btn-link collection-link text-left pt-0 border-0"
-                >
+                  class="btn btn-link collection-link text-left pt-0 border-0">
                   {{ collection[column] }}
                 </button>
               </router-link>
@@ -44,7 +41,7 @@
               <quality-column
                 :qualities="collection[column]"
                 :spacing="0"
-              ></quality-column>
+                :qualityInfo="qualityStandardsDictionary"></quality-column>
             </span>
             <span v-else-if="column === 'type'">
               {{ getCollectionType(collection) }}
@@ -72,8 +69,7 @@
             </b-link>
             <b-collapse :id="'collapse-' + collection.id">
               <sub-collections-table
-                :subCollections="collection.sub_collections"
-              ></sub-collections-table>
+                :subCollections="collection.sub_collections"></sub-collections-table>
             </b-collapse>
           </td>
         </tr>
@@ -87,7 +83,8 @@ import utils from '../../utils'
 import SubCollectionsTable from './SubCollectionsTable'
 import { mapGetters, mapMutations } from 'vuex'
 import QualityColumn from './QualityColumn'
-import CollectionSelector from '@/components/buttons/CollectionSelector'
+import CollectionSelector from '../buttons/CollectionSelector'
+import { mapState } from 'vuex'
 
 export default {
   name: 'CollectionsTable',
@@ -108,35 +105,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedCollections']),
-    selectedAllCollections: {
-      get () {
-        return this.parentCollections
-          .map(pc => pc.value)
-          .every(id => this.selectedCollections.map(sc => sc.value).includes(id))
-      },
-      set (newValue) {
-        if (newValue === true) {
-          this.AddCollectionToSelection({
-            collection: this.parentCollections,
-            router: this.$router
-          })
-        } else {
-          this.RemoveCollectionFromSelection({
-            collection: this.parentCollections,
-            router: this.$router
-          })
-        }
-      }
-    },
-    someCollectionsSelected () {
-      return (
-        this.parentCollections
-          .map(pc => pc.value)
-          .some(id => this.selectedCollections.map(sc => sc.value).includes(id)) &&
-        !this.selectedAllCollections
-      )
-    },
+    ...mapState(['qualityStandardsDictionary']),
     parentCollections () {
       return this.topLevelElements.map((tle) => ({
         label: tle.label || tle.name,

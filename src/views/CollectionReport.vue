@@ -3,7 +3,9 @@
     <div class="container-fluid">
       <loading :active="isLoading" loader="dots" :is-full-page="true" color="#598c68" background-color="var(--light)"></loading>
       <!-- Back to previous page buttons -->
-      <button class="btn btn-link pl-0" @click="back"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
+      <button class="btn btn-link pl-0" @click="back">
+        <i class="fa fa-angle-left" aria-hidden="true"></i> Back
+      </button>
 
       <div class="row" v-if="this.collection && !this.isLoading">
         <div class="col">
@@ -15,8 +17,7 @@
                 <div>
                   <b-card
                     class="rounded-xl"
-                    style="max-width: 50rem;"
-                  >
+                    style="max-width: 50rem;">
                   <b-card-text>
                     <div class="row" style="height: 40px;">
                       <div class="col-sm-6" style="text-align:left" position="relative" top="-5px"> <b>ID: </b> {{collection.biobank.id}}</div>
@@ -26,13 +27,11 @@
                       <div class="col-sm-2">
                       <h2>
                         <b-badge
-                          v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary"
-                          >
+                          v-if="collection.biobank.ressource_types.label == 'Registry'" variant="primary">
                         {{collection.biobank.ressource_types.label}}
                         </b-badge>
                         <b-badge
-                          v-if="collection.biobank.ressource_types.label == 'Biobank'" variant="success"
-                        >
+                          v-if="collection.biobank.ressource_types.label == 'Biobank'" variant="success">
                         {{collection.biobank.ressource_types.label}}
                         </b-badge>
                       </h2>
@@ -57,9 +56,7 @@
                   <tr v-if="collection.url">
                     <th scope="row" class="pr-1">Website:</th>
                     <td>
-                      <span
-                        ><a target="_blank" :href="collection.url">{{ collection.url }}</a></span
-                      >
+                      <span><a target="_blank" :href="collection.url">{{ collection.url }}</a></span>
                     </td>
                   </tr>
                   <report-list-row :data="mainContent.Size">Size:</report-list-row>
@@ -152,12 +149,6 @@ export default {
   },
   computed: {
     ...mapState({ collection: 'collectionReport', isLoading: 'isLoading' }),
-    mainContent () {
-      return this.collection ? mapDetailsTableContent(this.collection) : {}
-    },
-    isTopLevelCollection () {
-      return this.collection.parent_collection === undefined
-    },
     info () {
       return collectionReportInformation(this.collection)
     },

@@ -3,15 +3,13 @@
     <b-form-checkbox
       id="covidBiobankNetwork"
       v-model="biobankNetwork"
-      name="covidBiobankNetwork"
-    >
+      name="covidBiobankNetwork">
       Biobanks providing COVID-19 services
     </b-form-checkbox>
     <b-form-checkbox
       id="covidCollectionNetwork"
       v-model="collectionNetwork"
-      name="covidCollectionNetwork"
-    >
+      name="covidCollectionNetwork">
       COVID-19 collections
     </b-form-checkbox>
   </div>
@@ -26,7 +24,7 @@ const covid19NetworkId = 'bbmri-eric:networkID:EU_BBMRI-ERIC:networks:COVID19'
 export default {
   name: 'CovidNetworkFilter',
   methods: {
-    ...mapMutations(['SetCovidNetworkFilter', 'UnsetCovidNetworkFilter'])
+    ...mapMutations(['UpdateFilterSelection'])
   },
   computed: {
     ...mapState(['filters']),
@@ -38,12 +36,9 @@ export default {
         }
         return false
       },
-      set (value) {
-        if (value) {
-          this.SetCovidNetworkFilter({ name: 'biobank_network', value: { text: 'COVID_19', value: covid19NetworkId }, router: this.$router })
-        } else {
-          this.UnsetCovidNetworkFilter({ name: 'biobank_network', value: { text: 'COVID_19', value: covid19NetworkId }, router: this.$router })
-        }
+      set (checked) {
+        const value = checked ? covid19NetworkId : []
+        this.UpdateFilterSelection({ name: 'biobank_network', value: { text: 'COVID_19', value } })
       }
     },
     collectionNetwork: {
@@ -54,12 +49,9 @@ export default {
         }
         return false
       },
-      set (value) {
-        if (value) {
-          this.SetCovidNetworkFilter({ name: 'collection_network', value: { text: 'COVID_19', value: covid19NetworkId }, router: this.$router })
-        } else {
-          this.UnsetCovidNetworkFilter({ name: 'collection_network', value: { text: 'COVID_19', value: covid19NetworkId }, router: this.$router })
-        }
+      set (checked) {
+        const value = checked ? covid19NetworkId : []
+        this.UpdateFilterSelection({ name: 'collection_network', value: { text: 'COVID_19', value } })
       }
     }
   }

@@ -1,9 +1,10 @@
 import CollectionsTable from '@/components/tables/CollectionsTable'
-import { mount, shallowMount } from '@vue/test-utils'
-import Vue from 'vue'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import { mockState } from '../../mockData'
 
-Vue.use(Vuex)
+const localVue = createLocalVue()
+localVue.use(Vuex)
 
 describe('components', () => {
   describe('CollectionsTable', () => {
@@ -67,23 +68,12 @@ describe('components', () => {
 
     let wrapper, store
 
-    const AddCollectionToSelection = jest.fn()
-    const RemoveCollectionFromSelection = jest.fn()
-    const selectedCollections = jest.fn(() => [])
-
     beforeEach(() => {
       store = new Vuex.Store({
-        state: {},
-        getters: {
-          selectedCollections
-        },
-        mutations: {
-          RemoveCollectionFromSelection,
-          AddCollectionToSelection
-        }
+        state: mockState()
       })
 
-      wrapper = shallowMount(CollectionsTable, { store, propsData: { collections }, stubs: ['router-link'] })
+      wrapper = shallowMount(CollectionsTable, { store, localVue, propsData: { collections }, stubs: ['router-link'] })
     })
 
     describe('html', () => {

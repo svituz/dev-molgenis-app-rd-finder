@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      label 'node-erbium'
+      inheritFrom 'node-erbium'
     }
   }
   environment {
@@ -26,7 +26,7 @@ pipeline {
           }
         }
         container('node') {
-          sh "daemon --name=sauceconnect -- /usr/local/bin/sc -u ${SAUCE_CRED_USR} -k ${SAUCE_CRED_PSW} -i ${TUNNEL_IDENTIFIER}"
+          startSauceConnect()
         }
       }
     }
@@ -38,13 +38,14 @@ pipeline {
         container('node') {
           sh "yarn install"
           sh "yarn test:unit"
-         // sh "yarn test:e2e --env chrome,firefox"
+          sh "yarn test:e2e --env ci_chrome,ci_firefox --use-selenium"
         }
       }
       post {
         always {
           container('node') {
-            sh "curl -s https://codecov.io/bash | bash -s - -c -F unit -K"
+            fetch_codecov()
+            sh "./codecov -c -F unit -K -C ${GIT_COMMIT}"
           }
         }
       }
@@ -84,9 +85,10 @@ pipeline {
             }
             container('rancher') {
                 sh "rancher apps delete ${NAME} || true" 
-                sh "sleep 5s" // wait for deletion
+                sh "sleep 15s" // wait for deletion
                 sh "rancher apps install " +
-                    "cattle-global-data:molgenis-helm-molgenis-frontend " +
+                    "-n ${NAME} " +
+                    "p-vx5vf:molgenis-helm3-molgenis-frontend " +
                     "${NAME} " +
                     "--no-prompt " +
                     "--set environment=dev " +
@@ -96,6 +98,7 @@ pipeline {
                     "--set proxy.backend.service.targetRelease=master " +
                     "--set image.pullPolicy=Always " +
                     "--set readinessPath=/index.html"
+                    
             }
         }
         post {
@@ -118,13 +121,14 @@ pipeline {
         container('node') {
           sh "yarn install"
           sh "yarn test:unit"
-         // sh "yarn test:e2e --env chrome,firefox"
+          sh "yarn test:e2e --env ci_chrome,ci_firefox --use-selenium"
         }
       }
       post {
         always {
           container('node') {
-            sh "curl -s https://codecov.io/bash | bash -s - -c -F unit -K"
+            fetch_codecov()
+            sh "./codecov -c -F unit -K -C ${GIT_COMMIT}"
           }
         }
       }
