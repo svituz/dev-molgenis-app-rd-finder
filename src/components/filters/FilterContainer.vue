@@ -10,7 +10,6 @@
       :label="filter.label"
       :headerClass="filter.headerClass"
       :collapsed="filter.initiallyCollapsed"
-      :optionsFilter='filter.name'
     >
       <component
         v-if="bookmarkMappedToState"
@@ -62,8 +61,13 @@ export default {
       return this.filterDefinitions.filter((facet) => {
         // config option showCountryFacet is used to toggle Country facet
         console.log('ee')
+        console.log(facet.name)
+        console.log('')
+        if (facet.name === 'country') {
+          facet.optionsFilter = ['AT']
+        }
         console.log(facet.optionsFilter)
-        // facet.optionsFilter = ['Austria']
+        // facet.optionsFilter = ['Biobank']
         return !(this.showCountryFacet === false && facet.name === 'country')
       }).filter((item) => item.component)
     }
@@ -71,6 +75,8 @@ export default {
   methods: {
     ...mapMutations(['UpdateFilter']),
     filterChange (name, value) {
+      console.log('value')
+      console.log(value)
       this.UpdateFilter({ name, value, router: this.$router })
     }
   }
