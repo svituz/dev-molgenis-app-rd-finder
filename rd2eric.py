@@ -654,7 +654,7 @@ def add_persons(eric_data, rd_data):
     eric_data["eu_bbmri_eric_persons"]["id"] = generate_contact_id(eric_data)
 
 
-def write_excel(eric_data, output_name):
+def write_excel(eric_data, output_name,index_flag = False):
     """writes dictionary of pandas dataframes to excel file
 
     Parameters
@@ -663,11 +663,13 @@ def write_excel(eric_data, output_name):
         dictionary that holds bbmri_eric file (with EMX package/entity/attribute names)
     output_name : string
         file name for output file
+    index_flag : boolian
+        True False for setting the index
     """
     with pd.ExcelWriter(output_name,engine='xlsxwriter') as writer:
         for sheet_name in eric_data.keys():
             df1 = eric_data[sheet_name]
-            df1.to_excel(writer, sheet_name=sheet_name,index=False)
+            df1.to_excel(writer, sheet_name=sheet_name,index=index_flag)
 
 def rename_packages(eric_data, package_name):
     """rename package name (standart: bbmri_eric_eu)
@@ -719,6 +721,8 @@ def build_starmodel(eric_data_star):
     #selected_entities = ['ontology_terms','body_parts', 'data_types', 'biobanks', 'collections', 'country', 'disease_types', 'material_types', 'ressource_types']
     # data types -> data_categories
     star_eric_data = { your_key: eric_data_star[your_key] for your_key in selected_entities}
+
+    star_eric_data_v2 = star_eric_data.copy()
 
     count = 0
     for biobank in star_eric_data["eu_bbmri_eric_biobanks"]["id"]:
@@ -820,10 +824,15 @@ def build_starmodel(eric_data_star):
         # biobank_count = len(nr_collections) + len(nr_datatypes) #TODO
 
     star_eric_counts = pd.DataFrame(piv.to_records())
+    # star_eric_counts.set_index(list(np.arange(len(star_eric_counts))))
+    star_eric_counts.index.name = 'PK'
 
-    with pd.ExcelWriter("star_model_counts.xlsx",engine='xlsxwriter') as writer:
-        star_eric_counts.to_excel(writer,index=False)
-        writer.save()
+    star_eric_data_v2["eu_bbmri_eric_facts"] = star_eric_counts
+
+    # with pd.ExcelWriter("star_model_counts.xlsx",engine='xlsxwriter') as writer:
+    #     star_eric_data_v2.to_excel(writer,index=True)
+    #     writer.save()
+    write_excel(star_eric_data_v2, "star_model_counts.xlsx", index_flag = True)
 
     return star_eric_data
 
