@@ -796,6 +796,9 @@ def build_starmodel(eric_data_star):
 
     # df = star_eric_data["eu_bbmri_eric_facts"].drop_duplicates(subset = ['eu_bbmri_eric_disease_types','eu_bbmri_eric_material_types','eu_bbmri_eric_data_types','eu_bbmri_eric_ressource_types','eu_bbmri_eric_countries'])    
 
+    star_eric_data["eu_bbmri_eric_facts"]["eu_bbmri_eric_disease_types"][star_eric_data["eu_bbmri_eric_facts"]["eu_bbmri_eric_disease_types"] == ''] = "missing"
+    star_eric_data["eu_bbmri_eric_facts"]["eu_bbmri_eric_disease_types"][pd.isnull(star_eric_data["eu_bbmri_eric_facts"]["eu_bbmri_eric_disease_types"])] = "missing"
+
     piv = pd.pivot_table(star_eric_data['eu_bbmri_eric_facts'],
                             index=['eu_bbmri_eric_countries',
                                 'eu_bbmri_eric_material_types',
