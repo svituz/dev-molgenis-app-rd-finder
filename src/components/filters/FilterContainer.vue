@@ -1,5 +1,5 @@
 <template>
-  <div id="filter-container">
+  <div v-if="!loading" id="filter-container">
     <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
       <StringFilter name="Search" v-model="search"></StringFilter>
     </FilterCard>
@@ -31,16 +31,18 @@ import { StringFilter, FilterCard, CheckboxFilter, MultiFilter } from '@molgenis
 /** */
 
 import { mapGetters, mapMutations } from 'vuex'
+import state from '../../store/state'
 
 export default {
   components: { StringFilter, CheckboxFilter, MultiFilter, FilterCard, CovidFilter, CovidNetworkFilter },
   data () {
     return {
-      debounce: undefined
+      debounce: undefined,
+      filterList: { country: ['AT'] }
     }
   },
   computed: {
-    ...mapGetters(['showCountryFacet', 'activeFilters', 'getFilterDefinitions']),
+    ...mapGetters(['showCountryFacet', 'activeFilters', 'getFilterDefinitions', 'biobanks', 'loading']),
     search: {
       get () {
         return this.activeFilters.search
@@ -59,6 +61,14 @@ export default {
     filters () {
       return this.getFilterDefinitions.filter((facet) => {
         // config option showCountryFacet is used to toggle Country facet
+        if (facet.name === 'country') {
+          console.log('Filter')
+          for (const c in state.countryDictionary) {
+            this.filterList.country.push(c)
+          }
+          // facet.optionsFilter = this.filterList[facet.name]
+          // console.log(this.filterList)
+        }
         return !(this.showCountryFacet === false && facet.name === 'country')
       }).filter((item) => item.component)
     }

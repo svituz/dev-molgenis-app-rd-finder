@@ -31,6 +31,7 @@ export default {
   biobankIdsWithSelectedQuality: [],
   collectionBiobankDictionary: {},
   collectionDictionary: {},
+  countryDictionary: [],
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],

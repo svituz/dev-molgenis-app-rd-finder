@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { createBookmark } from '../utils/bookmarkMapper'
 import { fixCollectionTree } from './helpers'
 import filterDefinitions from '../utils/filterDefinitions'
+import api from '@molgenis/molgenis-api-client'
 
 const negotiatorConfigIds = ['directory', 'bbmri-eric-model']
 
@@ -149,6 +150,26 @@ export default {
       isSubcollection: item.data.parent_collection !== undefined
     }))
     state.collectionInfo = collectionInfo
+  },
+  SetCountryList (state, response) {
+    console.log('setcoutnrylist')
+
+    if (response === undefined) {
+      state.countrylist = response
+      return
+    }
+    const CountryList = []
+    state.countryDictionary = []
+
+    for (var key in response.items) {
+      // console.log(response.items[key].data.country)
+      CountryList.push(response.items[key].data.country.links.self)
+    }
+    state.countrylist = Array.from(new Set(CountryList))
+    for (var country in state.countrylist) {
+      // api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
+      api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
+    }
   },
   /**
    * Store a single biobank in the state for showing a biobank report

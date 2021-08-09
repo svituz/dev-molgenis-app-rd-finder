@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
-import { genericFilterOptions } from './filterOptions'
+import { genericFilterOptions, genericFilterOptions2 } from './filterOptions'
 
 const filterDefinitions = (state) => [
   {
@@ -70,29 +70,30 @@ const filterDefinitions = (state) => [
   //   initiallyCollapsed: !state.route.query.diagnosis_available,
   //   humanReadableString: 'Disease type(s):'
   // },
-  // {
-  //   component: 'CheckboxFilter',
-  //   name: 'materials',
-  //   label: 'Materials',
-  //   type: 'checkbox-filter',
-  //   table: 'eu_bbmri_eric_material_types',
-  //   options: dynamicMaterialFilter('eu_bbmri_eric_material_types'), // dynamicMaterialFilter(),
-  //   initiallyCollapsed: !state.route.query.materials,
-  //   filters: state.filters.selections.materials,
-  //   maxVisibleOptions: 25,
-  //   humanReadableString: 'Material type(s):'
-  // },
+  {
+    component: 'CheckboxFilter',
+    name: 'materials',
+    label: 'Materials',
+    type: 'checkbox-filter',
+    table: 'eu_bbmri_eric_material_types',
+    options: genericFilterOptions('eu_bbmri_eric_material_types'), // dynamicMaterialFilter(),
+    initiallyCollapsed: !state.route.query.materials,
+    filters: state.filters.selections.materials,
+    maxVisibleOptions: 25,
+    humanReadableString: 'Material type(s):'
+  },
   {
     component: 'CheckboxFilter',
     name: 'country',
     label: 'Countries',
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_countries',
-    options: genericFilterOptions('eu_bbmri_eric_countries'),
+    options: genericFilterOptions2('eu_bbmri_eric_countries'),
     filters: state.filters.selections.country,
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
-    initiallyCollapsed: false
+    initiallyCollapsed: false,
+    showOptions: []
   }
   // {
   //   component: 'CheckboxFilter',
@@ -161,7 +162,7 @@ const filterDefinitions = (state) => [
   //   type: 'checkbox-filter',
   //   table: 'eu_bbmri_eric_data_types',
   //   options: genericFilterOptions('eu_bbmri_eric_data_types'),
-  //   initiallyCollapsed: !state.route.query.dataType,
+  //   initiallyCollapsed: false,
   //   filters: state.filters.selections.dataType,
   //   maxVisibleOptions: 25,
   //   humanReadableString: 'Data type(s):'
