@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
-import { genericFilterOptions, genericFilterOptions2 } from './filterOptions'
+import { genericFilterOptions } from './filterOptions'
 
 const filterDefinitions = (state) => [
   {
@@ -10,22 +10,18 @@ const filterDefinitions = (state) => [
     humanReadableString: 'Text search is',
     initiallyCollapsed: false
   },
-  // {
-  //   component: 'MultiFilter',
-  //   name: 'ressource_types',
-  //   label: 'Ressource Types',
-  //   type: 'multi-filter',
-  //   table: 'eu_bbmri_eric_ressource_types',
-  //   options: resscourceTypesAvailableFilterOptions('eu_bbmri_eric_ressource_types'),
-  //   // initiallyCollapsed: true,
-  //   filters: state.filters.selections.ressource_types,
-  //   maxVisibleOptions: 25,
-  //   humanReadableString: 'Ressource type(s):',
-  //   collapsed: false,
-  //   collapsable: false,
-  //   headerClass: 'bg-warning text-white',
-  //   all: true
-  // },
+  {
+    component: 'CheckboxFilter',
+    name: 'ressource_types',
+    label: 'Ressource Types',
+    type: 'checkbox-filter',
+    table: 'eu_bbmri_eric_ressource_types',
+    options: genericFilterOptions('eu_bbmri_eric_ressource_types', 'ressource_types'),
+    initiallyCollapsed: false,
+    filters: state.filters.selections.ressource_types,
+    maxVisibleOptions: 25,
+    humanReadableString: 'Ressource type(s):'
+  },
   // {
   //   headerClass: 'bg-warning text-white',
   //   component: 'CovidNetworkFilter',
@@ -76,7 +72,7 @@ const filterDefinitions = (state) => [
     label: 'Materials',
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_material_types',
-    options: genericFilterOptions('eu_bbmri_eric_material_types'), // dynamicMaterialFilter(),
+    options: genericFilterOptions('eu_bbmri_eric_material_types', 'materials'), // dynamicMaterialFilter(),
     initiallyCollapsed: !state.route.query.materials,
     filters: state.filters.selections.materials,
     maxVisibleOptions: 25,
@@ -88,7 +84,7 @@ const filterDefinitions = (state) => [
     label: 'Countries',
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_countries',
-    options: genericFilterOptions2('eu_bbmri_eric_countries'),
+    options: genericFilterOptions('eu_bbmri_eric_countries', 'country'),
     filters: state.filters.selections.country,
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
