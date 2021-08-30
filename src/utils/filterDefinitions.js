@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
-import { genericFilterOptions } from './filterOptions'
+import { genericFilterOptions, diagnosisAvailableFilterOptions } from './filterOptions'
+// import { genericFilterOptions } from './filterOptions'
 
 const filterDefinitions = (state) => [
   {
@@ -57,30 +58,33 @@ const filterDefinitions = (state) => [
   //   initiallyCollapsed: !state.route.query.external_sources,
   //   filters: state.filters.selections.external_sources
   // },
-  // {
-  //   component: 'MultiFilter',
-  //   name: 'diagnosis_available',
-  //   label: 'Diagnosis available',
-  //   type: 'multi-filter',
-  //   initialDisplayItems: 10,
-  //   maxVisibleOptions: 10,
-  //   table: 'rd_connect_disease_types',
-  //   options: diagnosisAvailableFilterOptions('rd_connect_disease_types'),
-  //   initiallyCollapsed: !state.route.query.diagnosis_available,
-  //   humanReadableString: 'Disease type(s):'
-  // },
-  // {
-  //   component: 'CheckboxFilter',
-  //   name: 'materials',
-  //   label: 'Materials',
-  //   type: 'checkbox-filter',
-  //   table: 'rd_connect_material_types',
-  //   options: dynamicMaterialFilter('rd_connect_material_types'), // dynamicMaterialFilter(),
-  //   initiallyCollapsed: !state.route.query.materials,
-  //   filters: state.filters.selections.materials,
-  //   maxVisibleOptions: 25,
-  //   humanReadableString: 'Material type(s):'
-  // },
+  {
+    component: 'MultiFilter',
+    name: 'diagnosis_available',
+    label: 'Diagnosis available',
+    type: 'multi-filter',
+    initialDisplayItems: 10,
+    maxVisibleOptions: 10,
+    table: 'rd_connect_disease_types',
+    options: diagnosisAvailableFilterOptions('rd_connect_disease_types'),
+    initiallyCollapsed: !state.route.query.diagnosis_available,
+    humanReadableString: 'Disease type(s):'
+    // optionsFilter: ['hollymolly']
+  },
+  {
+    component: 'CheckboxFilter',
+    name: 'materials',
+    label: 'Materials',
+    type: 'checkbox-filter',
+    table: 'rd_connect_material_types',
+    options: genericFilterOptions('rd_connect_material_types'), // dynamicMaterialFilter(),
+    // initiallyCollapsed: !state.route.query.materials,
+    initiallyCollapsed: false,
+    filters: state.filters.selections.materials,
+    maxVisibleOptions: 25,
+    humanReadableString: 'Material type(s):',
+    optionsFilter: []
+  },
   {
     component: 'CheckboxFilter',
     name: 'country',
@@ -91,8 +95,10 @@ const filterDefinitions = (state) => [
     filters: state.filters.selections.country,
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
-    initiallyCollapsed: false,
-    optionsFilter: []
+    initiallyCollapsed: false
+    // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary
+    // optionsFilter: genericFilterOptions2
+    // optionsFilter: Object.keys(state.countryDictionary)
   }
   // {
   //   component: 'CheckboxFilter',

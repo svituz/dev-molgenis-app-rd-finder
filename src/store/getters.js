@@ -1,6 +1,7 @@
 import { createRSQLQuery, createBiobankRSQLQuery, filterCollectionTree } from './helpers'
 import { groupCollectionsByBiobankId } from '../utils/grouping'
 import filterDefinitions from '../utils/filterDefinitions'
+// import optionsFilteroptions from '../utils/filterOptions'
 
 export default {
   filterDefinitions,
@@ -45,6 +46,12 @@ export default {
   foundBiobanks: (_, { biobanks }) => {
     return biobanks.length
   },
+  countryDict: state => state.countryDictionary,
+  foundC: (_, { countryDict }) => {
+    return countryDict.length
+  },
+  // optfilt: state => state.filters.selections,
+  getFoundBiobanksCountries: (_, { biobanks }) => biobanks.map(b => b.country || 'not available'),
   foundCollectionIds (state, { getFoundBiobankIds }) {
     // only if there are biobanks, then there are collections. we can't have rogue collections :)
     if (getFoundBiobankIds.length && state.collectionInfo.length) {

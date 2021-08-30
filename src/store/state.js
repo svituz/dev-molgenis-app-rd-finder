@@ -36,6 +36,8 @@ export default {
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],
+  countryDictionary: [],
+  materialDictionary: [],
   filters: {
     selections: {},
     labels: {} // for human readable string

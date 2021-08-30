@@ -21,7 +21,7 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 /**/
 
 /* Query Parameters */
-export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,biobank(logos),name,type,number_of_donors,parent_collection,sub_collections(id))'
+export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,country,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
 export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(*),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors,description,gene,timestamp),number_of_donors'
 /**/
 
@@ -46,6 +46,7 @@ export default {
     api.get(`${BIOBANK_API_PATH}?num=10000&attrs=${COLLECTION_ATTRIBUTE_SELECTOR},*&q=${q}`)
       .then(response => {
         commit('SetBiobanks', response.items)
+      //  commit('SetCountryList', response)
       }, error => {
         commit('SetError', error)
       })
@@ -81,7 +82,10 @@ export default {
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label),name,label,collaboration_commercial,parent_collection&expand=biobank&size=10000'
+    // commit('SetLoading', true)
+    // commit('SetCountryList', undefined)
+    // let url = `${'/api/data/rd_connect_biobanks?filter=id,country&size=10'}&q=${encodeRsqlValue(getters.biobankRsql)}`
+    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
     }
@@ -89,23 +93,39 @@ export default {
       .then(response => {
         commit('SetCollectionInfo', response)
         commit('SetDictionaries', response)
+        commit('SetCountryList', response)
         commit('MapQueryToState')
       }, error => {
         commit('SetError', error)
       })
+    // await Promise.all([url])
   },
   GetBiobankIds ({ commit, getters }) {
     commit('SetBiobankIds', undefined)
-    let url = '/api/data/rd_connect_biobanks?filter=id&size=10000'
+    // commit('SetCountryList', undefined)
+    let url = '/api/data/rd_connect_biobanks?filter=id,country&size=1000'
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
     api.get(url)
       .then(response => {
+        console.log('handler getbiobankids')
+        console.log(response.items)
+        // commit('SetCountryList', response)
         commit('SetBiobankIds', response.items.map(item => item.data.id))
       }, error => {
         commit('SetError', error)
       })
+    // url = '/api/data/rd_connect_collections?filter=biobank(country),country&expand=biobank&size=10000'
+    // if (getters.rsql) {
+    //   url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
+    // }
+    // api.get(url)
+    //   .then(response => {
+    //     commit('SetCountryList', response)
+    //   }, error => {
+    //     commit('SetError', error)
+    //   })
   },
   GetBiobankReport ({ commit, state }, biobankId) {
     if (state.allBiobanks) {
