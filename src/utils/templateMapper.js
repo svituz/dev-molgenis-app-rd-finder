@@ -127,10 +127,15 @@ export const collectionReportInformation = collection => {
       name: collection.biobank.name,
       juridical_person: collection.biobank.juridical_person,
       country: collection.country.name,
+      country_code: collection.country.id,
       report: `/biobank/${collection.biobank.id}`,
       website: mapUrl(collection.biobank.url),
       email: collection.biobank.contact ? collection.biobank.contact.email : undefined,
-      partnerCharter: collection.biobank.partner_charter_signed ? 'yes' : 'no'
+      partnerCharter: collection.biobank.partner_charter_signed ? 'yes' : 'no',
+      ressource_types: collection.biobank.ressource_types,
+      street: collection.biobank.street,
+      zip_code: collection.biobank.zip_code,
+      city: collection.biobank.city
     }
   }
 

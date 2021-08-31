@@ -1,6 +1,6 @@
 <template>
   <div @click="$root.$emit('bv::hide::popover')">
-    <div class="container">
+    <div class="container" style="padding-bottom: 0px">
       <b-alert v-if="errorMessage" show variant="danger" dismissible>{{errorMessage}}</b-alert>
       <router-view></router-view>
     </div>
@@ -12,10 +12,10 @@
   padding-top: 0 !important;
 }
 .app {
-    background-color: #f1f1de;
+  background-color: white;
 }
 .container {
-  background-color: #fcfcf5;
+  background-color: white;
 }
 </style>
 
@@ -30,8 +30,7 @@ export default {
     ...mapMutations(['MapQueryToState']),
     ...mapActions([
       'GetNegotiatorType',
-      'GetNegotiatorEntities',
-      'GetQualityStandardInformation'
+      'GetNegotiatorEntities'
     ])
   },
   watch: {
@@ -42,8 +41,6 @@ export default {
   mounted () {
     this.GetNegotiatorType()
     this.GetNegotiatorEntities()
-    this.GetQualityStandardInformation()
-    this.MapQueryToState()
   },
   name: 'biobank-explorer'
 }

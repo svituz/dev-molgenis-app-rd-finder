@@ -1,3 +1,4 @@
+/* jshint sub:true */
 import Vue from 'vue'
 import { createBookmark } from '../utils/bookmarkMapper'
 import { fixCollectionTree } from './helpers'
@@ -94,6 +95,9 @@ export default {
   SetBiobankIds (state, biobankIds) {
     state.biobankIds = biobankIds
   },
+  // SetCountries (state, countries) {
+  //   console.log(countries)
+  // },
   // TODO name more specifically
   SetDictionaries (state, response) {
     const collections = response.items.map(item => (
@@ -102,33 +106,140 @@ export default {
         label: item.data.label || item.data.name,
         biobankName: item.data.biobank.data.label || item.data.biobank.data.name,
         commercialUse: item.data.collaboration_commercial
+        // country: item.data.biobank.data.country
       }))
 
+    // state.countryDictionary = []
     collections.forEach(function (collection) {
       state.collectionBiobankDictionary[collection.id] = collection.biobankName
       state.collectionDictionary[collection.id] = collection.label
+      // state.countryDictionary[collection.id] = collection.country
+      // api.get(collection.country).then(response => {
+      //   // const materialsresolve = response.items.map((obj) => [obj.data.id, obj.data.label])
+      //   for (var item in response.items) {
+      //     state.countryDictionary[response.items[item].data.id] = response.items[item].data.id
+      //   }
+      // })
     })
 
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
-  SetFilterLists (state) {
-    console.log('Setting Filter Lists')
-  },
-  SetQualityStandardDictionary (state, response) {
-    // Combine arrays from two tables and deduplicate
-    const allStandards = [...new Set(
-      response.map(response => response.items)
-        .reduce((prev, next) => prev.concat(next)))
-    ]
-    const qualityStandardsDictionary = {}
+  SetCountryList (state, response) {
+    if (response === undefined) {
+      // state.countryDictionary = response
+      return
+    }
+    // return () => new Promise((resolve) => {
+    const collects = response.items.map(item => (item.data.country.links.self))
 
-    allStandards.forEach((standard) => {
-      qualityStandardsDictionary[standard.label] = standard.description || ''
-    })
+    console.log('setycoutnrylist')
+    // console.log(collects)
+    // console.log(new Set(collects))
+    const countrylist = Array.from(new Set(collects))
+    console.log(countrylist)
+    // const oo = []
+    // state.countryDictionary = []
+    // state.countryDictionary.AT = 'Austria'
+    // var ii = new Promise((resolve) => {
+    //   countrylist.forEach(async function (coll) {
+    //     api.get(coll).then(response => {
+    //       const key = response.data.id
+    //       const name = response.data.name
+    //       oo[key] = name
+    //       resolve(oo)
+    //       // console.log('hier')
+    //       // console.log(key)
+    //     })
+    //   })
+    // })
 
-    state.qualityStandardsDictionary = qualityStandardsDictionary
+    async function fetchcountrydata (countrylist) {
+      // countrylist.forEach(function (coll) {
+      // //   oo.push(api.get(coll))
+      // // }
+      const aa = []
+      for (var coll in countrylist) {
+      // console.log(response.items[key].data.biobank.data.country.links.self)
+        aa.push(api.get(countrylist[coll]))
+      }
+
+      // console.log(aa)
+      // const c1 = api.get(countrylist[0])
+      // const c2 = api.get(countrylist[1])
+      const results = await Promise.all(aa)
+      // console.log('awaiiting')
+      // console.log(results)
+      // console.log(state.countryDictionary)
+      state.countryDictionary = []
+      results.forEach((res) => {
+        state.countryDictionary[res.data.id] = res.data.name || ''
+      })
+
+      // state.countryDictionary[results[0].data.id] = results[0].data.name
+      // console.log(state.countryDictionary)
+    }
+    // console.log('await done 1')
+    fetchcountrydata(countrylist)
+    // response = ii // sinnlos
+    // console.log('length oo')
+    // console.log(oo.length)
+    // console.log(response)
+    // console.log('await done 2')
+    // console.log(state.countryDictionary)
+    // console.log(state.countryDictionary.length)
+
+    // for (var key in oo.items) {
+    //   console.log('key')
+    //   console.log(key)
+    // }
+
+    // state.countryDictionary = oo
+    // (state.countryDictionary[response.data.id] = response.data.name))
+    // resolve(state.countryDictionary[response.data.id])
+
+    // })
+    // })
+    // if (response === undefined) {
+    //   state.countrylist = response
+    //   return
+    // }
+
+    // const CountryList = []
+    // state.countryDictionary = []
+    // // const countries = []
+
+    // for (var key in response.items) {
+    //   // console.log(response.items[key].data.biobank.data.country.links.self)
+    //   CountryList.push(response.items[key].data.country.links.self)
+    // }
+    // // console.log(Array.from(new Set(CountryList)))
+    // const countrylist = Array.from(new Set(CountryList))
+    // // console.log(countrylist.length)
+    // // console.log(CountryList.length)
+    // for (var country in countrylist) {
+    //   // api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
+    //   api.get(countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
+    //   // await state.countryDictionary
+    // }
+    // await state.countryDictionary
+    // console.log('await dict')
+    // console.log(state.countryDictionary)
   },
+  // SetQualityStandardDictionary (state, response) {
+  //   // Combine arrays from two tables and deduplicate
+  //   const allStandards = [...new Set(
+  //     response.map(response => response.items)
+  //       .reduce((prev, next) => prev.concat(next)))
+  //   ]
+  //   const qualityStandardsDictionary = {}
+
+  //   allStandards.forEach((standard) => {
+  //     qualityStandardsDictionary[standard.label] = standard.description || ''
+  //   })
+
+  //   state.qualityStandardsDictionary = qualityStandardsDictionary
+  // },
   SetFilterOptionDictionary (state, { filterName, filterOptions }) {
     // only cache it once
     if (!state.filterOptionDictionary[filterName]) {
@@ -154,27 +265,6 @@ export default {
     }))
     state.collectionInfo = collectionInfo
   },
-  SetCountryList (state, response) {
-    console.log('setcoutnrylist')
-
-    if (response === undefined) {
-      state.countrylist = response
-      return
-    }
-    const CountryList = []
-    state.countryDictionary = []
-
-    for (var key in response.items) {
-      // console.log(response.items[key].data.country)
-      CountryList.push(response.items[key].data.country.links.self)
-    }
-    state.countrylist = Array.from(new Set(CountryList))
-    for (var country in state.countrylist) {
-      // api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
-      api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
-    }
-    console.log(state.Dictionary)
-  },
   /**
    * Store a single biobank in the state for showing a biobank report
    * @param state
@@ -196,34 +286,34 @@ export default {
     state.networkReport.biobanks = biobanks
   },
   // methods for rehydrating bookmark
-  SetCollectionIdsWithSelectedQuality (state, response) {
-    if (response.items && response.items.length > 0) {
-      state.collectionIdsWithSelectedQuality = []
-      state.collectionIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.collection.id))]
-    } else {
-      const collectionQualityFilter = state.filters.selections.collection_quality
-      const isCollectionQualityFilterActive = (collectionQualityFilter && collectionQualityFilter.length > 0) || state.route.query.collection_quality
+  // SetCollectionIdsWithSelectedQuality (state, response) {
+  //   if (response.items && response.items.length > 0) {
+  //     state.collectionIdsWithSelectedQuality = []
+  //     state.collectionIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.collection.id))]
+  //   } else {
+  //     const collectionQualityFilter = state.filters.selections.collection_quality
+  //     const isCollectionQualityFilterActive = (collectionQualityFilter && collectionQualityFilter.length > 0) || state.route.query.collection_quality
 
-      state.collectionIdsWithSelectedQuality = isCollectionQualityFilterActive ? ['no-collection-found'] : []
-    }
-  },
-  SetBiobankIdsWithSelectedQuality (state, response) {
-    if (response.items && response.items.length > 0) {
-      state.biobankIdsWithSelectedQuality = []
-      state.biobankIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.biobank.id))]
-    } else {
-      const biobankQualityFilter = state.filters.selections.biobank_quality
-      const isBiobankQualityFilterActive = (biobankQualityFilter && biobankQualityFilter.length > 0) || state.route.query.biobank_quality
+  //     state.collectionIdsWithSelectedQuality = isCollectionQualityFilterActive ? ['no-collection-found'] : []
+  //   }
+  // },
+  // SetBiobankIdsWithSelectedQuality (state, response) {
+  //   if (response.items && response.items.length > 0) {
+  //     state.biobankIdsWithSelectedQuality = []
+  //     state.biobankIdsWithSelectedQuality = [...new Set(response.items.map(ri => ri.biobank.id))]
+  //   } else {
+  //     const biobankQualityFilter = state.filters.selections.biobank_quality
+  //     const isBiobankQualityFilterActive = (biobankQualityFilter && biobankQualityFilter.length > 0) || state.route.query.biobank_quality
 
-      state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
-    }
-  },
-  AddCollectionsToSelection (state, { collections, bookmark }) {
+  //     state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
+  //   }
+  // },
+  AddCollectionsToSelection (state, { collections, router }) {
     const currentIds = state.selectedCollections.map(sc => sc.value)
     const newCollections = collections.filter(cf => !currentIds.includes(cf.value))
     state.selectedCollections = state.selectedCollections.concat(newCollections)
 
-    if (bookmark) {
+    if (router.bookmark) {
       createBookmark(state.filters.selections, state.selectedCollections)
     }
   },

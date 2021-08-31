@@ -39,10 +39,20 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
 
                 for entry in list_like:
                     for k in entry.keys():
-                        if len(entry[k]) > 255:
-                            content = "none"
+
+                        if "omim" in k:
+                            no_space_omim = re.sub('[^0-9*#+%]+', ';',entry[k])
+                            cleaned = no_space_omim.replace("*;", "*").replace("#;", "#").replace("+;", "+").replace("%;", "%")
+                            content = cleaned
+                        
+                        elif "name" in k:
+                            content = re.sub('[^A-Za-z0-9_@.*#+% ]+-()', '',entry[k])
+                            # print("name:", content)
+                        elif "gene" in k:
+                            content = str(entry[k])
                         else:
-                            content = re.sub('[^A-Za-z0-9_@. ]+', '',entry[k])
+                            content = re.sub('[^A-Za-z0-9_@.*#+% ]+', '',entry[k])
+
                         
                         df.at[len(df[k].dropna()), k] = content
 
@@ -50,7 +60,7 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
                     df.at[len(df["ID"].dropna()), "ID"] = len(df["ID"])
 
 
-        # add address or contact
+        # add address or contact or DISEASE_AREAS!
         if list_like and  isinstance(list_like, dict):
             df.at[len(df["OrganizationID"].dropna()), "OrganizationID"] = org_id
 
@@ -60,10 +70,11 @@ def add_multi_content(df_dict, package_name, entity_name, key, list_like, org_id
 
                 if "contact" in key:
                     df.at[len(df[k].dropna()), "main"] = main
-
-
                     
-                content = re.sub('[^A-Za-z0-9_@. ]+', '',list_like[k])
+                content = re.sub('[^A-Za-z0-9_@. ]+/äöü', '',list_like[k])
+
+                if "others" in k:
+                    content = re.sub('[^A-Za-z0-9_@. ]+-()', '',list_like[k])
 
 
                 df.at[len(df[k].dropna()), k] = content
@@ -108,6 +119,8 @@ if __name__ == "__main__":
             entry_type = type(j_entry[key])
             org_id = j_entry["OrganizationID"]
 
+            if org_id == 44001:
+                print(key)
             content = j_entry[key]
             # INT or STRING for basic info
             if isinstance(j_entry[key], int) or isinstance(j_entry[key], str):

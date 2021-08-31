@@ -1,17 +1,56 @@
 <template>
-  <div class="col-md-4">
-    <div class="card">
+  <div class="col-md-5">
+    <div class="card info">
       <div class="card-body">
         <div class="card-text">
-          <template class="contact-info-box" v-if="info.biobank">
-            <h4 class="header">Host Institution</h4>
+          <template  v-if="info.biobank">
+            <div class="row" height="100px">
+              <div v-if="getCountryUrl(info.biobank.country)">
+                <div class="col-2">
+                  <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" style="margin-left: -18px"/>
+                </div>
+              </div>
+                <!-- <a :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span style="position: aboslute;margin-top:0%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
+                  <span style="position: aboslute;margin-top:4%;margin-left: 20px"> {{link=getUrls(info.biobank.website)[0]}} </span>
+                </a> -->
+                <div class="col-9" style="float: right">
+                <a v-for="link in getUrls(info.biobank.website)" :key="`${link}`" :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span> {{link}} </span>
+                </a>
+                </div>
+            </div>
+
+<!--             <div v-if="getCountryUrl(info.biobank.country)">
+              <img id='country_flag' :src="getCountryUrl(info.biobank.country_code)" contain height="40px" />
+              <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`"> -->
+<!--                 <a  v-for="link in getUrls(info.biobank.website)" :key="`${link}`" :href="link" target="_blank" rel="noopener noreferrer" >
+                  <span style=" position: relative; margin-top:7%;margin-left: 20px"> {{link}} </span>
+                </a> -->
+            <!-- </div> -->
+            <!-- </div> -->
+            <!-- <div v-for="link in getUrls(info.biobank.website)" :key="`${link}`">
+              <a :href="link" target="_blank" rel="noopener noreferrer">
+                <span> {{link}} </span>
+              </a>
+            </div> -->
+            <!-- </div> -->
+
+            <div style="position: absolute; margin-top:7%; width:280px;">
+            <b style="margin-left: -1.0rem;" >Host Institution</b>
             <ul class="right-content-list">
               <li>
                 <div>
-                  Name: {{ info.biobank.juridical_person }}
+                  {{ info.biobank.juridical_person }}
                 </div>
                 <div>
-                  Country: {{ info.biobank.country }}
+                  {{ this.checkStreetName(info.biobank.street) }}
+                </div>
+                <div>
+                  {{ info.biobank.zip_code }} {{info.biobank.city}}
+                </div>
+                <div>
+                  {{ info.biobank.country }}
                 </div>
               </li>
               <li>
@@ -21,17 +60,9 @@
                     <span>View {{ info.biobank.name }}</span>
                   </router-link>
                 </div> -->
-                <div v-if="info.biobank.website">
-                <b>Website(s):</b>
-                </div>
-                <div v-for="(url) in getUrls(info.biobank.website)" :key="url">
-                  <span class="fa fa-fw fa-globe mr-2" aria-hidden="true"></span>
-                  <a :href="url" target="_blank" rel="noopener noreferrer">
-                    <span>{{url}}</span>
-                  </a>
-                </div>
               </li>
-              <template v-if="info.contact">
+              <!-- <template v-if="info.contact">
+            <div style="position: absolute; margin-top:20%;">
             <h4 class="header">Personnel</h4>
             <ul class="right-content-list">
               <template v-if="info.head">
@@ -47,60 +78,14 @@
               <li v-if="info.contact.email">
                 <span class="fa fa-fw fa-paper-plane mr-2" aria-hidden="true"></span>
                 <a :href="'mailto:' + info.contact.email">
-                  <span>Email</span>
+                  <span> {{info.contact.email}}</span>
                 </a>
-                <div v-if="info.contact.phone">
-                  <span class="fa fa-fw fa-phone mr-1" aria-hidden="true"></span>
-                  <a :href="'tel:' + info.contact.phone">
-                    <span> {{ info.contact.phone }}</span></a>
-                </div>
               </li>
             </ul>
-          </template>
-            </ul>
-          </template>
-          <template v-if="info.networks && info.networks.length > 0">
-            <h5>Networks</h5>
-            <ul class="right-content-list">
-              <li>
-                <div class="info-list" v-for="(network, index) in info.networks" :key="`${network.name}-${index}`">
-                  <span class="font-weight-bold mr-2">Name:</span>
-                  <span>{{ network.name }}</span>
-                  <div>
-                    <span class="fa fa-fw fa-address-card mr-2" aria-hidden="true"></span>
-                    <router-link :to="network.report">
-                      <span>View {{ network.name }} network</span>
-                    </router-link>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </template>
-          <template v-if="info.certifications && info.certifications.length > 0">
-            <h5>Quality</h5>
-            <ul class="right-content-list">
-              <li>
-                <span class="font-weight-bold mr-2">Certification(s):</span>
-                <span v-for="(cert, index) in info.certifications" :key="`${cert}-${index}`">
-                  <span class="cert-badge badge badge-success">
-                    {{ cert }}
-                  </span>
-                </span>
-              </li>
-            </ul>
-          </template>
-          <template v-if="info.collaboration.length > 0">
-            <h5>Collaboration</h5>
-            <div class="container p-0">
-              <div class="row" v-for="(collab, index) in info.collaboration" :key="`${collab.name}-${index}`">
-                <div class="col pr-0">
-                  <span class="font-weight-bold">{{ collab.name }}:</span>
-                </div>
-                <div class="col p-0">
-                  <span class="badge badge-info">{{ collab.value }}</span>
-                </div>
-              </div>
             </div>
+          </template> -->
+            </ul>
+          </div>
           </template>
         </div>
       </div>
@@ -124,6 +109,23 @@ export default {
       }
       var urls = url.split(',')
       return urls
+    },
+    getCountryUrl (countryCode) {
+      if (countryCode === 'ZZ') {
+        return undefined
+      }
+      const code = countryCode.toLowerCase()
+      var url = 'http://www.geonames.org/flags/x/' + code + '.gif'
+      return url
+    },
+
+    checkStreetName (street) {
+      if (street === 'nan - nan') {
+        return 'not specified'
+      }
+      var streetReplaced = street.replaceAll('- nan', '')
+      streetReplaced = streetReplaced.replaceAll('nan -', '')
+      return streetReplaced
     }
   }
 }
@@ -136,7 +138,9 @@ export default {
 
 .right-content-list {
   list-style-type: none;
-  margin-left: -2.5rem;
+  font-size: 15px;
+  /* font-weight: bold; */
+  margin-left: -3.5rem;
 }
 .right-content-list:not(:last-child) {
   margin-bottom: 1.5rem;
@@ -158,5 +162,9 @@ export default {
 }
 .header {
   color: #a6cc74
+}
+.info {
+  background-color: white;
+  border: none;
 }
 </style>

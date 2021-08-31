@@ -1,9 +1,8 @@
-import { createInQuery, createQuery } from '../../utils'
+import { createInQuery, createQuery, createComparisons } from '../../utils'
 import { flatten } from 'lodash'
 import { transformToRSQL } from '@molgenis/rsql'
 
-export const isCodeRegex = /^(ORPHA|[A-Z]|[XVI]+):?(\d{0,2}(-([A-Z]\d{0,2})?|\.\d{0,3})?|\d+)?$/i
-
+export const isCodeRegex = /^([A-Z]|[XVI]+)(\d{0,2}(-([A-Z]\d{0,2})?|\.\d{0,3})?)?$/i
 /**
  * @example queries
  * q=country.id=in=(NL,BE)
@@ -24,8 +23,8 @@ export const createRSQLQuery = (state) => transformToRSQL({
     createQuery(state.filters.selections.collection_network, 'network', state.filters.satisfyAll.includes('collection_network')),
     state.filters.selections.search ? [{
       operator: 'OR',
-      operands: ['name', 'id', 'acronym', 'biobank.name', 'biobank.id', 'biobank.acronym']
-        .map(attr => ({ selector: attr, comparison: '=q=', arguments: state.filters.selections.search || '' }))
+      operands: ['biobank.name', 'biobank.id', 'biobank.acronym']
+        .map(attr => ({ selector: attr, comparison: '=like=', arguments: state.filters.selections.search || '' }))
     }] : []
   ])
 })
@@ -35,8 +34,9 @@ export const createBiobankRSQLQuery = (state) => transformToRSQL({
   operands: flatten([
     createInQuery('country', state.filters.selections.country || []),
     createInQuery('id', state.biobankIdsWithSelectedQuality),
-    createQuery(state.filters.selections.biobank_network, 'network', state.filters.satisfyAll.includes('biobank_network')),
-    createQuery(state.filters.selections.covid19, 'covid19biobank', state.filters.satisfyAll.includes('covid19'))
+    createInQuery('network', state.filters.selections.biobank_network || []),
+    // createComparisons('covid19biobank', state.filters.selections.covid19 || []),
+    createComparisons('ressource_types', state.filters.selections.ressource_types || [])
   ])
 })
 

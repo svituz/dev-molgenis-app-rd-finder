@@ -16,28 +16,6 @@
               </router-link>
               <span id="biobank-name">{{ biobank.name }}</span>
             </h5>
-
-            <small v-if="biobank.quality && biobank.quality.length > 0">
-              <info-popover label="Quality mark(s):" bold-text icon-before-label>
-                <table>
-                  <tbody>
-                    <tr
-                      :key="`${biobank.id}-${quality.label}`"
-                      v-for="quality in biobank.quality">
-                      <td class="text-nowrap align-top font-weight-bold p-2">
-                        {{ quality.label }}
-                      </td>
-                      <td class="py-2">
-                        {{ qualityStandardsDictionary[quality.label] }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </info-popover>
-              <quality-column
-                :qualities="biobank.quality"
-                :spacing="0"></quality-column>
-            </small>
             <span v-if="availableCovidTypes">
               <b-img
                 class="biobank-icon covid-icon"
@@ -116,20 +94,18 @@
 
 <script>
 // import CollectionsTable from '../tables/CollectionsTable.vue'
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 // import CollectionSelector from '@/components/buttons/CollectionSelector'
 // import CollectionsTable from '../tables/CollectionsTable.vue'
 import utils from '../../utils'
 import { sortCollectionsByName } from '../../utils/sorting'
-import QualityColumn from '../tables/QualityColumn'
+// import QualityColumn from '../tables/QualityColumn'
 import 'array-flat-polyfill'
 // import InfoPopover from '../popovers/InfoPopover.vue'
 
 export default {
   name: 'biobank-card',
   components: {
-    QualityColumn
-  },
   props: {
     biobank: {
       type: [Object, String]
@@ -147,7 +123,6 @@ export default {
     }
   },
   computed: {
-    ...mapState(['qualityStandardsDictionary']),
     ...mapGetters(['selectedCollections']),
     biobankInSelection () {
       if (!this.biobank.collections) return false

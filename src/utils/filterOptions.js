@@ -3,7 +3,7 @@ import api from '@molgenis/molgenis-api-client'
 import store from '../store'
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 import { isCodeRegex } from '../../src/store/helpers'
-import state from '../../src/store/state'
+import state from '../store/state'
 
 // Async so we can fire and forget for performance.
 async function cache (filterData) {
@@ -81,6 +81,45 @@ export const genericFilterOptions2 = (tableName) => {
   })
 }
 
+// export const genericFilterOptions2 = () => {
+//   return () => new Promise((resolve) => {
+//     api.get(`/api/v2/${api}`).then(response => {
+//       // var dict = []
+//       // for (var count in state.countryDictionary) {
+//       //   dict.push({ name: state.countryDictionary[count], id: count })
+//       // }
+//       // const countryresolve = dict.map((obj) => { return { text: obj.name, value: obj.id } })
+//       const oo = ['AT', 'CZ']
+//       resolve(oo)
+//     })
+//   })
+// }
+
+// export const genericFilterOptions2 = Object.keys(state.filters.selections) // ['AT', 'CZ'] //
+
+// export const optionsFilteroptions = () => {
+//   // const collects = response.items.map(item => (item.data.country.links.self))
+
+//   console.log('filteroptions')
+//   // console.log(new Set(collects))
+//   const countrylist = ['http://localhost:8082/api/data/rd_connect_countries/AT', 'http://localhost:8082/api/data/rd_connect_countries/CZ']
+//   // console.log(countrylist.length)
+//   // const oo = []
+//   return ({ oo }) => new Promise((resolve) => {
+//     countrylist.forEach(function (coll) {
+//       api.get(coll).then(response => {
+//         const oo = ['AT', 'CZ'] // response.map((data) => { return data.id })
+//         // console.log(oo)
+//         // const key = response.data.id
+//         // const name = response.data.name
+//         // oo[key] = name
+//         resolve(oo)
+//         // console.log('hier')
+//         // console.log(oo)
+//       })
+//     })
+//   })
+// }
 /** Specific logic for diagnosis available filter */
 const createDiagnosisLabelQuery = (query) => transformToRSQL({ selector: 'label', comparison: '=like=', arguments: query })
 const createDiagnosisCodeQuery = (query) => transformToRSQL({ selector: 'code', comparison: '=like=', arguments: query.toUpperCase() })
@@ -96,7 +135,7 @@ export const diagnosisAvailableFilterOptions = (tableName, filterName) => {
       if (queryType === 'in') {
         url = `${url}?q=${encodeRsqlValue(`code=in=(${query})`)}`
       } else if (isCodeRegex.test(query)) {
-        url = `${url}?q=${encodeRsqlValue(createDiagnosisCodeQuery(query))}&sort=code`
+        url = `${url}?q=${encodeRsqlValue(createDiagnosisCodeQuery(query))}`
       } else {
         url = `${url}?q=${encodeRsqlValue(createDiagnosisLabelQuery(query))}`
       }

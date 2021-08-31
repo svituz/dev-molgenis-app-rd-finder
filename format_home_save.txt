@@ -1,0 +1,11 @@
+<div class="container-fluid mg-page-content" style="background-color:#f2f3df">&nbsp;
+<p style="margin-left: 40%; margin-right: 40%"><img alt="RD-Connectlogo.png" src="https://github.com/bibbox/BiBBox/blob/master/themes/RDConnectPublic-theme/docroot/images/RD-Connectlogo.png?raw=true" style="width: 320px; height: 80px; margin-top: 0px; margin-bottom: 0px;" /></p>
+
+<p style="margin-left: 41.5%; margin-right: 41.5%">makes your Registry / Biobank visible</p>
+
+<div class="card border-0" style="background-image: url('https://raw.githubusercontent.com/bibbox/dev-molgenis-app-rd-finder/rd-finder-v0.1/rdconnectfrontagelogo.png'); background-repeat: no-repeat; margin-left: 24%; margin-right: 24%">&nbsp;
+<p style="margin-left: 20%; margin-top: 300px"><a class="btn btn-primary btn-lg" href="http://molgenis-rd-connect.silicolab.bibbox.org/menu/main/app-molgenis-app-biobank-explorer#/" role="button">Browse - The RD Connect Network</a></p>
+
+<p style="margin-left: 20%;">Linking up rare disease resarch across the world</p>
+</div>
+</div>

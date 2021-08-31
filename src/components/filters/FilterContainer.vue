@@ -1,8 +1,8 @@
 <template>
-  <div v-if="!loading" id="filter-container">
-    <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
+  <div id="filter-container">
+    <!-- <FilterCard name="search" label="Search" description="Search by name, id, acronym" :collapsed="false">
       <StringFilter name="Search" v-model="search"></StringFilter>
-    </FilterCard>
+    </FilterCard> -->
     <FilterCard
       v-for="filter in filters"
       :key="filter.name"
@@ -28,10 +28,12 @@
 import CovidFilter from '../filters/CovidFilter'
 import CovidNetworkFilter from '../filters/CovidNetworkFilter'
 import { StringFilter, FilterCard, CheckboxFilter, MultiFilter } from '@molgenis-ui/components-library'
+// import state from '../../store/state'
+
 /** */
 
 import { mapGetters, mapMutations } from 'vuex'
-import state from '../../store/state'
+// import state from '../../store/state'
 
 export default {
   components: { StringFilter, CheckboxFilter, MultiFilter, FilterCard, CovidFilter, CovidNetworkFilter },
@@ -42,7 +44,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['showCountryFacet', 'activeFilters', 'getFilterDefinitions', 'biobanks', 'loading']),
+    ...mapGetters(['loading', 'foundC', 'showCountryFacet', 'countryDict', 'biobanks', 'activeFilters', 'getFoundBiobankIds', 'getFoundBiobanksCountries', 'getFilterDefinitions', 'bookmarkMappedToState']),
+    // ...mapMutations(['SetCountryList']),
     search: {
       get () {
         return this.activeFilters.search
@@ -58,28 +61,59 @@ export default {
         }, 500)
       }
     },
+    getDict () {
+      return this.countryDict
+    },
     filters () {
       return this.getFilterDefinitions.filter((facet) => {
         // config option showCountryFacet is used to toggle Country facet
-        if (facet.name === 'country') {
-          console.log('Filter')
-          for (const c in state.countryDictionary) {
-            this.filterList.country.push(c)
-          }
-          // facet.optionsFilter = this.filterList[facet.name]
-          // console.log(this.filterList)
-        }
-        return !(this.showCountryFacet === false && facet.name === 'country')
+        // console.log(facet.name)
+        // console.log(this.activeFilters)
+        console.log('activefilters')
+        // console.log(facet.name)
+
+        console.log(Object.keys(this.countryDict))
+        // console.log(Object.keys(state.countryDictionary))
+
+        // if (facet.name === 'country') {
+        //   console.log(this.filterDefinitions)
+        this.getFilterDefinitions[4].optionsFilter = Object.keys(this.countryDict)
+        // }
+        // if (!facet.name === 'ressource_types') {
+        //   console.log(this.countryDict)
+        //   this.filterDefinitions[4].optionsFilter = this.optfilt // Object.keys(this.countryDict)
+        //   console.log(this.filterDefinitions[4].optionsFilter.length)
+        // }
+        // console.log(this.foundC)
+        // console.log(this.getFoundBiobanksCountries)
+        // console.log(this.biobanks[5].country)
+        // console.log(this.countryDictionary)
+        // console.log(this.countryDictionary[0])
+        // for (const bcountry in this.getFoundBiobanksCountries) {
+        //   console.log(this.getFoundBiobanksCountries[bcountry].id)
+        // }
+        // facet.optionsFilter = ['Biobank']
+        // state.countryDictionary = []
+        // state.countryDictionary.AT = 'Austria'
+        // console.log(state.countryDictionary)
+        return !(this.showCountryFacet === false)
       }).filter((item) => item.component)
     }
   },
   methods: {
     ...mapMutations(['UpdateFilterSelection', 'UpdateFilterSatisfyAll']),
     filterChange (name, value) {
-      this.UpdateFilterSelection({ name, value })
-    },
-    filterSatisfyAllChange (name, value) {
-      this.UpdateFilterSatisfyAll({ name, value })
+      // console.log('chango')
+      // console.log(this.countryDict)
+      // console.log('value')
+      // console.log(name)
+      // console.log(value)
+      this.UpdateFilterSelection({ name, value, router: this.$router })
+      // console.log(Object.keys(this.countryDict))
+      // console.log(Object.keys(state.countryDictionary))
+      // if (name === 'country') {
+      //   console.log(Object.keys(this.countryDict))
+      // }
     }
   }
 }

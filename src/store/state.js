@@ -35,6 +35,7 @@ export default {
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],
+  materialDictionary: [],
   filters: {
     selections: {},
     satisfyAll: [],

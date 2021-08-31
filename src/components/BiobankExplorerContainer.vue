@@ -1,15 +1,27 @@
 <template>
   <div class="row biobank-explorer-container">
-    <div class="col-md-3">
-      <filter-container></filter-container>
+    <div class="row row-header">
+          <b>Linking up rare disease research across the world</b>
     </div>
-
-    <div class="col-md-9">
-      <div class="row mb-3">
+            <div class="background-hack">
+          <div class="background-hack-l">
+          </div>
+          <div class="background-hack-r">
+          </div>
+          </div>
+    <div class="row explorer shadow">
+    <div class="col-md-3">
+    <div style="height: 80px;">
         <collection-select-all
+        style="padding-top: 12px;"
           v-if="!loading && foundCollectionIds.length"
           class="mt-1 ml-3"
-          bookmark/>
+          router-enabled/>
+      </div>
+      <filter-container style="position: relative; top: 20px; margin-bottom: 25px;"></filter-container>
+    </div>
+    <div class="col-md-9">
+      <div class="row mb-3">
         <div class="col-md-8">
           <div v-if="isIE11">
             <input
@@ -44,12 +56,12 @@
           <result-header></result-header>
         </div>
       </div>
-
       <div class="row">
         <div class="col-md-12">
           <biobank-cards-container></biobank-cards-container>
         </div>
       </div>
+    </div>
     </div>
 
     <cart-selection-toast
@@ -139,6 +151,17 @@
         </div>
       </template>
     </b-modal>
+    <div class="row-footer">
+      <p class="footer-p">
+      Linking up rare disease resarch across the world
+      </p>
+      <p class="footer-p footer-link">
+        <a :href="getUrl">RD-Connect</a>
+      </p>
+      <p class="footer-p footer-link">
+        <router-link :to="'/dataprotectionstatement'">Data Protection statement </router-link>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -150,6 +173,7 @@ import ResultHeader from './ResultHeader'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import { createBookmark } from '../utils/bookmarkMapper'
 import CollectionSelectAll from '@/components/buttons/CollectionSelectAll.vue'
+// import { INITIAL_STATE } from '../store/state'
 
 export default {
   name: 'biobank-explorer-container',
@@ -174,10 +198,6 @@ export default {
       'foundCollectionIds',
       'activeFilters',
       'collectionsInPodium',
-      'selectedBiobankQuality',
-      'selectedCollectionQuality',
-      'satisfyAllBiobankQuality',
-      'satisfyAllCollectionQuality',
       'selectedCollections',
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
@@ -212,25 +232,12 @@ export default {
     },
     hasSelection () {
       return this.selectedCollections.length > 0
+    },
+    getUrl () {
+      return 'https://rd-connect.eu/'
     }
   },
   watch: {
-    selectedBiobankQuality: {
-      immediate: true,
-      handler: 'GetBiobankIdsForQuality'
-    },
-    selectedCollectionQuality: {
-      immediate: true,
-      handler: 'GetCollectionIdsForQuality'
-    },
-    satisfyAllBiobankQuality: {
-      immediate: true,
-      handler: 'GetBiobankIdsForQuality'
-    },
-    satisfyAllCollectionQuality: {
-      immediate: true,
-      handler: 'GetCollectionIdsForQuality'
-    },
     rsql: {
       immediate: true,
       handler: 'GetCollectionInfo'
@@ -242,10 +249,6 @@ export default {
     isPodium: {
       immediate: true,
       handler: 'GetPodiumCollections'
-    },
-    numberActiveFilters: {
-      immediate: true,
-      handler: 'GetFilterLists'
     }
   },
   methods: {
@@ -253,10 +256,7 @@ export default {
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
-      'GetPodiumCollections',
-      'GetBiobankIdsForQuality',
-      'GetCollectionIdsForQuality',
-      'GetFilterLists'
+      'GetPodiumCollections'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0
@@ -344,5 +344,75 @@ export default {
 
 .collection-cart > div:last-child {
   border:none !important;
+}
+
+.background-hack {
+  height: 0px;
+  position: relative;
+} */
+
+.background-hack-l {
+  height: 0px;
+  width: 50px;
+  position: relative;
+  left: -50px;
+  top: -16px;
+  background-color: #f4f4e1;
+}
+
+.background-hack-r {
+  height: 80px;
+  width: 50px;
+  position: relative;
+  left: 1130px;
+  top: -96px;
+  background-color: #f4f4e1;
+}
+
+.row-header {
+  text-align: left;
+  padding-top: 10px;
+  font-size: 150%;
+  height: 60px;
+  background-color: #f4f4e1;
+  width: 1160px;
+  position: relative;
+  left: 15px;
+  margin-top: -40px
+}
+.row-footer {
+    background-color: #F4F4E1;
+    position: relative;
+    min-width: 1900px;
+    height: 85px;
+    margin-top: 0px;
+    margin-left: 0;
+    text-align: center;
+    z-index: 109;
+    padding-left: -50px;
+    left: -350px;
+    border-top: 1px solid black;
+    background-color: #fafaf0;
+}
+.image {
+  position: relative;
+  margin-left: 80px;
+}
+.explorer {
+  padding-top: 10px;
+  background-color: white;
+  width:1140px;
+  min-width:1160px;
+  min-height: 800px;
+  z-index: 900;
+}
+.biobank-explorer-container {
+  margin-top: -20px;
+}
+.footer-p {
+  margin-bottom: 0rem;
+}
+.footer-link {
+  font-size: 120%;
 }
 </style>
