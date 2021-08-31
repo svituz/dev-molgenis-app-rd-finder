@@ -8,12 +8,11 @@
       @change="handleCollectionStatus"
       :checked="collectionSelected(collection.id)"
       :value="{ label: collection.label || collection.name, value: collection.id }"
-      hidden
-    />
+      hidden/>
     <label class="add-to-cart-label btn btn-success" :for="collection.id">Add to selection<span class="ml-2 fa fa-plus"></span></label>
     <label class="remove-from-cart-label btn btn-danger" :for="collection.id">
-      Remove from selection<span class="ml-2 fa fa-times"> </span
-    ></label>
+      Remove from selection<span class="ml-2 fa fa-times"> </span>
+    </label>
   </div>
 </template>
 
