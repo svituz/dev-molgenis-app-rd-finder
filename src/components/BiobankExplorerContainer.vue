@@ -181,7 +181,8 @@ export default {
       'selectedCollections',
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
-      'selectedNonCommercialCollections'
+      'selectedNonCommercialCollections',
+      'numberActiveFilters'
     ]),
     ...mapState([
       'isPodium',
@@ -241,6 +242,10 @@ export default {
     isPodium: {
       immediate: true,
       handler: 'GetPodiumCollections'
+    },
+    numberActiveFilters: {
+      immediate: true,
+      handler: 'GetFilterLists'
     }
   },
   methods: {
@@ -250,7 +255,8 @@ export default {
       'GetBiobankIds',
       'GetPodiumCollections',
       'GetBiobankIdsForQuality',
-      'GetCollectionIdsForQuality'
+      'GetCollectionIdsForQuality',
+      'GetFilterLists'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0

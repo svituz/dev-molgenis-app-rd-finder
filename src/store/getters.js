@@ -102,10 +102,12 @@ export default {
   biobankRsql: createBiobankRSQLQuery,
   resetPage: state => !state.isPaginating,
   showCountryFacet: state => state.showCountryFacet,
+  countryDict: state => state.countryDictionary,
   /**
    * Get map of active filters
    */
   activeFilters: state => state.filters.selections,
+  numberActiveFilters: state => state.filters.selections,
   getErrorMessage: state => {
     if (!state.error) {
       return undefined

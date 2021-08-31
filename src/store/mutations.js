@@ -112,6 +112,9 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
+  SetFilterLists (state) {
+    console.log('Setting Filter Lists')
+  },
   SetQualityStandardDictionary (state, response) {
     // Combine arrays from two tables and deduplicate
     const allStandards = [...new Set(
@@ -170,6 +173,7 @@ export default {
       // api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
       api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
     }
+    console.log(state.Dictionary)
   },
   /**
    * Store a single biobank in the state for showing a biobank report

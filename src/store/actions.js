@@ -127,6 +127,10 @@ export default {
         commit('SetError', error)
       })
   },
+  GetFilterLists ({ commit, state }) {
+    commit('SetFilterLists', state)
+    console.log('getting FilterLists')
+  },
   GetBiobankReport ({ commit, state }, biobankId) {
     if (state.allBiobanks) {
       commit('SetBiobankReport', state.allBiobanks.find(it => it.id === biobankId))

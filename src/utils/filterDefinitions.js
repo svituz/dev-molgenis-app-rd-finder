@@ -73,7 +73,7 @@ const filterDefinitions = (state) => [
     type: 'checkbox-filter',
     table: 'eu_bbmri_eric_material_types',
     options: genericFilterOptions('eu_bbmri_eric_material_types', 'materials'), // dynamicMaterialFilter(),
-    initiallyCollapsed: !state.route.query.materials,
+    initiallyCollapsed: false,
     filters: state.filters.selections.materials,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):'
@@ -89,7 +89,7 @@ const filterDefinitions = (state) => [
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
     initiallyCollapsed: false,
-    showOptions: []
+    optionsFilter: []
   }
   // {
   //   component: 'CheckboxFilter',
