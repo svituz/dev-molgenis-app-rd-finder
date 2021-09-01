@@ -1,4 +1,4 @@
-import { diagnosisAvailableQuery, createInQuery, createQuery } from '../../utils'
+import { diagnosisAvailableQuery, createInQuery, createQuery, createComparisons } from '../../utils'
 import { flatten } from 'lodash'
 import { transformToRSQL } from '@molgenis/rsql'
 
@@ -36,7 +36,8 @@ export const createBiobankRSQLQuery = (state) => transformToRSQL({
     createInQuery('country', state.filters.selections.country || []),
     createInQuery('id', state.biobankIdsWithSelectedQuality),
     createQuery(state.filters.selections.biobank_network, 'network', state.filters.satisfyAll.includes('biobank_network')),
-    createQuery(state.filters.selections.covid19, 'covid19biobank', state.filters.satisfyAll.includes('covid19'))
+    // createQuery(state.filters.selections.covid19, 'covid19biobank', state.filters.satisfyAll.includes('covid19'))
+    createComparisons('ressource_types', state.filters.selections.ressource_types || [])
   ])
 })
 
