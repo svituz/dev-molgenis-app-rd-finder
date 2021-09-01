@@ -266,6 +266,10 @@ export default {
     isPodium: {
       immediate: true,
       handler: 'GetPodiumCollections'
+    },
+    numberActiveFilters: {
+      immediate: true,
+      handler: 'GetFilterLists'
     }
   },
   methods: {
@@ -273,7 +277,8 @@ export default {
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
-      'GetPodiumCollections'
+      'GetPodiumCollections',
+      'GetFilterLists'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0

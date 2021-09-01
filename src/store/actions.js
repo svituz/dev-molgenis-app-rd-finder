@@ -1,6 +1,6 @@
 import api from '@molgenis/molgenis-api-client'
 import helpers from './helpers'
-import utils from '../utils'
+import utils, { createQuery, createInQuery } from '../utils'
 import 'array-flat-polyfill'
 
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
@@ -8,12 +8,11 @@ import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 /* API PATHS */
 const BIOBANK_API_PATH = '/api/v2/rd_connect_biobanks'
 const COLLECTION_API_PATH = '/api/v2/rd_connect_collections'
-// const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
-// const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
-// const FILEMETA_API_PATH = '/api/v2/rd_connect_fileMeta'
+const BIOBANK_QUALITY_STANDARDS = '/api/v2/rd_connect_ops_standards'
+const COLLECTION_QUALITY_STANDARDS = '/api/v2/rd_connect_lab_standards'
 
-// export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
-// export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
+export const COLLECTION_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_col_qual_info'
+export const BIOBANK_QUALITY_INFO_API_PATH = '/api/v2/rd_connect_bio_qual_info'
 
 const NETWORK_API_PATH = '/api/v2/rd_connect_networks'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
@@ -22,7 +21,7 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 
 /* Query Parameters */
 export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,country,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
-export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(*),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors,description,gene,timestamp),number_of_donors'
+export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(id,name,juridical_person,country,url,contact,ressource_types,description),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors),number_of_donors'
 /**/
 
 export default {
@@ -31,13 +30,13 @@ export default {
       commit('SetNegotiatorEntities', response)
     })
   },
-  // async GetQualityStandardInformation ({ commit }) {
-  //   const biobankQualityInfo = api.get(`${BIOBANK_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
-  //   const collectionQualityInfo = api.get(`${COLLECTION_QUALITY_STANDARDS}?num=10000&attrs=label`)
-  //   const response = await Promise.all([biobankQualityInfo, collectionQualityInfo])
+  async GetQualityStandardInformation ({ commit }) {
+    const biobankQualityInfo = api.get(`${BIOBANK_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
+    const collectionQualityInfo = api.get(`${COLLECTION_QUALITY_STANDARDS}?num=10000&attrs=label,description`)
+    const response = await Promise.all([biobankQualityInfo, collectionQualityInfo])
 
-  //   commit('SetQualityStandardDictionary', response)
-  // },
+    commit('SetQualityStandardDictionary', response)
+  },
   /*
    * Retrieves biobanks and stores them in the cache
    */
@@ -46,46 +45,61 @@ export default {
     api.get(`${BIOBANK_API_PATH}?num=10000&attrs=${COLLECTION_ATTRIBUTE_SELECTOR},*&q=${q}`)
       .then(response => {
         commit('SetBiobanks', response.items)
-      //  commit('SetCountryList', response)
       }, error => {
         commit('SetError', error)
       })
   },
   // We need to get id's to use in RSQL later, because we can't do a join on this table
-  // GetCollectionIdsForQuality ({ state, commit }) {
-  //   const collectionQuality = state.route.query.collection_quality ? state.route.query.collection_quality : null
-  //   const qualityIds = state.filters.selections.collection_quality ?? collectionQuality
-
-  //   if (qualityIds && qualityIds.length > 0) {
-  //     api.get(`${COLLECTION_QUALITY_INFO_API_PATH}?attrs=collection(id)&q=assess_level_col=in=(${qualityIds})`).then(response => {
-  //       commit('SetCollectionIdsWithSelectedQuality', response)
-  //     })
-  //   } else {
-  //     commit('SetCollectionIdsWithSelectedQuality', [])
-  //   }
-  // },
+  GetCollectionIdsForQuality ({ state, commit }) {
+    const collectionQuality = state.route.query.collection_quality ? state.route.query.collection_quality : null
+    const qualityIds = state.filters.selections.collection_quality ?? collectionQuality
+    const selection = 'assess_level_col'
+    if (qualityIds && qualityIds.length > 0) {
+      const query = encodeRsqlValue(transformToRSQL({
+        operator: 'AND',
+        operands: flatten([
+          state.filters.satisfyAll.includes('collection_quality')
+            ? createQuery(qualityIds, selection, state.filters.satisfyAll.includes('collection_quality'))
+            : createInQuery(selection, qualityIds)
+        ])
+      }
+      ))
+      api.get(`${COLLECTION_QUALITY_INFO_API_PATH}?attrs=collection(id)&q` + query).then(response => {
+        commit('SetCollectionIdsWithSelectedQuality', response)
+      })
+    } else {
+      commit('SetCollectionIdsWithSelectedQuality', [])
+    }
+  },
   // Same as collections above
-  // GetBiobankIdsForQuality ({ state, commit }) {
-  //   const biobankQuality = state.route.query.biobank_quality ? state.route.query.biobank_quality : null
-  //   const qualityIds = state.filters.selections.biobank_quality ?? biobankQuality
-
-  //   if (qualityIds && qualityIds.length > 0) {
-  //     api.get(`${BIOBANK_QUALITY_INFO_API_PATH}?attrs=biobank(id)&q=assess_level_bio=in=(${qualityIds})`).then(response => {
-  //       commit('SetBiobankIdsWithSelectedQuality', response)
-  //     })
-  //   } else {
-  //     commit('SetBiobankIdsWithSelectedQuality', [])
-  //   }
-  // },
+  GetBiobankIdsForQuality ({ state, commit }) {
+    const biobankQuality = state.route.query.biobank_quality ? state.route.query.biobank_quality : null
+    const qualityIds = state.filters.selections.biobank_quality ?? biobankQuality
+    const selection = 'assess_level_bio'
+    if (qualityIds && qualityIds.length > 0) {
+      const query = encodeRsqlValue(transformToRSQL({
+        operator: 'AND',
+        operands: flatten([
+          state.filters.satisfyAll.includes('biobank_quality')
+            ? createQuery(qualityIds, selection, state.filters.satisfyAll.includes('biobank_quality'))
+            : createInQuery(selection, qualityIds)
+        ])
+      }
+      ))
+      api.get(`${BIOBANK_QUALITY_INFO_API_PATH}?attrs=biobank(id)&q=` + query).then(response => {
+        commit('SetBiobankIdsWithSelectedQuality', response)
+      })
+    } else {
+      commit('SetBiobankIdsWithSelectedQuality', [])
+    }
+  },
   /*
    * Retrieves all collection identifiers matching the collection filters, and their biobanks
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    // commit('SetLoading', true)
-    // commit('SetCountryList', undefined)
-    // let url = `${'/api/data/rd_connect_biobanks?filter=id,country&size=10'}&q=${encodeRsqlValue(getters.biobankRsql)}`
-    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'
+    commit('SetCountryList', undefined)
+    let url = '/api/data/rd_connect_collections?filter=id,biobank,name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000&sort=biobank_label'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
     }
@@ -93,39 +107,23 @@ export default {
       .then(response => {
         commit('SetCollectionInfo', response)
         commit('SetDictionaries', response)
-        commit('SetCountryList', response)
-        commit('MapQueryToState')
+        // commit('SetCountryList', response)
       }, error => {
         commit('SetError', error)
       })
-    // await Promise.all([url])
   },
   GetBiobankIds ({ commit, getters }) {
     commit('SetBiobankIds', undefined)
-    // commit('SetCountryList', undefined)
-    let url = '/api/data/rd_connect_biobanks?filter=id,country&size=1000'
+    let url = '/api/data/rd_connect_biobanks?filter=id&size=10000&sort=name'
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
     api.get(url)
       .then(response => {
-        console.log('handler getbiobankids')
-        console.log(response.items)
-        // commit('SetCountryList', response)
         commit('SetBiobankIds', response.items.map(item => item.data.id))
       }, error => {
         commit('SetError', error)
       })
-    // url = '/api/data/rd_connect_collections?filter=biobank(country),country&expand=biobank&size=10000'
-    // if (getters.rsql) {
-    //   url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
-    // }
-    // api.get(url)
-    //   .then(response => {
-    //     commit('SetCountryList', response)
-    //   }, error => {
-    //     commit('SetError', error)
-    //   })
   },
   GetBiobankReport ({ commit, state }, biobankId) {
     if (state.allBiobanks) {
@@ -193,8 +191,3 @@ export default {
       .then(helpers.setLocationHref, error => commit('SetError', error))
   }
 }
-// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-4.css
-// /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-3.css
-//
-// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-4.css
-// https://unpkg.com/@molgenis-ui/molgenis-theme@2.1.1/dist/themes/mg-rd-connect-3.css

@@ -66,10 +66,10 @@ export default {
         // config option showCountryFacet is used to toggle Country facet
         // console.log(facet.name)
         // console.log(this.activeFilters)
-        console.log('activefilters')
+        // console.log('activefilters')
         // console.log(facet.name)
 
-        console.log(Object.keys(this.countryDict))
+        // console.log(Object.keys(this.countryDict))
         // console.log(Object.keys(state.countryDictionary))
 
         // if (facet.name === 'country') {

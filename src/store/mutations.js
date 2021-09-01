@@ -4,6 +4,7 @@ import { createBookmark } from '../utils/bookmarkMapper'
 import { fixCollectionTree } from './helpers'
 import filterDefinitions from '../utils/filterDefinitions'
 import api from '@molgenis/molgenis-api-client'
+import state from './state'
 
 const negotiatorConfigIds = ['directory', 'bbmri-eric-model']
 
@@ -71,6 +72,9 @@ export default {
   ResetFilters (state) {
     state.filters.selections = {}
   },
+  SetFilterLists (state) {
+    console.log('Setting Filter Lists')
+  },
   SetBiobanks (state, biobanks) {
     biobanks.forEach(biobank => {
       Vue.set(state.biobanks, biobank.id, fixCollectionTree(biobank))
@@ -109,6 +113,11 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
+  SetCountryDict (id, name) {
+    console.log(id, name)
+    state.countryDictionary[id] = name
+    console.log(state.countryDictionary)
+  },
   SetCountryList (state, response) {
     if (response === undefined) {
       // state.countryDictionary = response
@@ -117,11 +126,11 @@ export default {
     // return () => new Promise((resolve) => {
     const collects = response.items.map(item => (item.data.country.links.self))
 
-    console.log('setycoutnrylist')
+    // console.log('setycoutnrylist')
     // console.log(collects)
     // console.log(new Set(collects))
     const countrylist = Array.from(new Set(collects))
-    console.log(countrylist)
+    // console.log(countrylist)
     // const oo = []
     // state.countryDictionary = []
     // state.countryDictionary.AT = 'Austria'
