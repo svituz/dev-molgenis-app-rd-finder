@@ -308,13 +308,26 @@ export default {
   //     state.biobankIdsWithSelectedQuality = isBiobankQualityFilterActive ? ['no-biobank-found'] : []
   //   }
   // },
-  AddCollectionsToSelection (state, { collections, router }) {
+  SetCollectionsToSelection (state, { collections, bookmark }) {
     const currentIds = state.selectedCollections.map(sc => sc.value)
     const newCollections = collections.filter(cf => !currentIds.includes(cf.value))
     state.selectedCollections = state.selectedCollections.concat(newCollections)
 
-    if (router.bookmark) {
+    if (bookmark) {
       createBookmark(state.filters.selections, state.selectedCollections)
+    }
+  },
+  SetSearchHistory (state, history) {
+    if (history === '') {
+      history = 'No filters used.'
+    }
+
+    // only add if this is a different query than before
+    if (state.searchHistory.length && !state.searchHistory[state.searchHistory.length - 1] !== history) {
+      state.searchHistory.push(history)
+    } else {
+      // we can safely write history here.
+      state.searchHistory.push(history)
     }
   },
   RemoveCollectionsFromSelection (state, { collections, bookmark }) {
@@ -332,6 +345,7 @@ export default {
    */
   MapQueryToState (state, ie11Query) {
     const query = ie11Query || state.route.query
+
     const keysInQuery = Object.keys(query)
     // we load the filterdefinitions, grab the names, so we can loop over it to map the selections
     const filters = filterDefinitions(state).map(fd => fd.name)
@@ -355,11 +369,26 @@ export default {
       const cartIdString = atob(decoded)
       const cartIds = cartIdString.split(',')
       state.selectedCollections = cartIds.map(id => ({ label: state.collectionDictionary[id], value: id }))
+
+      // add the beginning of history if from a link-back url
+      if (state.searchHistory.length === 0) {
+        state.searchHistory.push('Starting with a preselected list of collections')
+      }
     }
 
     for (const filterName of filters) {
       if (query[filterName]) {
-        Vue.set(state.filters.selections, filterName, decodeURIComponent(query[filterName]).split(','))
+        let queryValues = decodeURIComponent(query[filterName]).split(',')
+        // if it's not ORPHA it's ICD-10, then we have to add urn:miriam:icd: to make it an id
+        // for backwards compatibility if it's not present
+        if (filterName === 'diagnosis_available') {
+          queryValues = queryValues.map(value => {
+            const isOrphanet = value.match(/^ORPHA/g)
+            const isICD10 = value.match(/^urn:miriam:icd:/g)
+            return (!isOrphanet && !isICD10) ? `urn:miriam:icd:${value}` : value
+          })
+        }
+        Vue.set(state.filters.selections, filterName, queryValues)
       }
     }
   },

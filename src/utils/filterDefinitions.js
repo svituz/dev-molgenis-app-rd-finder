@@ -81,6 +81,8 @@ const filterDefinitions = (state) => [
     // initiallyCollapsed: !state.route.query.materials,
     initiallyCollapsed: false,
     filters: state.filters.selections.materials,
+    satisfyAll: state.filters.satisfyAll.includes('materials'),
+    showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
     optionsFilter: []

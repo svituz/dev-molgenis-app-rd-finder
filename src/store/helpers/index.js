@@ -1,8 +1,9 @@
-import { createInQuery, createQuery, createComparisons } from '../../utils'
+import { diagnosisAvailableQuery, createInQuery, createQuery } from '../../utils'
 import { flatten } from 'lodash'
 import { transformToRSQL } from '@molgenis/rsql'
 
-export const isCodeRegex = /^([A-Z]|[XVI]+)(\d{0,2}(-([A-Z]\d{0,2})?|\.\d{0,3})?)?$/i
+export const isCodeRegex = /^(ORPHA|[A-Z]|[XVI]+):?(\d{0,2}(-([A-Z]\d{0,2})?|\.\d{0,3})?|\d+)?$/i
+
 /**
  * @example queries
  * q=country.id=in=(NL,BE)
@@ -17,7 +18,7 @@ export const createRSQLQuery = (state) => transformToRSQL({
     createQuery(state.filters.selections.materials, 'materials', state.filters.satisfyAll.includes('materials')),
     createQuery(state.filters.selections.type, 'type', state.filters.satisfyAll.includes('type')),
     createQuery(state.filters.selections.dataType, 'data_categories', state.filters.satisfyAll.includes('dataType')),
-    createQuery(state.filters.selections.diagnosis_available, 'diagnosis_available.code', state.filters.satisfyAll.includes('diagnosis_available')),
+    diagnosisAvailableQuery(state.filters.selections.diagnosis_available, 'diagnosis_available.id', state.filters.satisfyAll.includes('diagnosis_available')),
     createQuery(state.collectionIdsWithSelectedQuality, 'id', state.filters.satisfyAll.includes('collection_quality')),
     createInQuery('collaboration_commercial', state.filters.selections.commercial_use || []),
     createQuery(state.filters.selections.collection_network, 'network', state.filters.satisfyAll.includes('collection_network')),
@@ -34,9 +35,8 @@ export const createBiobankRSQLQuery = (state) => transformToRSQL({
   operands: flatten([
     createInQuery('country', state.filters.selections.country || []),
     createInQuery('id', state.biobankIdsWithSelectedQuality),
-    createInQuery('network', state.filters.selections.biobank_network || []),
-    // createComparisons('covid19biobank', state.filters.selections.covid19 || []),
-    createComparisons('ressource_types', state.filters.selections.ressource_types || [])
+    createQuery(state.filters.selections.biobank_network, 'network', state.filters.satisfyAll.includes('biobank_network')),
+    createQuery(state.filters.selections.covid19, 'covid19biobank', state.filters.satisfyAll.includes('covid19'))
   ])
 })
 
@@ -45,15 +45,23 @@ const createNegotiatorQueryBody = (state, getters, url) => {
     /* Remove the nToken from the URL to prevent duplication on the negotiator side when a query is edited more than once */
     URL: url.replace(/&nToken=\w{32}/, ''),
     entityId: state.negotiatorCollectionEntityId,
-    humanReadable: getHumanReadableString(state, getters),
+    humanReadable: createHistoryJournal(state),
     nToken: state.nToken
   }
 
   const collections = state.isPodium ? getters.collectionsInPodium : getters.selectedCollections
   result.rsql = transformToRSQL({ operator: 'AND', operands: createInQuery('id', collections.map(sc => sc.value)) })
-  result.humanReadable += result.humanReadable.length ? ' and with custom collection selection.' : 'Custom collection selection.'
 
   return result
+}
+
+function createHistoryJournal (state) {
+  let journal = ''
+
+  for (let i = 0, length = state.searchHistory.length; i < length; i++) {
+    journal += `#${i + 1}: ${state.searchHistory[i]}\r\n`
+  }
+  return journal.substr(0, journal.length - 2) // remove the last \r\n
 }
 
 export const getHumanReadableString = (state, { getFilterDefinitions }) => {
