@@ -129,7 +129,6 @@ export const diagnosisAvailableFilterOptions = (tableName, filterName) => {
   // destructure the query part from the multi-filter
   return ({ query, queryType }) => new Promise((resolve) => {
     let url = `/api/v2/${tableName}`
-
     if (query) {
       // initial load, values are id's
       if (queryType === 'in') {

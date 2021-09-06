@@ -66,10 +66,10 @@ const filterDefinitions = (state) => [
     initialDisplayItems: 10,
     maxVisibleOptions: 10,
     table: 'rd_connect_disease_types',
-    options: diagnosisAvailableFilterOptions('rd_connect_disease_types'),
-    initiallyCollapsed: !state.route.query.diagnosis_available,
-    humanReadableString: 'Disease type(s):'
-    // optionsFilter: ['hollymolly']
+    options: diagnosisAvailableFilterOptions('rd_connect_disease_types', 'diagnosis_available'),
+    initiallyCollapsed: false,
+    humanReadableString: 'Disease type(s):',
+    optionsFilter: []
   },
   {
     component: 'CheckboxFilter',
