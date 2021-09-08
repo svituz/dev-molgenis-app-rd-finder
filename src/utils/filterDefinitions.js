@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
 import { genericFilterOptions, diagnosisAvailableFilterOptions } from './filterOptions'
+import store from '../store'
 // import { genericFilterOptions } from './filterOptions'
 
 const filterDefinitions = (state) => [
@@ -23,7 +24,7 @@ const filterDefinitions = (state) => [
     filters: state.filters.selections.ressource_types,
     maxVisibleOptions: 10,
     humanReadableString: 'Ressource type(s):',
-    optionsFilter: []
+    optionsFilter: Object.keys(store.getters.restype)
     // all: true
   },
   // {
@@ -97,7 +98,8 @@ const filterDefinitions = (state) => [
     filters: state.filters.selections.country,
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
-    initiallyCollapsed: false
+    initiallyCollapsed: false,
+    optionsFilter: Object.keys(store.getters.countryDict)
     // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary
     // optionsFilter: genericFilterOptions2
     // optionsFilter: Object.keys(state.countryDictionary)

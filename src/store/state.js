@@ -32,6 +32,7 @@ export default {
   collectionBiobankDictionary: {},
   collectionDictionary: {},
   countryDictionary: [],
+  restype: [],
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],

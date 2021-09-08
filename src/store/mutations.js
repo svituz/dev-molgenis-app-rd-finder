@@ -125,6 +125,69 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
+  ResetC (state, emt) {
+    state.countryDictionary = emt
+  },
+  SetC (state, resul) {
+    // state.countryDictionary = []
+    console.log('mut results')
+    // console.log(resul.constructor.name)
+    console.log(resul)
+
+    // if (resul) {
+    //   state.countryDictionary = []
+    // }
+    // state.countryDictionary = []
+
+    resul.then(function (result) {
+      // state.countryDictionary = undefined
+      // const o = []
+      // Vue.set(state.countryDictionary, [])
+      state.countryDictionary = []
+      // state.commit('countrysDictionary', [])
+      // state.countryDictionary.splice(0)
+      result.forEach((res) => {
+        state.countryDictionary[res.data.id] = res.data.name || ''
+        // o[res.data.id] = res.data.name || ''
+      })
+      // console.log('statedict')
+      // console.log(o)
+      console.log(state.countryDictionary)
+      // state.countryDictionary = o
+    })
+
+    // resul[1].then(function (result) {
+    //   state.restype = []
+    //   console.log(result[1])
+    //   result[1].forEach((res) => {
+    //     state.restype[res.data.id] = res.data.label || ''
+    //     // o[res.data.id] = res.data.name || ''
+    //   })
+    // })
+
+    // console.log(state.countryDictionary)
+    // state.countryDictionary = o
+    // console.log('state.dict')
+    // console.log(state.countryDictionary)
+    // const collections = results.map(item => (
+    //   {
+    //     id: item.data.id,
+    //     name: item.data.name
+    //   }))
+    // console.log(collections)
+    // resul.forEach((res) => {
+    //   state.countryDictionary[res.data.id] = res.data.name || ''
+    // })
+    // console.log(resul)
+    // state.countryDictionary = results
+    // results.forEach(function (res) {
+    //   state.countryDictionary[res.id] = res.name
+    // })
+
+    // results.forEach((res) => {
+    //   state.countryDictionary[res.data.id] = res.data.name || ''
+    // })
+  },
   SetCountryList (state, response) {
     if (response === undefined) {
       // state.countryDictionary = response

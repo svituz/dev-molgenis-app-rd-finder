@@ -77,7 +77,7 @@ export default {
 
         // if (facet.name === 'country') {
         //   console.log(this.filterDefinitions)
-        this.getFilterDefinitions[4].optionsFilter = Object.keys(this.countryDict)
+        // this.getFilterDefinitions[4].optionsFilter = Object.keys(this.countryDict)
         // }
         // if (!facet.name === 'ressource_types') {
         //   console.log(this.countryDict)

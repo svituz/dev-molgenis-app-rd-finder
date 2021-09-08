@@ -103,6 +103,7 @@ export default {
   resetPage: state => !state.isPaginating,
   showCountryFacet: state => state.showCountryFacet,
   countryDict: state => state.countryDictionary,
+  restype: state => state.restype,
   /**
    * Get map of active filters
    */
