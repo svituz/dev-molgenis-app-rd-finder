@@ -51,29 +51,27 @@ export const genericFilterOptions = (tableName, filterName) => {
   })
 }
 
+export const reducedFilterOptions = (entityName) => {
+  // if latest filter selection is filterName dont do anything,
+  // else create reduced filter array for specific filter
+  if (Object.keys(state.filters.selections).at(-1) === entityName && state.loading) {
+    return 0
+  } else {
+    // store.dispatch('GetReducedFilter', entityName)
+    console.log('Wanna Reduce Filters for:')
+    console.log(entityName)
+  }
+}
 export const genericFilterOptions2 = (tableName) => {
   return () => new Promise((resolve) => {
     api.get(`/api/v2/${tableName}`).then(response => {
       // const filterOptions = response.items.map((obj) => { return { text: obj.label || obj.name, value: obj.id } })
-      // console.log('generic')
-      // console.log(filterOptions)
       // resolve(filterOptions)
-
       var dict = []
-
       for (var count in state.countryDictionary) {
         // console.log(count)
         dict.push({ name: state.countryDictionary[count], id: count })
       }
-      console.log('statecoutrydict')
-      console.log(state.countryDictionary)
-      console.log(state.countryDictionary.length)
-
-      // console.log(state.countryDictionary)
-      console.log(dict)
-      console.log('over')
-      // console.log('dict')
-      // console.log(dict)
       const countryresolve = dict.map((obj) => { return { text: obj.name, value: obj.id } })
       // UpdateFilter (state, { name, value, router })
       resolve(countryresolve)
@@ -100,22 +98,15 @@ export const genericFilterOptions2 = (tableName) => {
 // export const optionsFilteroptions = () => {
 //   // const collects = response.items.map(item => (item.data.country.links.self))
 
-//   console.log('filteroptions')
-//   // console.log(new Set(collects))
 //   const countrylist = ['http://localhost:8082/api/data/rd_connect_countries/AT', 'http://localhost:8082/api/data/rd_connect_countries/CZ']
-//   // console.log(countrylist.length)
-//   // const oo = []
 //   return ({ oo }) => new Promise((resolve) => {
 //     countrylist.forEach(function (coll) {
 //       api.get(coll).then(response => {
 //         const oo = ['AT', 'CZ'] // response.map((data) => { return data.id })
-//         // console.log(oo)
 //         // const key = response.data.id
 //         // const name = response.data.name
 //         // oo[key] = name
 //         resolve(oo)
-//         // console.log('hier')
-//         // console.log(oo)
 //       })
 //     })
 //   })

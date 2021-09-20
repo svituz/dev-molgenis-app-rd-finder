@@ -82,7 +82,7 @@ const filterDefinitions = (state) => [
     // initiallyCollapsed: !state.route.query.materials,
     initiallyCollapsed: false,
     filters: state.filters.selections.materials,
-    satisfyAll: state.filters.satisfyAll.includes('materials'),
+    satisfyAll: state.filters.satisfyAll.includes('material'),
     showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
@@ -100,6 +100,7 @@ const filterDefinitions = (state) => [
     humanReadableString: 'Countries:',
     initiallyCollapsed: false,
     optionsFilter: Object.keys(store.getters.countryDict)
+    // adaptiveFunction: reducedFilterOptions('country')
     // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary
     // optionsFilter: genericFilterOptions2
     // optionsFilter: Object.keys(state.countryDictionary)

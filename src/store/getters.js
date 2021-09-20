@@ -104,6 +104,9 @@ export default {
   showCountryFacet: state => state.showCountryFacet,
   countryDict: state => state.countryDictionary,
   restype: state => state.restype,
+  adaptiveFilters: (state, { filterName }) => {
+    return state.adaptiveDict[filterName]
+  },
   /**
    * Get map of active filters
    */

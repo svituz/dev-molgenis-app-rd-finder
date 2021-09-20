@@ -118,8 +118,42 @@ export default {
       })
     // await Promise.all([url])
   },
+  GetFilterReduction ({ commit }) {
+    console.log('GetFilterReduction')
+    commit('SetReducedFilters', 'filter')
+  },
+  GetReducedFilter ({ commit, getters }, entityName) {
+    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,materials,parent_collection&expand=biobank&size=10000'
+    if (getters.rsql) {
+      url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
+    }
+    async function fetchData (response, entityName) {
+      console.log('filterName:')
+      console.log(entityName)
+      console.log(response.items)
+      // const key = String(entityName)
+      const collects = response.items.map(item => (item.data[entityName].links.self))
+      const countrylist = Array.from(new Set(collects))
+      const aa = []
+      for (var coll in countrylist) {
+        aa.push(api.get(countrylist[coll]))
+      }
+      const results = await Promise.all(aa)
+      return results
+    }
+    api.get(url)
+      .then(response => {
+        const resu = fetchData(response, entityName)
+        if (resu) {
+          console.log(resu)
+          commit('SetReducedFilters', entityName, resu)
+        }
+      }, error => {
+        commit('SetError', error)
+      })
+  },
   GetCountry ({ commit, getters }) {
-    console.log('action getcountry')
+    // console.log('action getcountry')
     let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
@@ -136,7 +170,7 @@ export default {
       // console.log(response.items[key].data.biobank.data.country.links.self)
         aa.push(api.get(countrylist[coll]))
       }
-      console.log(response)
+      // console.log(response)
       const collects2 = response.items.map(item => (item.data.biobank.data.ressource_types.links.self))
       const rescourcelist = Array.from(new Set(collects2))
       const bb = []
@@ -150,8 +184,8 @@ export default {
       // const c2 = api.get(countrylist[1])
       const results = await Promise.all(aa)
 
-      console.log('awaiiting')
-      console.log(results)
+      // console.log('awaiiting')
+      // console.log(results)
       // console.log(state.countryDictionary)
       // const oo = []
       // return new Promise(resolve => { resolve(results) })
@@ -169,9 +203,9 @@ export default {
         // if (response !== undefined) {
         // commit('ResetC', [])
         // }
-        console.log('fff')
+        // console.log('fff')
         // console.log(getters.activeFilters)
-        console.log(response)
+        // console.log(response)
         const resu = fetchcountrydata(response)
         // commit('ResetC', [])
         if (resu) {
@@ -191,8 +225,8 @@ export default {
     }
     api.get(url)
       .then(response => {
-        console.log('handler getbiobankids')
-        console.log(response.items)
+        // console.log('handler getbiobankids')
+        // console.log(response.items)
         // commit('SetCountryList', response)
         commit('SetBiobankIds', response.items.map(item => item.data.id))
       }, error => {
@@ -208,10 +242,6 @@ export default {
     //   }, error => {
     //     commit('SetError', error)
     //   })
-  },
-  GetFilterLists ({ commit, state }) {
-    commit('SetFilterLists', state)
-    console.log('getting FilterLists')
   },
   GetBiobankReport ({ commit, state }, biobankId) {
     if (state.allBiobanks) {

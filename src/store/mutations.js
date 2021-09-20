@@ -130,9 +130,9 @@ export default {
   },
   SetC (state, resul) {
     // state.countryDictionary = []
-    console.log('mut results')
+    // console.log('mut results')
     // console.log(resul.constructor.name)
-    console.log(resul)
+    // console.log(resul)
 
     // if (resul) {
     //   state.countryDictionary = []
@@ -152,7 +152,7 @@ export default {
       })
       // console.log('statedict')
       // console.log(o)
-      console.log(state.countryDictionary)
+      // console.log(state.countryDictionary)
       // state.countryDictionary = o
     })
 
@@ -196,11 +196,11 @@ export default {
     // return () => new Promise((resolve) => {
     const collects = response.items.map(item => (item.data.country.links.self))
 
-    console.log('setycoutnrylist')
+    // console.log('setycoutnrylist')
     // console.log(collects)
     // console.log(new Set(collects))
     const countrylist = Array.from(new Set(collects))
-    console.log(countrylist)
+    // console.log(countrylist)
     // const oo = []
     // state.countryDictionary = []
     // state.countryDictionary.AT = 'Austria'
@@ -347,6 +347,21 @@ export default {
   },
   SetNetworkBiobanks (state, biobanks) {
     state.networkReport.biobanks = biobanks
+  },
+  SetReducedFilters (state, filterName, resul) {
+    resul.then(function (result) {
+      state.filterDict[filterName] = []
+      // state.commit('countrysDictionary', [])
+      // state.countryDictionary.splice(0)
+      result.forEach((res) => {
+        state[filterName][res.data.id] = res.data.name || ''
+        // o[res.data.id] = res.data.name || ''
+      })
+      // console.log('statedict')
+      // console.log(o)
+      // console.log(state.countryDictionary)
+      // state.countryDictionary = o
+    })
   },
   // methods for rehydrating bookmark
   // SetCollectionIdsWithSelectedQuality (state, response) {

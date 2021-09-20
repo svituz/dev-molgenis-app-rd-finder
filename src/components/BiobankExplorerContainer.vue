@@ -261,7 +261,8 @@ export default {
       'GetCollectionInfo',
       'GetBiobankIds',
       'GetPodiumCollections',
-      'GetCountry'
+      'GetCountry',
+      'GetFilterReduction'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0
