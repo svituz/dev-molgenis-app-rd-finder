@@ -120,8 +120,14 @@ export default {
   },
   GetFilterReduction ({ commit, getters }) {
     async function fetchData (url) {
-      api.get(url).then(response => { console.log(response.aggs.xLabels) })
-      commit('SetReducedFilters', 'filter')
+      api.get(url).then(response => {
+        console.log('commit')
+        console.log(response.aggs.xLabels)
+        // commit('SetReducedFilters', 'filter')
+        commit('SetC', response.aggs.xLabels)
+      }, error => {
+        commit('SetError', error)
+      })
     }
     console.log('GetFilterReduction')
     const baseUrl = '/api/v2/rd_connect_collections'
@@ -134,7 +140,7 @@ export default {
       console.log(filterName)
       console.log(filterOptions)
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
-      const url = baseUrl + unique + '&q=country==UK&q=country==AT'
+      const url = baseUrl + unique + '&q=ressource_types==BIOBANK&q=country==BE&size=100' // + filterOptions // UK&q=country==AT'
       fetchData(url)
     }
   },

@@ -138,23 +138,29 @@ export default {
     //   state.countryDictionary = []
     // }
     // state.countryDictionary = []
-
-    resul.then(function (result) {
-      // state.countryDictionary = undefined
-      // const o = []
-      // Vue.set(state.countryDictionary, [])
-      state.countryDictionary = []
-      // state.commit('countrysDictionary', [])
-      // state.countryDictionary.splice(0)
-      result.forEach((res) => {
-        state.countryDictionary[res.data.id] = res.data.name || ''
-        // o[res.data.id] = res.data.name || ''
-      })
-      // console.log('statedict')
-      // console.log(o)
-      // console.log(state.countryDictionary)
-      // state.countryDictionary = o
+    console.log(resul)
+    state.countryDictionary = []
+    resul.forEach((res) => {
+      state.countryDictionary[res.id || res.name] = res.name || ''
+      // o[res.data.id] = res.data.name || ''
     })
+    // resul.then(function (result) {
+    //   // state.countryDictionary = undefined
+    //   // const o = []
+    //   // Vue.set(state.countryDictionary, [])
+    //   console.log(result)
+    //   state.countryDictionary = []
+    //   // state.commit('countrysDictionary', [])
+    //   // state.countryDictionary.splice(0)
+    //   result.forEach((res) => {
+    //     state.countryDictionary[res.data.id] = res.data.name || ''
+    //     // o[res.data.id] = res.data.name || ''
+    //   })
+    //   // console.log('statedict')
+    //   // console.log(o)
+    //   // console.log(state.countryDictionary)
+    //   // state.countryDictionary = o
+    // })
 
     // resul[1].then(function (result) {
     //   state.restype = []
