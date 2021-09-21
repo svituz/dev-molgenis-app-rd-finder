@@ -118,24 +118,33 @@ export default {
       })
     // await Promise.all([url])
   },
-  GetFilterReduction ({ commit, getters }) {
-    async function fetchData (url) {
-      api.get(url).then(response => { console.log(response.aggs.xLabels) })
-      commit('SetReducedFilters', 'filter')
+  GetFilterReduction ({ commit, getters, state }) {
+    async function fetchData (url, filterName) {
+      var filterDict = {}
+      api.get(url).then(response => {
+        for (var res in response.aggs.xLabels) {
+          filterDict[response.aggs.xLabels[res].id] = response.aggs.xLabels[res].name || response.aggs.xLabels[res].label
+        }
+      })
+      const load = { filter: filterName, list: filterDict }
+      commit('SetReducedFilters', load)
     }
-    console.log('GetFilterReduction')
+
     const baseUrl = '/api/v2/rd_connect_collections'
-    const filters = Object.keys(getters.activeFilters)
-    // console.log(getters.rsql)
-    console.log(filters)
-    for (const filter in Object.keys(getters.activeFilters)) {
-      const filterName = filters[filter]
-      const filterOptions = getters.activeFilters[filters[filter]]
-      console.log(filterName)
-      console.log(filterOptions)
+    const dynamicFilters = ['country', 'materials']
+    for (const filter in dynamicFilters) {
+      const filterName = dynamicFilters[filter]
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
-      const url = baseUrl + unique + '&q=country==UK&q=country==AT'
-      fetchData(url)
+      var additionalFilters = ''
+      for (const activeFilter in getters.activeFilters) {
+        for (const option in getters.activeFilters[activeFilter]) {
+          additionalFilters = additionalFilters + `&q=${activeFilter}==${getters.activeFilters[activeFilter][option]}`
+        }
+      }
+      // console.log(additionalFilters)
+      const url = baseUrl + unique + additionalFilters
+      console.log(url)
+      fetchData(url, filterName)
     }
   },
   GetReducedFilter ({ commit, getters }, entityName) {

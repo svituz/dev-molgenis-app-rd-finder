@@ -348,20 +348,12 @@ export default {
   SetNetworkBiobanks (state, biobanks) {
     state.networkReport.biobanks = biobanks
   },
-  SetReducedFilters (state, filterName, resul) {
-    resul.then(function (result) {
-      state.filterDict[filterName] = []
-      // state.commit('countrysDictionary', [])
-      // state.countryDictionary.splice(0)
-      result.forEach((res) => {
-        state[filterName][res.data.id] = res.data.name || ''
-        // o[res.data.id] = res.data.name || ''
-      })
-      // console.log('statedict')
-      // console.log(o)
-      // console.log(state.countryDictionary)
-      // state.countryDictionary = o
-    })
+  SetReducedFilters (state, load) {
+    const filterName = load.filter
+    console.log(filterName)
+    const filterDict = load.list
+    console.log(filterDict)
+    state[filterName] = filterDict
   },
   // methods for rehydrating bookmark
   // SetCollectionIdsWithSelectedQuality (state, response) {
