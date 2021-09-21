@@ -250,9 +250,9 @@ export default {
       immediate: true,
       handler: 'GetPodiumCollections'
     },
-    foundCollectionIds: {
+    activeFilters: {
       immediate: true,
-      handler: 'GetCountry'
+      handler: 'GetFilterReduction'
     }
   },
   methods: {

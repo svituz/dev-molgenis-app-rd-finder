@@ -118,9 +118,25 @@ export default {
       })
     // await Promise.all([url])
   },
-  GetFilterReduction ({ commit }) {
+  GetFilterReduction ({ commit, getters }) {
+    async function fetchData (url) {
+      api.get(url).then(response => { console.log(response.aggs.xLabels) })
+      commit('SetReducedFilters', 'filter')
+    }
     console.log('GetFilterReduction')
-    commit('SetReducedFilters', 'filter')
+    const baseUrl = '/api/v2/rd_connect_collections'
+    const filters = Object.keys(getters.activeFilters)
+    // console.log(getters.rsql)
+    console.log(filters)
+    for (const filter in Object.keys(getters.activeFilters)) {
+      const filterName = filters[filter]
+      const filterOptions = getters.activeFilters[filters[filter]]
+      console.log(filterName)
+      console.log(filterOptions)
+      const unique = `?aggs=x==${filterName};distinct==${filterName}`
+      const url = baseUrl + unique + '&q=country==UK&q=country==AT'
+      fetchData(url)
+    }
   },
   GetReducedFilter ({ commit, getters }, entityName) {
     let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,materials,parent_collection&expand=biobank&size=10000'
