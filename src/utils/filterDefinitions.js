@@ -86,7 +86,7 @@ const filterDefinitions = (state) => [
     showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
-    optionsFilter: []
+    optionsFilter: Object.keys(store.getters.materialsDict)
   },
   {
     component: 'CheckboxFilter',

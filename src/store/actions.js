@@ -4,6 +4,7 @@ import utils from '../utils'
 import 'array-flat-polyfill'
 
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
+// import { filter } from 'core-js/core/array'
 
 /* API PATHS */
 const BIOBANK_API_PATH = '/api/v2/rd_connect_biobanks'
@@ -119,61 +120,68 @@ export default {
     // await Promise.all([url])
   },
   GetFilterReduction ({ commit, getters }) {
-    async function fetchData (url) {
+    async function fetchData (url, filterName) {
       api.get(url).then(response => {
-        console.log('commit')
-        console.log(response.aggs.xLabels)
         // commit('SetReducedFilters', 'filter')
-        commit('SetC', response.aggs.xLabels)
+        const load = { filter: filterName, options: response.aggs.xLabels }
+        commit('SetC', load)
       }, error => {
         commit('SetError', error)
       })
     }
-    console.log('GetFilterReduction')
+
     const baseUrl = '/api/v2/rd_connect_collections'
-    const filters = Object.keys(getters.activeFilters)
-    // console.log(getters.rsql)
-    console.log(filters)
-    for (const filter in Object.keys(getters.activeFilters)) {
-      const filterName = filters[filter]
-      const filterOptions = getters.activeFilters[filters[filter]]
-      console.log(filterName)
-      console.log(filterOptions)
+    const dynamicFilters = ['country', 'materials']
+    for (const filter in dynamicFilters) {
+      const filterName = dynamicFilters[filter]
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
-      const url = baseUrl + unique + '&q=ressource_types==BIOBANK&q=country==BE&size=100' // + filterOptions // UK&q=country==AT'
-      fetchData(url)
-    }
-  },
-  GetReducedFilter ({ commit, getters }, entityName) {
-    let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,materials,parent_collection&expand=biobank&size=10000'
-    if (getters.rsql) {
-      url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
-    }
-    async function fetchData (response, entityName) {
-      console.log('filterName:')
-      console.log(entityName)
-      console.log(response.items)
-      // const key = String(entityName)
-      const collects = response.items.map(item => (item.data[entityName].links.self))
-      const countrylist = Array.from(new Set(collects))
-      const aa = []
-      for (var coll in countrylist) {
-        aa.push(api.get(countrylist[coll]))
-      }
-      const results = await Promise.all(aa)
-      return results
-    }
-    api.get(url)
-      .then(response => {
-        const resu = fetchData(response, entityName)
-        if (resu) {
-          console.log(resu)
-          commit('SetReducedFilters', entityName, resu)
+      var additionalFilters = ''
+      for (const activeFilter in getters.activeFilters) {
+        console.log('ee')
+        console.log(getters.activeFilters)
+        console.log(filterName)
+        if (getters.activeFilters[activeFilter] !== filterName) {
+          for (const option in getters.activeFilters[activeFilter]) {
+            additionalFilters = additionalFilters + `&q=${activeFilter}==${getters.activeFilters[activeFilter][option]}`
+          }
         }
-      }, error => {
-        commit('SetError', error)
-      })
+      }
+      // console.log(additionalFilters)
+      const url = baseUrl + unique + additionalFilters
+      console.log(url)
+      fetchData(url, filterName)
+    }
   },
+  // GetReducedFilter ({ commit, getters }, entityName) {
+  //   let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,materials,parent_collection&expand=biobank&size=10000'
+  //   if (getters.rsql) {
+  //     url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
+  //   }
+  //   async function fetchData (response, entityName) {
+  //     console.log('filterName:')
+  //     console.log(entityName)
+  //     console.log(response.items)
+  //     // const key = String(entityName)
+  //     const collects = response.items.map(item => (item.data[entityName].links.self))
+  //     const countrylist = Array.from(new Set(collects))
+  //     const aa = []
+  //     for (var coll in countrylist) {
+  //       aa.push(api.get(countrylist[coll]))
+  //     }
+  //     const results = await Promise.all(aa)
+  //     return results
+  //   }
+  //   api.get(url)
+  //     .then(response => {
+  //       const resu = fetchData(response, entityName)
+  //       if (resu) {
+  //         console.log(resu)
+  //         commit('SetReducedFilters', entityName, resu)
+  //       }
+  //     }, error => {
+  //       commit('SetError', error)
+  //     })
+  // },
   GetCountry ({ commit, getters }) {
     // console.log('action getcountry')
     let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'

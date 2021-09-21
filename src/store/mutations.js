@@ -128,7 +128,7 @@ export default {
   ResetC (state, emt) {
     state.countryDictionary = emt
   },
-  SetC (state, resul) {
+  SetC (state, load) {
     // state.countryDictionary = []
     // console.log('mut results')
     // console.log(resul.constructor.name)
@@ -138,12 +138,21 @@ export default {
     //   state.countryDictionary = []
     // }
     // state.countryDictionary = []
+    console.log(load)
+    const resul = load.options
+    const filtername = load.filter
+    console.log('setc')
+    console.log(filtername)
     console.log(resul)
+    console.log(state.filters.labels)
     state.countryDictionary = []
+    state[filtername] = []
     resul.forEach((res) => {
-      state.countryDictionary[res.id || res.name] = res.name || ''
+      // state.countryDictionary[res.id || res.name] = res.name || ''
+      state[filtername][res.id || res.name] = res.name || ''
       // o[res.data.id] = res.data.name || ''
     })
+    // console.log(state[filtername])
     // resul.then(function (result) {
     //   // state.countryDictionary = undefined
     //   // const o = []
@@ -354,20 +363,12 @@ export default {
   SetNetworkBiobanks (state, biobanks) {
     state.networkReport.biobanks = biobanks
   },
-  SetReducedFilters (state, filterName, resul) {
-    resul.then(function (result) {
-      state.filterDict[filterName] = []
-      // state.commit('countrysDictionary', [])
-      // state.countryDictionary.splice(0)
-      result.forEach((res) => {
-        state[filterName][res.data.id] = res.data.name || ''
-        // o[res.data.id] = res.data.name || ''
-      })
-      // console.log('statedict')
-      // console.log(o)
-      // console.log(state.countryDictionary)
-      // state.countryDictionary = o
-    })
+  SetReducedFilters (state, load) {
+    const filterName = load.filter
+    console.log(filterName)
+    const filterDict = load.list
+    console.log(filterDict)
+    state[filterName] = filterDict
   },
   // methods for rehydrating bookmark
   // SetCollectionIdsWithSelectedQuality (state, response) {

@@ -102,7 +102,8 @@ export default {
   biobankRsql: createBiobankRSQLQuery,
   resetPage: state => !state.isPaginating,
   showCountryFacet: state => state.showCountryFacet,
-  countryDict: state => state.countryDictionary,
+  countryDict: state => state.country,
+  materialsDict: state => state.materials,
   restype: state => state.restype,
   adaptiveFilters: (state, { filterName }) => {
     return state.adaptiveDict[filterName]
