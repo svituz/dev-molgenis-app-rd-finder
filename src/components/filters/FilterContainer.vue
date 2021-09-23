@@ -103,17 +103,7 @@ export default {
   methods: {
     ...mapMutations(['UpdateFilterSelection', 'UpdateFilterSatisfyAll']),
     filterChange (name, value) {
-      // console.log('chango')
-      // console.log(this.countryDict)
-      // console.log('value')
-      // console.log(name)
-      // console.log(value)
       this.UpdateFilterSelection({ name, value, router: this.$router })
-      // console.log(Object.keys(this.countryDict))
-      // console.log(Object.keys(state.countryDictionary))
-      // if (name === 'country') {
-      //   console.log(Object.keys(this.countryDict))
-      // }
     }
   }
 }

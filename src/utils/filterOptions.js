@@ -58,8 +58,6 @@ export const reducedFilterOptions = (entityName) => {
     return 0
   } else {
     // store.dispatch('GetReducedFilter', entityName)
-    console.log('Wanna Reduce Filters for:')
-    console.log(entityName)
   }
 }
 export const genericFilterOptions2 = (tableName) => {
