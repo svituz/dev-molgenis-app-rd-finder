@@ -839,9 +839,13 @@ def build_starmodel(eric_data_star):
 
     return star_eric_data
 
+def replace_null(eric_data):
+    # replace NaN values in disease table with "NAV" (Not Available / Unknown / Other)
+    eric_data["rd_connect_collections"]["diagnosis_available"].fillna('NAV', inplace=True)
 
 if __name__ == "__main__":
     sub_collections = True
+    rebuild = False
 
     eric_name = "empty_eric_ext.xlsx"
     eric_name_star = "empty_eric_ext_star.xlsx"
@@ -854,30 +858,37 @@ if __name__ == "__main__":
     #     output_name = "rd_connect_catalogue.xlsx"
     #     package_name = "rd_connect"
 
-    # rd_data : EMX file format with data from RD Connect json
-    rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
-    # eric_data: empty eric (empty bbmri format sheets) , gets filled with RD data
-    eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
-    eric_data_star = pd.read_excel(eric_name_star, sheet_name=None, engine="openpyxl")
+    if rebuild:
+        # rd_data : EMX file format with data from RD Connect json
+        rd_data = pd.read_excel(rd_name, sheet_name=None, engine="openpyxl")
+        # eric_data: empty eric (empty bbmri format sheets) , gets filled with RD data
+        eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
+        # eric_data_star = pd.read_excel(eric_name_star, sheet_name=None, engine="openpyxl")
 
 
 
-    # add_organization_info(eric_data, rd_data)
-    # add_persons(eric_data, rd_data)
-    # add_collections_info(eric_data, rd_data, sub_collections)
-    # additional_organization_info(eric_data, rd_data)
+        add_organization_info(eric_data, rd_data)
+        add_persons(eric_data, rd_data)
+        add_collections_info(eric_data, rd_data, sub_collections)
+        additional_organization_info(eric_data, rd_data)
+        
+        # change package name
+        eric_data = rename_packages(eric_data, package_name)
 
-    add_organization_info(eric_data_star, rd_data)
-    add_persons(eric_data_star, rd_data)
-    add_collections_info(eric_data_star, rd_data, sub_collections)
-    additional_organization_info(eric_data_star, rd_data)
+    else:
+        eric_name = "rd_connect_catalogue.xlsx"
+        eric_data = pd.read_excel(eric_name, sheet_name=None, engine="openpyxl")
+    # add_organization_info(eric_data_star, rd_data)
+    # add_persons(eric_data_star, rd_data)
+    # add_collections_info(eric_data_star, rd_data, sub_collections)
+    # additional_organization_info(eric_data_star, rd_data)
 
-    data_starmodel = build_starmodel(eric_data_star)
+    # data_starmodel = build_starmodel(eric_data_star)
 
 
-    # change package name
 
-    eric_data = rename_packages(eric_data, package_name)
-    #write_excel(eric_data, output_name)
-    write_excel(data_starmodel, output_name_starmodel)
+    replace_null(eric_data)
+
+    write_excel(eric_data, output_name)
+    # write_excel(data_starmodel, output_name_starmodel)
 
