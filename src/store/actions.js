@@ -4,6 +4,7 @@ import utils from '../utils'
 import 'array-flat-polyfill'
 
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
+// import state from './state'
 // import { filter } from 'core-js/core/array'
 
 /* API PATHS */
@@ -124,6 +125,7 @@ export default {
       api.get(url).then(response => {
         // commit('SetReducedFilters', 'filter')
         const load = { filter: filterName, options: response.aggs.xLabels }
+        console.log(load)
         commit('SetC', load)
       }, error => {
         commit('SetError', error)
@@ -132,21 +134,32 @@ export default {
 
     const baseUrl = '/api/v2/rd_connect_collections'
     const dynamicFilters = ['country', 'materials']
+
     for (const filter in dynamicFilters) {
       const filterName = dynamicFilters[filter]
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
-      var additionalFilters = ''
+      var additionalFilters = '&q='
+
       for (const activeFilter in getters.activeFilters) {
-        console.log('ee')
-        console.log(getters.activeFilters)
-        console.log(filterName)
-        if (getters.activeFilters[activeFilter] !== filterName) {
+        if (activeFilter !== filterName) {
+          var tempList = ''
           for (const option in getters.activeFilters[activeFilter]) {
-            additionalFilters = additionalFilters + `&q=${activeFilter}==${getters.activeFilters[activeFilter][option]}`
+            tempList = tempList + `${getters.activeFilters[activeFilter][option]},`
           }
+          tempList = tempList.slice(0, -1)
+
+          if (getters.activeFilters[activeFilter].length > 1) {
+            additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`
+          } else {
+            additionalFilters = additionalFilters + `${activeFilter}==${tempList}`
+          }
+          additionalFilters = additionalFilters + ';'
         }
       }
       // console.log(additionalFilters)
+      if (additionalFilters.at(-1) === ';' || additionalFilters.at(-1) === ',') {
+        additionalFilters = additionalFilters.slice(0, -1)
+      }
       const url = baseUrl + unique + additionalFilters
       console.log(url)
       fetchData(url, filterName)
@@ -253,6 +266,8 @@ export default {
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
+    console.log('GetIDs:')
+    console.log(url)
     api.get(url)
       .then(response => {
         // console.log('handler getbiobankids')
