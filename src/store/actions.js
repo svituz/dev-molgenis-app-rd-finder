@@ -126,7 +126,7 @@ export default {
         // commit('SetReducedFilters', 'filter')
         const load = { filter: filterName, options: response.aggs.xLabels }
         console.log(load)
-        commit('SetC', load)
+        commit('SetCountry', load)
       }, error => {
         commit('SetError', error)
       })
@@ -147,6 +147,7 @@ export default {
             tempList = tempList + `${getters.activeFilters[activeFilter][option]},`
           }
           tempList = tempList.slice(0, -1)
+          // additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`
 
           if (getters.activeFilters[activeFilter].length > 1) {
             additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`

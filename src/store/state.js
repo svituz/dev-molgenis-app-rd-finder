@@ -34,10 +34,10 @@ export default {
   adaptiveDict: {},
   country: [],
   restype: [],
+  materials: [],
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],
-  materials: [],
   filters: {
     selections: {},
     satisfyAll: [],

@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { createBookmark } from '../utils/bookmarkMapper'
 import { fixCollectionTree } from './helpers'
 import filterDefinitions from '../utils/filterDefinitions'
-import api from '@molgenis/molgenis-api-client'
+// import api from '@molgenis/molgenis-api-client'
 
 const negotiatorConfigIds = ['directory', 'bbmri-eric-model']
 
@@ -128,182 +128,54 @@ export default {
   ResetC (state, emt) {
     state.countryDictionary = emt
   },
-  SetC (state, load) {
-    // state.countryDictionary = []
-    // console.log('mut results')
-    // console.log(resul.constructor.name)
-    // console.log(resul)
-
-    // if (resul) {
-    //   state.countryDictionary = []
-    // }
-    // state.countryDictionary = []
-    console.log(load)
-    const resul = load.options
+  SetCountry (state, load) {
+    // const resul = load.options
     const filtername = load.filter
-    console.log('setc')
-    console.log(filtername)
-    console.log(resul)
-    console.log(state.filters.labels)
-    state.countryDictionary = []
+    // console.log('setc')
+    // console.log(filtername)
+    // console.log(resul)
+    // console.log(state.filters.labels)
+    // state.countryDictionary = []
     state[filtername] = []
-    resul.forEach((res) => {
+    load.options.forEach((res) => {
       // state.countryDictionary[res.id || res.name] = res.name || ''
       state[filtername][res.id || res.name] = res.name || ''
       // o[res.data.id] = res.data.name || ''
     })
-    // console.log(state[filtername])
-    // resul.then(function (result) {
-    //   // state.countryDictionary = undefined
-    //   // const o = []
-    //   // Vue.set(state.countryDictionary, [])
-    //   console.log(result)
-    //   state.countryDictionary = []
-    //   // state.commit('countrysDictionary', [])
-    //   // state.countryDictionary.splice(0)
-    //   result.forEach((res) => {
-    //     state.countryDictionary[res.data.id] = res.data.name || ''
-    //     // o[res.data.id] = res.data.name || ''
-    //   })
-    //   // console.log('statedict')
-    //   // console.log(o)
-    //   // console.log(state.countryDictionary)
-    //   // state.countryDictionary = o
-    // })
-
-    // resul[1].then(function (result) {
-    //   state.restype = []
-    //   console.log(result[1])
-    //   result[1].forEach((res) => {
-    //     state.restype[res.data.id] = res.data.label || ''
-    //     // o[res.data.id] = res.data.name || ''
-    //   })
-    // })
-
-    // console.log(state.countryDictionary)
-    // state.countryDictionary = o
-    // console.log('state.dict')
-    // console.log(state.countryDictionary)
-    // const collections = results.map(item => (
-    //   {
-    //     id: item.data.id,
-    //     name: item.data.name
-    //   }))
-    // console.log(collections)
-    // resul.forEach((res) => {
-    //   state.countryDictionary[res.data.id] = res.data.name || ''
-    // })
-    // console.log(resul)
-    // state.countryDictionary = results
-    // results.forEach(function (res) {
-    //   state.countryDictionary[res.id] = res.name
-    // })
-
-    // results.forEach((res) => {
-    //   state.countryDictionary[res.data.id] = res.data.name || ''
-    // })
   },
-  SetCountryList (state, response) {
-    if (response === undefined) {
-      // state.countryDictionary = response
-      return
-    }
-    // return () => new Promise((resolve) => {
-    const collects = response.items.map(item => (item.data.country.links.self))
+  // SetCountryList (state, response) {
+  //   if (response === undefined) {
+  //     // state.countryDictionary = response
+  //     return
+  //   }
+  //   // return () => new Promise((resolve) => {
+  //   const collects = response.items.map(item => (item.data.country.links.self))
 
-    // console.log('setycoutnrylist')
-    // console.log(collects)
-    // console.log(new Set(collects))
-    const countrylist = Array.from(new Set(collects))
-    // console.log(countrylist)
-    // const oo = []
-    // state.countryDictionary = []
-    // state.countryDictionary.AT = 'Austria'
-    // var ii = new Promise((resolve) => {
-    //   countrylist.forEach(async function (coll) {
-    //     api.get(coll).then(response => {
-    //       const key = response.data.id
-    //       const name = response.data.name
-    //       oo[key] = name
-    //       resolve(oo)
-    //       // console.log('hier')
-    //       // console.log(key)
-    //     })
-    //   })
-    // })
+  //   // console.log('setycoutnrylist')
+  //   // console.log(collects)
+  //   // console.log(new Set(collects))
+  //   const countrylist = Array.from(new Set(collects))
 
-    async function fetchcountrydata (countrylist) {
-      // countrylist.forEach(function (coll) {
-      // //   oo.push(api.get(coll))
-      // // }
-      const aa = []
-      for (var coll in countrylist) {
-      // console.log(response.items[key].data.biobank.data.country.links.self)
-        aa.push(api.get(countrylist[coll]))
-      }
+  //   async function fetchcountrydata (countrylist) {
+  //     // countrylist.forEach(function (coll) {
+  //     // //   oo.push(api.get(coll))
+  //     // // }
+  //     const aa = []
+  //     for (var coll in countrylist) {
+  //     // console.log(response.items[key].data.biobank.data.country.links.self)
+  //       aa.push(api.get(countrylist[coll]))
+  //     }
 
-      // console.log(aa)
-      // const c1 = api.get(countrylist[0])
-      // const c2 = api.get(countrylist[1])
-      const results = await Promise.all(aa)
-      // console.log('awaiiting')
-      // console.log(results)
-      // console.log(state.countryDictionary)
-      state.countryDictionary = []
-      results.forEach((res) => {
-        state.countryDictionary[res.data.id] = res.data.name || ''
-      })
+  //     const results = await Promise.all(aa)
 
-      // state.countryDictionary[results[0].data.id] = results[0].data.name
-      // console.log(state.countryDictionary)
-    }
-    // console.log('await done 1')
-    fetchcountrydata(countrylist)
-    // response = ii // sinnlos
-    // console.log('length oo')
-    // console.log(oo.length)
-    // console.log(response)
-    // console.log('await done 2')
-    // console.log(state.countryDictionary)
-    // console.log(state.countryDictionary.length)
-
-    // for (var key in oo.items) {
-    //   console.log('key')
-    //   console.log(key)
-    // }
-
-    // state.countryDictionary = oo
-    // (state.countryDictionary[response.data.id] = response.data.name))
-    // resolve(state.countryDictionary[response.data.id])
-
-    // })
-    // })
-    // if (response === undefined) {
-    //   state.countrylist = response
-    //   return
-    // }
-
-    // const CountryList = []
-    // state.countryDictionary = []
-    // // const countries = []
-
-    // for (var key in response.items) {
-    //   // console.log(response.items[key].data.biobank.data.country.links.self)
-    //   CountryList.push(response.items[key].data.country.links.self)
-    // }
-    // // console.log(Array.from(new Set(CountryList)))
-    // const countrylist = Array.from(new Set(CountryList))
-    // // console.log(countrylist.length)
-    // // console.log(CountryList.length)
-    // for (var country in countrylist) {
-    //   // api.get(state.countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
-    //   api.get(countrylist[country]).then(response => (state.countryDictionary[response.data.id] = response.data.name))
-    //   // await state.countryDictionary
-    // }
-    // await state.countryDictionary
-    // console.log('await dict')
-    // console.log(state.countryDictionary)
-  },
+  //     state.countryDictionary = []
+  //     results.forEach((res) => {
+  //       state.countryDictionary[res.data.id] = res.data.name || ''
+  //     })
+  //   }
+  //   // console.log('await done 1')
+  //   fetchcountrydata(countrylist)
+  // },
   // SetQualityStandardDictionary (state, response) {
   //   // Combine arrays from two tables and deduplicate
   //   const allStandards = [...new Set(
