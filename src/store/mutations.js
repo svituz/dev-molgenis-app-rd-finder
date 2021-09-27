@@ -128,7 +128,7 @@ export default {
   ResetC (state, emt) {
     state.countryDictionary = emt
   },
-  SetCountry (state, load) {
+  SetFilterReduction (state, load) {
     // const resul = load.options
     const filtername = load.filter
     // console.log('setc')
@@ -143,39 +143,6 @@ export default {
       // o[res.data.id] = res.data.name || ''
     })
   },
-  // SetCountryList (state, response) {
-  //   if (response === undefined) {
-  //     // state.countryDictionary = response
-  //     return
-  //   }
-  //   // return () => new Promise((resolve) => {
-  //   const collects = response.items.map(item => (item.data.country.links.self))
-
-  //   // console.log('setycoutnrylist')
-  //   // console.log(collects)
-  //   // console.log(new Set(collects))
-  //   const countrylist = Array.from(new Set(collects))
-
-  //   async function fetchcountrydata (countrylist) {
-  //     // countrylist.forEach(function (coll) {
-  //     // //   oo.push(api.get(coll))
-  //     // // }
-  //     const aa = []
-  //     for (var coll in countrylist) {
-  //     // console.log(response.items[key].data.biobank.data.country.links.self)
-  //       aa.push(api.get(countrylist[coll]))
-  //     }
-
-  //     const results = await Promise.all(aa)
-
-  //     state.countryDictionary = []
-  //     results.forEach((res) => {
-  //       state.countryDictionary[res.data.id] = res.data.name || ''
-  //     })
-  //   }
-  //   // console.log('await done 1')
-  //   fetchcountrydata(countrylist)
-  // },
   // SetQualityStandardDictionary (state, response) {
   //   // Combine arrays from two tables and deduplicate
   //   const allStandards = [...new Set(
