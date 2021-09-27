@@ -154,26 +154,20 @@ export default {
         // skip the filter that was just changed
         if (activeFilter !== filterName) {
           var tempList = ''
+          // iterate over active filters and add its ID to tempList (E.G: DNA,SERUM,)
           for (const option in getters.activeFilters[activeFilter]) {
             tempList = tempList + `${getters.activeFilters[activeFilter][option]},`
           }
           // remove the last comma from URL:
           tempList = tempList.slice(0, -1)
-
-          if (getters.activeFilters[activeFilter].length > 1) {
-            additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`
-          } else {
-            additionalFilters = additionalFilters + `${activeFilter}==${tempList}`
-          }
-          additionalFilters = additionalFilters + ';'
+          additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList});`
         }
       }
-      // check and remove the last semicolon from URL:
-      if (additionalFilters.at(-1) === ';') {
-        additionalFilters = additionalFilters.slice(0, -1)
-      }
-      // construct query URL and fetch data for each dynamic fitler:
+      // remove the last semicolon from URL:
+      additionalFilters = additionalFilters.slice(0, -1)
+      // construct query URL and fetch data for each dynamic filter:
       const url = baseUrl + unique + additionalFilters
+      console.log(url)
       fetchData(url, filterName)
     }
   },
