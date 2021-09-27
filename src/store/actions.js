@@ -131,13 +131,13 @@ export default {
         commit('SetError', error)
       })
     }
-
-    if (Object.keys(getters.activeFilters).length === 0) {
-      return 0
-    }
-
     const baseUrl = '/api/v2/rd_connect_collections'
     const dynamicFilters = ['country', 'materials']
+
+    if (Object.keys(getters.activeFilters).length === 0) {
+      commit('ResetDynamicFilters', dynamicFilters)
+      return 0
+    }
 
     for (const filter in dynamicFilters) {
       const filterName = dynamicFilters[filter]
@@ -151,7 +151,6 @@ export default {
             tempList = tempList + `${getters.activeFilters[activeFilter][option]},`
           }
           tempList = tempList.slice(0, -1)
-          // additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`
 
           if (getters.activeFilters[activeFilter].length > 1) {
             additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList})`
@@ -162,7 +161,7 @@ export default {
         }
       }
       // console.log(additionalFilters)
-      if (additionalFilters.at(-1) === ';' || additionalFilters.at(-1) === ',') {
+      if (additionalFilters.at(-1) === ';') {
         additionalFilters = additionalFilters.slice(0, -1)
       }
       const url = baseUrl + unique + additionalFilters

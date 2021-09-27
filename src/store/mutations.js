@@ -125,22 +125,16 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
-  ResetC (state, emt) {
-    state.countryDictionary = emt
+  ResetDynamicFilters (state, dynamicFilters) {
+    for (var filterName in dynamicFilters) {
+      state[dynamicFilters[filterName]] = []
+    }
   },
   SetFilterReduction (state, load) {
-    // const resul = load.options
     const filtername = load.filter
-    // console.log('setc')
-    // console.log(filtername)
-    // console.log(resul)
-    // console.log(state.filters.labels)
-    // state.countryDictionary = []
     state[filtername] = []
-    load.options.forEach((res) => {
-      // state.countryDictionary[res.id || res.name] = res.name || ''
-      state[filtername][res.id || res.name] = res.name || ''
-      // o[res.data.id] = res.data.name || ''
+    load.options.forEach((item) => {
+      state[filtername][item.id || item.name] = item.name || ''
     })
   },
   // SetQualityStandardDictionary (state, response) {
