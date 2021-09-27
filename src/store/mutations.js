@@ -131,10 +131,12 @@ export default {
     }
   },
   SetFilterReduction (state, load) {
+    // unpack load and push item.id OR item.name
+    // to state[filtername] (which is initialized as list)
     const filtername = load.filter
     state[filtername] = []
     load.options.forEach((item) => {
-      state[filtername][item.id || item.name] = item.name || ''
+      state[filtername].push(item.id || item.name)
     })
   },
   // SetQualityStandardDictionary (state, response) {
@@ -195,13 +197,6 @@ export default {
   },
   SetNetworkBiobanks (state, biobanks) {
     state.networkReport.biobanks = biobanks
-  },
-  SetReducedFilters (state, load) {
-    const filterName = load.filter
-    console.log(filterName)
-    const filterDict = load.list
-    console.log(filterDict)
-    state[filterName] = filterDict
   },
   // methods for rehydrating bookmark
   // SetCollectionIdsWithSelectedQuality (state, response) {

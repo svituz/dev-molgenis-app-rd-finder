@@ -23,8 +23,7 @@ const filterDefinitions = (state) => [
     initiallyCollapsed: false,
     filters: state.filters.selections.ressource_types,
     maxVisibleOptions: 10,
-    humanReadableString: 'Ressource type(s):',
-    optionsFilter: Object.keys(store.getters.restype)
+    humanReadableString: 'Ressource type(s):'
     // all: true
   },
   // {
@@ -86,7 +85,7 @@ const filterDefinitions = (state) => [
     showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
-    optionsFilter: Object.keys(store.getters.materialsDict)
+    optionsFilter: store.getters.materialsList
   },
   {
     component: 'CheckboxFilter',
@@ -99,7 +98,7 @@ const filterDefinitions = (state) => [
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
     initiallyCollapsed: false,
-    optionsFilter: Object.keys(store.getters.countryDict)
+    optionsFilter: store.getters.countryList
     // adaptiveFunction: reducedFilterOptions('country')
     // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary
     // optionsFilter: genericFilterOptions2

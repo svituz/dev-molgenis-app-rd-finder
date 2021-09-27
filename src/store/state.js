@@ -31,9 +31,8 @@ export default {
   biobankIdsWithSelectedQuality: [],
   collectionBiobankDictionary: {},
   collectionDictionary: {},
-  adaptiveDict: {},
+  // initialize lists for dynamic filters (country & materials):
   country: [],
-  restype: [],
   materials: [],
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],

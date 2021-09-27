@@ -102,9 +102,6 @@ export default {
    */
   GetCollectionInfo ({ commit, getters }) {
     commit('SetCollectionInfo', undefined)
-    // commit('SetLoading', true)
-    // commit('SetCountryList', undefined)
-    // let url = `${'/api/data/rd_connect_biobanks?filter=id,country&size=10'}&q=${encodeRsqlValue(getters.biobankRsql)}`
     let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'
     if (getters.rsql) {
       url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
@@ -113,17 +110,19 @@ export default {
       .then(response => {
         commit('SetCollectionInfo', response)
         commit('SetDictionaries', response)
-        // commit('SetCountryList', response)
         commit('MapQueryToState')
       }, error => {
         commit('SetError', error)
       })
-    // await Promise.all([url])
   },
   GetFilterReduction ({ commit, getters }) {
+    // prepare async function and build correct query URLs for
+    // the api/v2 - implementation of sql: DISTINCT command.
+    // E.G. for country: ?aggs=x==country;distinct==country
+
     async function fetchData (url, filterName) {
+      // asnyc function so we can load data and commit it right away
       api.get(url).then(response => {
-        // commit('SetReducedFilters', 'filter')
         const load = { filter: filterName, options: response.aggs.xLabels }
         console.log(load)
         commit('SetFilterReduction', load)
@@ -131,25 +130,34 @@ export default {
         commit('SetError', error)
       })
     }
+    // prepare baseUrl and set list for dynamic filters that will be updated
+    // this is still hardcoded!! List needs to be set here, state.List needs also to be set
+    // in states object.
     const baseUrl = '/api/v2/rd_connect_collections'
     const dynamicFilters = ['country', 'materials']
 
+    // if there is no activeFilter (anymore):
+    // reset the dynamic filters:
     if (Object.keys(getters.activeFilters).length === 0) {
       commit('ResetDynamicFilters', dynamicFilters)
       return 0
     }
 
+    // iterate over previously defined dynamic filters
+    // and create one query URL for each dynamic filter
     for (const filter in dynamicFilters) {
       const filterName = dynamicFilters[filter]
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
       var additionalFilters = '&q='
 
       for (const activeFilter in getters.activeFilters) {
+        // skip the filter that was just changed
         if (activeFilter !== filterName) {
           var tempList = ''
           for (const option in getters.activeFilters[activeFilter]) {
             tempList = tempList + `${getters.activeFilters[activeFilter][option]},`
           }
+          // remove the last comma from URL:
           tempList = tempList.slice(0, -1)
 
           if (getters.activeFilters[activeFilter].length > 1) {
@@ -160,109 +168,15 @@ export default {
           additionalFilters = additionalFilters + ';'
         }
       }
-      // console.log(additionalFilters)
+      // check and remove the last semicolon from URL:
       if (additionalFilters.at(-1) === ';') {
         additionalFilters = additionalFilters.slice(0, -1)
       }
+      // construct query URL and fetch data for each dynamic fitler:
       const url = baseUrl + unique + additionalFilters
-      console.log(url)
       fetchData(url, filterName)
     }
   },
-  // GetReducedFilter ({ commit, getters }, entityName) {
-  //   let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,materials,parent_collection&expand=biobank&size=10000'
-  //   if (getters.rsql) {
-  //     url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
-  //   }
-  //   async function fetchData (response, entityName) {
-  //     console.log('filterName:')
-  //     console.log(entityName)
-  //     console.log(response.items)
-  //     // const key = String(entityName)
-  //     const collects = response.items.map(item => (item.data[entityName].links.self))
-  //     const countrylist = Array.from(new Set(collects))
-  //     const aa = []
-  //     for (var coll in countrylist) {
-  //       aa.push(api.get(countrylist[coll]))
-  //     }
-  //     const results = await Promise.all(aa)
-  //     return results
-  //   }
-  //   api.get(url)
-  //     .then(response => {
-  //       const resu = fetchData(response, entityName)
-  //       if (resu) {
-  //         console.log(resu)
-  //         commit('SetReducedFilters', entityName, resu)
-  //       }
-  //     }, error => {
-  //       commit('SetError', error)
-  //     })
-  // },
-  // GetCountry ({ commit, getters }) {
-  //   // console.log('action getcountry')
-  //   let url = '/api/data/rd_connect_collections?filter=id,biobank(id,name,label,country,ressource_types),name,label,country,collaboration_commercial,parent_collection&expand=biobank&size=10000'
-  //   if (getters.rsql) {
-  //     url = `${url}&q=${encodeRsqlValue(getters.rsql)}`
-  //   }
-  //   async function fetchcountrydata (response) {
-  //     // countrylist.forEach(function (coll) {
-  //     // //   oo.push(api.get(coll))
-  //     // // }
-
-  //     const collects = response.items.map(item => (item.data.country.links.self))
-  //     const countrylist = Array.from(new Set(collects))
-  //     const aa = []
-  //     for (var coll in countrylist) {
-  //     // console.log(response.items[key].data.biobank.data.country.links.self)
-  //       aa.push(api.get(countrylist[coll]))
-  //     }
-  //     // console.log(response)
-  //     const collects2 = response.items.map(item => (item.data.biobank.data.ressource_types.links.self))
-  //     const rescourcelist = Array.from(new Set(collects2))
-  //     const bb = []
-  //     for (var coll2 in rescourcelist) {
-  //     // console.log(response.items[key].data.biobank.data.country.links.self)
-  //       bb.push(api.get(rescourcelist[coll2]))
-  //     }
-
-  //     // console.log(aa)
-  //     // const c1 = api.get(countrylist[0])
-  //     // const c2 = api.get(countrylist[1])
-  //     const results = await Promise.all(aa)
-
-  //     // console.log('awaiiting')
-  //     // console.log(results)
-  //     // console.log(state.countryDictionary)
-  //     // const oo = []
-  //     // return new Promise(resolve => { resolve(results) })
-  //     return results
-  //   }
-  //   //   console.log('oo')
-  //   //   console.log(results)
-  //   //   // results.forEach((res) => {
-  //   //   //   oo[res.data.id] = res.data.name || ''
-  //   //   // })
-  //   //   console.log(oo)
-  //   // }
-  //   api.get(url)
-  //     .then(response => {
-  //       // if (response !== undefined) {
-  //       // commit('ResetC', [])
-  //       // }
-  //       // console.log('fff')
-  //       // console.log(getters.activeFilters)
-  //       // console.log(response)
-  //       const resu = fetchcountrydata(response)
-  //       // commit('ResetC', [])
-  //       if (resu) {
-  //         commit('SetC', resu)
-  //       }
-  //       // commit('SetC', resu)
-  //     }, error => {
-  //       commit('SetError', error)
-  //     })
-  // },
   GetBiobankIds ({ commit, getters }) {
     commit('SetBiobankIds', undefined)
     // commit('SetCountryList', undefined)
