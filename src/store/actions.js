@@ -126,7 +126,7 @@ export default {
         // commit('SetReducedFilters', 'filter')
         const load = { filter: filterName, options: response.aggs.xLabels }
         console.log(load)
-        commit('SetCountry', load)
+        commit('SetFilterReduction', load)
       }, error => {
         commit('SetError', error)
       })
