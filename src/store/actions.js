@@ -164,14 +164,17 @@ export default {
           // remove the last comma from URL:
           tempList = tempList.slice(0, -1)
           additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList});`
-        } else {
-          additionalFilters = ''
         }
       }
+
       // remove the last semicolon from URL:
       additionalFilters = additionalFilters.slice(0, -1)
       // construct query URL and fetch data for each dynamic filter:
-      const url = baseUrl + unique + additionalFilters
+      var url = baseUrl + unique + additionalFilters
+      if (url.at(url.length - 1) === 'q') {
+        url = url.slice(0, -2)
+      }
+
       console.log(url)
       fetchData(url, filterName)
       console.log('after fetch:')
