@@ -39,8 +39,7 @@ export default {
   components: { StringFilter, CheckboxFilter, MultiFilter, FilterCard, CovidFilter, CovidNetworkFilter },
   data () {
     return {
-      debounce: undefined,
-      filterList: { country: ['AT'] }
+      debounce: undefined
     }
   },
   computed: {

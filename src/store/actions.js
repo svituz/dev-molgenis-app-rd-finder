@@ -124,18 +124,21 @@ export default {
       // asnyc function so we can load data and commit it right away
       api.get(url).then(response => {
         const load = { filter: filterName, options: response.aggs.xLabels }
-        console.log(load)
         commit('SetFilterReduction', load)
       }, error => {
         commit('SetError', error)
       })
     }
     // prepare baseUrl and set list for dynamic filters that will be updated
-    // this is still hardcoded!! List needs to be set here, state.List needs also to be set
-    // in states object.
     const baseUrl = '/api/v2/rd_connect_collections'
-    const dynamicFilters = ['country', 'materials']
+    const dynamicFilters = []
+    const dynFilt = getters.getFilterDefinitions
 
+    for (const filter in dynFilt) {
+      if (dynFilt[filter].dynamic) {
+        dynamicFilters.push(dynFilt[filter].name)
+      }
+    }
     // if there is no activeFilter (anymore):
     // reset the dynamic filters:
     if (Object.keys(getters.activeFilters).length === 0) {
@@ -169,6 +172,8 @@ export default {
       const url = baseUrl + unique + additionalFilters
       console.log(url)
       fetchData(url, filterName)
+      console.log('after fetch:')
+      console.log(getters.dynamicFilters)
     }
   },
   GetBiobankIds ({ commit, getters }) {

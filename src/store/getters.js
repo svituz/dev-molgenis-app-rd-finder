@@ -104,6 +104,7 @@ export default {
   showCountryFacet: state => state.showCountryFacet,
   countryList: state => state.country,
   materialsList: state => state.materials,
+  dynamicFilters: state => state.dynamicFilters,
   adaptiveFilters: (state, { filterName }) => {
     return state.adaptiveDict[filterName]
   },

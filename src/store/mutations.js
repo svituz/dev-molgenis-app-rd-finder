@@ -125,18 +125,19 @@ export default {
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
   },
-  ResetDynamicFilters (state, dynamicFilters) {
-    for (var filterName in dynamicFilters) {
-      state[dynamicFilters[filterName]] = []
+  ResetDynamicFilters (state, filters) {
+    for (var filterName in filters) {
+      // state.dynamicFilters[filters[filterName]] = []
+      Vue.set(state.dynamicFilters, filters[filterName], [])
     }
   },
   SetFilterReduction (state, load) {
     // unpack load and push item.id OR item.name
     // to state[filtername] (which is initialized as list)
     const filtername = load.filter
-    state[filtername] = []
+    state.dynamicFilters[filtername] = []
     load.options.forEach((item) => {
-      state[filtername].push(item.id || item.name)
+      state.dynamicFilters[filtername].push(item.id || item.name)
     })
   },
   // SetQualityStandardDictionary (state, response) {
@@ -265,6 +266,16 @@ export default {
       .filter(name => keysInQuery.includes(name))
       .filter(fr => !['search', 'nToken'].includes(fr)) // remove specific filters, else we are doing them again.
 
+    // console.log('MapState')
+    // console.log(filterDefinitions(state))
+    // for (const filter in filterDefinitions(state)) {
+    //   const filt = filterDefinitions(state)[filter]
+    //   console.log(filt)
+    //   if (filt.dynamic) {
+    //     Vue.set(state.dynamicFilters, filt.name, [])
+    //   }
+    // }
+    // console.log(state.dynamicFilters)
     if (query.search) {
       Vue.set(state.filters.selections, 'search', decodeURIComponent(query.search))
     }
