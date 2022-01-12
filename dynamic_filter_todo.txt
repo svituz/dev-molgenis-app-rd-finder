@@ -1,0 +1,8 @@
+state.js dictionary of dynamic filters in state e.g.: dynamic_dict : { "country" : [],
+                                                              "materials" : [] }
+
+??.js init as empty dict.
+
+getters.js: get_dynamic_filters(filterName) return state.dynamicFilters[filterName]
+
+actions.js: replace static list with getters.get_dynamic_filters
