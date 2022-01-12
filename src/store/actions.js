@@ -164,6 +164,8 @@ export default {
           // remove the last comma from URL:
           tempList = tempList.slice(0, -1)
           additionalFilters = additionalFilters + `${activeFilter}=in=(${tempList});`
+        } else {
+          additionalFilters = ''
         }
       }
       // remove the last semicolon from URL:
