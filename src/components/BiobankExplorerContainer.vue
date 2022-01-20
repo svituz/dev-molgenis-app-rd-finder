@@ -204,8 +204,7 @@ export default {
       'selectedCollections',
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
-      'selectedNonCommercialCollections',
-      'numberActiveFilters'
+      'selectedNonCommercialCollections'
     ]),
     ...mapState([
       'isPodium',

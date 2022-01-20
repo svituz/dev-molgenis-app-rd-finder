@@ -51,7 +51,6 @@ export default {
   mounted () {
     this.GetNegotiatorType()
     this.GetNegotiatorEntities()
-  },
-  name: 'biobank-explorer'
+  }
 }
 </script>

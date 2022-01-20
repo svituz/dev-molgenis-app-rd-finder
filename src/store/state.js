@@ -41,7 +41,6 @@ export default {
   // initialize lists for dynamic filters (country & materials):
   // country: [],
   // materials: [],
-  dynamicFilters: {},
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],

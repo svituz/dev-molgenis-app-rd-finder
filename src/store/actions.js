@@ -1,6 +1,6 @@
 import api from '@molgenis/molgenis-api-client'
 import helpers from './helpers'
-import utils, { createQuery, createInQuery } from '../utils'
+import utils from '../utils'
 import initialCollectionColumns from '../config/initialCollectionColumns'
 import 'array-flat-polyfill'
 
