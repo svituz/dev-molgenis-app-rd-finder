@@ -5,7 +5,13 @@
       class="card-header biobank-card-header"
       @click.prevent="collapsed = !collapsed">
       <div class="row">
-        <div class="col-md-5 d-flex flex-column" v-if="!loading">
+        <div class="col-6 d-flex" v-if="!loading">
+          <div class="mr-3" v-if="!loading">
+            <font-awesome-icon
+              icon="caret-right"
+              :style="iconStyle"
+              class="collapse-button"/>
+          </div>
           <div class="mb-2">
             <h5>
               <router-link :to="'/biobank/' + biobank.id">
@@ -23,14 +29,8 @@
                 title="Covid-19"/>
             </span>
           </div>
-          <collection-selector
-            class="align-with-table mt-auto w-25"
-            v-if="biobank.collections.length > 0"
-            :collectionData="biobank.collections"
-            icon-only
-            bookmark></collection-selector>
         </div>
-        <div class="col-md-6" v-if="!loading">
+        <div class="col-5" v-if="!loading">
           <p>
             <!-- <small>
               <b>Collection types:</b>
@@ -122,6 +122,13 @@ export default {
       collapsed: this.initCollapsed
     }
   },
+  methods: {
+    handleCheckAll: function (checked) {
+      if (checked === true) {
+        this.collapsed = false
+      }
+    }
+  },
   computed: {
     ...mapGetters(['selectedCollections']),
     biobankInSelection () {
@@ -175,6 +182,12 @@ export default {
           .map((covidItem) => covidItem.label || covidItem.name)
           .join(', ')
       } else return ''
+    },
+    iconStyle () {
+      return {
+        transform: `rotate(${this.collapsed ? 0 : 90}deg)`,
+        transition: 'transform 0.2s'
+      }
     }
   },
   methods: {
@@ -187,9 +200,6 @@ export default {
 .table-card {
   padding: 0.1rem;
 }
-.align-with-table {
-  margin-left: 0.1rem;
-}
 
 .added-to-selection {
   position: absolute;
@@ -199,6 +209,7 @@ export default {
   background: white;
   border-radius: 50%;
 }
+
 .biobank-card {
   margin-bottom: 1em;
 }
@@ -209,8 +220,8 @@ export default {
 
 .biobank-card-header:hover {
   cursor: pointer;
-  background-color: #e4e4e4;
 }
+
 .biobank-icon:hover {
   cursor: pointer;
 }

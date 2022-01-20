@@ -41,7 +41,7 @@
 </style>
 
 <script>
-import ActiveFilterList from './filters/ActiveFilterList'
+import ActiveFilterList from './filters/active/ActiveFilterList.vue'
 import { mapGetters } from 'vuex'
 
 export default {

@@ -1,6 +1,7 @@
 import api from '@molgenis/molgenis-api-client'
 import helpers from './helpers'
-import utils from '../utils'
+import utils, { createQuery, createInQuery } from '../utils'
+import initialCollectionColumns from '../config/initialCollectionColumns'
 import 'array-flat-polyfill'
 
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
@@ -23,8 +24,19 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 /**/
 
 /* Query Parameters */
-export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available,country,name,type,number_of_donors,order_of_magnitude(*),order_of_magnitude_donors(*),size,number_of_donors,sub_collections(*),parent_collection,quality(*),data_categories)'
-export const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = '*,diagnosis_available(label),data_use(label,uri),biobank(*),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,diagnosis_available(*),order_of_magnitude,materials,data_categories,number_of_donors,description,gene,timestamp),number_of_donors'
+export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available(label,uri,code),name,type,order_of_magnitude(*),size,sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories),parent_collection,quality(*),data_categories(label,uri))'
+
+const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = () => {
+  const collectionRsql = initialCollectionColumns.filter(icc => icc.rsql).map(prop => prop.rsql)
+
+  let rsqlStart = '*,'
+
+  if (collectionRsql.length) {
+    rsqlStart += collectionRsql.join(',')
+  }
+
+  return `${rsqlStart},biobank(id,name,juridical_person,country,url,contact),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories)`
+}
 /**/
 
 export default {
@@ -132,7 +144,7 @@ export default {
     // prepare baseUrl and set list for dynamic filters that will be updated
     const baseUrl = '/api/v2/rd_connect_collections'
     const dynamicFilters = []
-    const dynFilt = getters.getFilterDefinitions
+    const dynFilt = getters.getFilters
 
     for (const filter in dynFilt) {
       if (dynFilt[filter].dynamic) {
@@ -151,10 +163,12 @@ export default {
     for (const filter in dynamicFilters) {
       const filterName = dynamicFilters[filter]
       const unique = `?aggs=x==${filterName};distinct==${filterName}`
+      // const unique = `?distinct==${filterName}`
+
       var additionalFilters = '&q='
 
       for (const activeFilter in getters.activeFilters) {
-        // skip the filter that was just changed
+      // skip the filter that was just changed
         if (activeFilter !== filterName) {
           var tempList = ''
           // iterate over active filters and add its ID to tempList (E.G: DNA,SERUM,)
@@ -226,7 +240,7 @@ export default {
   },
   GetCollectionReport ({ commit }, collectionId) {
     commit('SetLoading', true)
-    api.get(`${COLLECTION_API_PATH}/${collectionId}?attrs=${COLLECTION_REPORT_ATTRIBUTE_SELECTOR}`).then(response => {
+    api.get(`${COLLECTION_API_PATH}/${collectionId}?attrs=${COLLECTION_REPORT_ATTRIBUTE_SELECTOR()}`).then(response => {
       commit('SetCollectionReport', response)
       commit('SetLoading', false)
     }, error => {
@@ -241,20 +255,24 @@ export default {
       commit('SetError', error)
     })
   },
-  GetNetworkReport ({ commit }, networkId) {
+  async GetNetworkReport ({ commit }, networkId) {
     commit('SetNetworkBiobanks', undefined)
     commit('SetNetworkCollections', undefined)
     commit('SetNetworkReport', undefined)
     commit('SetLoading', true)
+
     const networks = api.get(`${NETWORK_API_PATH}/${networkId}`)
       .then(response => commit('SetNetworkReport', response))
       .finally(() => commit('SetLoading', false))
-    const collections = api.get(`${COLLECTION_API_PATH}?q=network==${networkId}&num=10000&attrs=${COLLECTION_REPORT_ATTRIBUTE_SELECTOR}`)
+    const collections = api.get(`${COLLECTION_API_PATH}?q=network==${networkId}&num=10000&attrs=${COLLECTION_REPORT_ATTRIBUTE_SELECTOR()}`)
       .then(response => commit('SetNetworkCollections', response.items))
     const biobanks = api.get(`${BIOBANK_API_PATH}?q=network==${networkId}&num=10000`)
       .then(response => commit('SetNetworkBiobanks', response.items))
-    Promise.all([collections, biobanks, networks])
-      .catch((error) => commit('SetError', error))
+
+    await Promise.all([collections, biobanks, networks])
+      .catch((error) => {
+        commit('SetError', error)
+      })
   },
   GetPodiumCollections ({ state, commit }) {
     if (state.isPodium && state.podiumCollectionIds.length === 0) { // only fetch once.
@@ -276,6 +294,7 @@ export default {
       .then(helpers.setLocationHref, error => commit('SetError', error))
   },
   AddCollectionsToSelection ({ commit, getters }, { collections, bookmark }) {
+    commit('SetCartValidationStatus', false)
     commit('SetCollectionsToSelection', { collections, bookmark })
     commit('SetSearchHistory', getters.getHumanReadableString)
   }

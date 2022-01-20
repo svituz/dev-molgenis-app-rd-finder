@@ -4,6 +4,7 @@ import store from '../store'
 import { encodeRsqlValue, transformToRSQL } from '@molgenis/rsql'
 import { isCodeRegex } from '../../src/store/helpers'
 import state from '../store/state'
+import { createTextSearchQuery } from '.'
 
 // Async so we can fire and forget for performance.
 async function cache (filterData) {
@@ -110,7 +111,7 @@ export const genericFilterOptions2 = (tableName) => {
 //   })
 // }
 /** Specific logic for diagnosis available filter */
-const createDiagnosisLabelQuery = (query) => transformToRSQL({ selector: 'label', comparison: '=like=', arguments: query })
+const createDiagnosisLabelQuery = (query) => transformToRSQL(createTextSearchQuery('label', query, true))
 const createDiagnosisCodeQuery = (query) => transformToRSQL({ selector: 'code', comparison: '=like=', arguments: query.toUpperCase() })
 /** */
 

@@ -23,11 +23,12 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
+  name: 'biobank-explorer',
   computed: {
     ...mapGetters({ errorMessage: 'getErrorMessage', loading: 'loading' })
   },
   methods: {
-    ...mapMutations(['MapQueryToState']),
+    ...mapMutations(['MapQueryToState', 'ConfigureFilters']),
     ...mapActions([
       'GetNegotiatorType',
       'GetNegotiatorEntities'
@@ -42,6 +43,10 @@ export default {
         this.MapQueryToState()
       }
     }
+  },
+  beforeMount () {
+    this.ConfigureFilters()
+    this.MapQueryToState()
   },
   mounted () {
     this.GetNegotiatorType()

@@ -1,4 +1,3 @@
-import store from '../store'
 /* istanbul ignore file */
 // import { genericFilterOptions, dynamicCountryFilter, dynamicMaterialFilter, diagnosisAvailableFilterOptions, resscourceTypesAvailableFilterOptions } from './filterOptions'
 import { genericFilterOptions, diagnosisAvailableFilterOptions } from './filterOptions'
@@ -69,8 +68,7 @@ const filterDefinitions = (state) => [
     table: 'rd_connect_disease_types',
     options: diagnosisAvailableFilterOptions('rd_connect_disease_types', 'diagnosis_available'),
     initiallyCollapsed: false,
-    humanReadableString: 'Disease type(s):',
-    optionsFilter: []
+    humanReadableString: 'Disease type(s):'
   },
   {
     component: 'CheckboxFilter',
@@ -86,7 +84,6 @@ const filterDefinitions = (state) => [
     showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
-    optionsFilter: store.getters.dynamicFilters.materials,
     dynamic: true
   },
   {
@@ -100,7 +97,6 @@ const filterDefinitions = (state) => [
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
     initiallyCollapsed: false,
-    optionsFilter: store.getters.dynamicFilters.country,
     dynamic: true
     // adaptiveFunction: reducedFilterOptions('country')
     // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary

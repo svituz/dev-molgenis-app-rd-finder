@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { createBookmark } from '../utils/bookmarkMapper'
 import { fixCollectionTree } from './helpers'
 import filterDefinitions from '../utils/filterDefinitions'
-// import api from '@molgenis/molgenis-api-client'
+import { customCheckboxFilters } from '../config/configurableFacets'
 
 const negotiatorConfigIds = ['directory', 'bbmri-eric-model']
 
@@ -78,7 +78,25 @@ export default {
         state.filters.satisfyAll.splice(state.filters.satisfyAll.indexOf(name), 1)
       }
     }
+
     createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll)
+  },
+  ResetDynamicFilters (state, filters) {
+    for (var filterName in filters) {
+      // state.dynamicFilters[filters[filterName]] = []
+      Vue.set(state.dynamicFilters, filters[filterName], [])
+    }
+  },
+  SetFilterReduction (state, load) {
+    // unpack load and push item.id OR item.name
+    // to state[filtername] (which is initialized as list)
+    // ToDO create array, push once to state
+    const filtername = load.filter
+    state.dynamicFilters[filtername] = []
+    load.options.forEach((item) => {
+      state.dynamicFilters[filtername].push(item.id || item.name)
+    })
+    state.dynamicFilters[filtername].push.apply(state.dynamicFilters[filtername], state.filters.selections[filtername])
   },
   /**
    * Reset all filters in the state
@@ -124,21 +142,6 @@ export default {
 
     const newNonCommercialCollections = state.nonCommercialCollections.concat(collections.filter(collection => !collection.commercialUse).map(collection => collection.id))
     state.nonCommercialCollections = [...new Set(newNonCommercialCollections)]
-  },
-  ResetDynamicFilters (state, filters) {
-    for (var filterName in filters) {
-      // state.dynamicFilters[filters[filterName]] = []
-      Vue.set(state.dynamicFilters, filters[filterName], [])
-    }
-  },
-  SetFilterReduction (state, load) {
-    // unpack load and push item.id OR item.name
-    // to state[filtername] (which is initialized as list)
-    const filtername = load.filter
-    state.dynamicFilters[filtername] = []
-    load.options.forEach((item) => {
-      state.dynamicFilters[filtername].push(item.id || item.name)
-    })
   },
   // SetQualityStandardDictionary (state, response) {
   //   // Combine arrays from two tables and deduplicate
@@ -223,11 +226,13 @@ export default {
   //   }
   // },
   SetCollectionsToSelection (state, { collections, bookmark }) {
+    state.cartValid = false
     const currentIds = state.selectedCollections.map(sc => sc.value)
     const newCollections = collections.filter(cf => !currentIds.includes(cf.value))
     state.selectedCollections = state.selectedCollections.concat(newCollections)
 
     if (bookmark) {
+      state.cartValid = true
       createBookmark(state.filters.selections, state.selectedCollections)
     }
   },
@@ -245,10 +250,12 @@ export default {
     }
   },
   RemoveCollectionsFromSelection (state, { collections, bookmark }) {
+    state.cartValid = false
     const collectionsToRemove = collections.map(c => c.value)
     state.selectedCollections = state.selectedCollections.filter(sc => !collectionsToRemove.includes(sc.value))
 
     if (bookmark) {
+      state.cartValid = true
       createBookmark(state.filters.selections, state.selectedCollections)
     }
   },
@@ -258,11 +265,13 @@ export default {
    * @param params
    */
   MapQueryToState (state, ie11Query) {
+    // bookmark has been altered in another view
+    if (!state.cartValid) return
     const query = ie11Query || state.route.query
 
     const keysInQuery = Object.keys(query)
     // we load the filterdefinitions, grab the names, so we can loop over it to map the selections
-    const filters = filterDefinitions(state).map(fd => fd.name)
+    const filters = state.filterFacets.map(fd => fd.name)
       .filter(name => keysInQuery.includes(name))
       .filter(fr => !['search', 'nToken'].includes(fr)) // remove specific filters, else we are doing them again.
 
@@ -315,6 +324,25 @@ export default {
         Vue.set(state.filters.selections, filterName, queryValues)
       }
     }
+  },
+  ConfigureFilters (state) {
+    const filterFacets = filterDefinitions(state)
+    const customFilters = customCheckboxFilters(state)
+
+    for (const customFilter of customFilters) {
+      if (customFilter.insertBefore) {
+        const filterIndex = filterFacets.findIndex(filter => filter.name === customFilter.insertBefore)
+
+        if (filterIndex !== -1) {
+          filterFacets.splice(filterIndex, 0, customFilter)
+        } else {
+          filterFacets.push(customFilter)
+        }
+      } else {
+        filterFacets.push(customFilter)
+      }
+    }
+    state.filterFacets = filterFacets
   },
   SetError (state, error) {
     state.error = error

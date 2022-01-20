@@ -1,15 +1,22 @@
+import { bbmriConfig } from '../config/configManager'
+
+const config = bbmriConfig()
+
 export const INITIAL_STATE = window.__INITIAL_STATE__ || {}
 
 export default {
   isIE11: window.ActiveXObject !== undefined && 'ActiveXObject' in window,
   ie11Bookmark: '',
+  cartValid: true,
   negotiatorCollectionEntityId: '',
   negotiatorBiobankEntityId: '',
   isLoading: false,
   isPodium: false,
   podiumCollectionIds: [],
   error: null,
-  showCountryFacet: Object.hasOwnProperty.call(INITIAL_STATE, 'showCountryFacet') ? INITIAL_STATE.showCountryFacet : true,
+  disabledFilters: config.disabledFilters,
+  collectionColumns: config.collectionColumns,
+  customCollectionFilterFacets: config.customCollectionFilterFacets,
   // Map ID to biobank
   biobanks: {},
   // IDs of biobanks matching the biobank filters
@@ -38,6 +45,7 @@ export default {
   qualityStandardsDictionary: {},
   nonCommercialCollections: [],
   selectedCollections: [],
+  dynamicFilters: {}, // holds data for adaptive filters if flag is set in filterDefinitions. Set by "resetFilters" in mutations using dynamicFilter.
   filters: {
     selections: {},
     satisfyAll: [],
