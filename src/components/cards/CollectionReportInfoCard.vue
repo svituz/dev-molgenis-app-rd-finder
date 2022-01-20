@@ -120,6 +120,9 @@ export default {
     },
 
     checkStreetName (street) {
+      if (!street) {
+        return ''
+      }
       if (street === 'nan - nan') {
         return 'not specified'
       }
