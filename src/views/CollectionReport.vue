@@ -289,7 +289,7 @@ export default {
       //     return true
       //   }
       // }
-      if (this.collection.biobank.ressource_types.label === 'Biobank') {
+      if (this.collection.biobank.ressource_types && this.collection.biobank.ressource_types.label === 'Biobank') {
         return true
       }
       return false
