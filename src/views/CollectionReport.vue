@@ -213,7 +213,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import CollectionReportInfoCard from '@/components/cards/CollectionReportInfoCard'
 import moment from 'moment'
 import CollectionSelector from '@/components/filters/CollectionSelector'
-import { mapCollectionsDetailsTableContent, collectionReportInformation } from '@/utils/templateMapper'
+import { collectionReportInformation } from '@/utils/templateMapper'
 
 export default {
   name: 'CollectionReport',
@@ -306,9 +306,6 @@ export default {
 
   computed: {
     ...mapState({ collection: 'collectionReport', isLoading: 'isLoading' }),
-    mainContent () {
-      return this.collection ? mapCollectionsDetailsTableContent(this.collection) : {}
-    },
     isTopLevelCollection () {
       return this.collection.parent_collection === undefined
     },
@@ -357,11 +354,6 @@ export default {
         shown.push({ field: this.collection.disease_area_other })
       }
       return shown
-    },
-    subCollections () {
-      return this.collection && this.collection.sub_collections && this.collection.sub_collections.length
-        ? mapCollectionsDetailsTableContent(this.collection.sub_collections)
-        : []
     },
     collectionId () {
       const splittedUrl = this.$route.fullPath.split('/')
