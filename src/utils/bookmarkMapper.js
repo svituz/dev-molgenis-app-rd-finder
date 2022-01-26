@@ -15,7 +15,7 @@ function setBookmark (bookmark) {
     state.ie11Bookmark = `${window.location.host}/#${Router.currentRoute.fullPath}`
   }
 }
-export const createBookmark = (filters, selection, satisfyAllSelection) => {
+export const createBookmark = (filters, selection, satisfyAllSelection, biobankForRecordSelection) => {
   const bookmark = {}
 
   if (filters && Object.keys(filters).length > 0) {
@@ -34,6 +34,11 @@ export const createBookmark = (filters, selection, satisfyAllSelection) => {
   if (selection && selection.length) {
     const bookmarkIds = selection.map(s => s.value)
     bookmark.cart = encodeURI(btoa(bookmarkIds.join(',')))
+  }
+
+  if (biobankForRecordSelection && biobankForRecordSelection.length) {
+    const biobankBookmarkIds = biobankForRecordSelection.map(s => s.id)
+    bookmark.recordCart = encodeURI(btoa(biobankBookmarkIds.join(',')))
   }
 
   if (satisfyAllSelection && satisfyAllSelection.length) {

@@ -68,7 +68,7 @@ export default {
     const labels = { ...currentLabels, ...newFilterLabels }
     Vue.set(state.filters, 'labels', labels)
 
-    createBookmark(filterSelection, state.selectedCollections, state.filters.satisfyAll)
+    createBookmark(filterSelection, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
   },
   UpdateFilterSatisfyAll (state, { name, value }) {
     if (value && !state.filters.satisfyAll.includes(name)) {
@@ -79,7 +79,7 @@ export default {
       }
     }
 
-    createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll)
+    createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
   },
   ResetDynamicFilters (state, filters) {
     for (var filterName in filters) {
@@ -233,7 +233,16 @@ export default {
 
     if (bookmark) {
       state.cartValid = true
-      createBookmark(state.filters.selections, state.selectedCollections)
+      createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
+    }
+  },
+  SetBiobanksToSelectionForRecordsSearch (state, { biobanks, bookmark }) {
+    const currentIds = state.biobanksSelectedForRecordSearch.map(sc => sc.id)
+    const newBiobanks = biobanks.filter(b => !currentIds.includes(b.id))
+    state.biobanksSelectedForRecordSearch = state.biobanksSelectedForRecordSearch.concat(newBiobanks)
+
+    if (bookmark) {
+      createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
     }
   },
   SetSearchHistory (state, history) {
@@ -256,7 +265,14 @@ export default {
 
     if (bookmark) {
       state.cartValid = true
-      createBookmark(state.filters.selections, state.selectedCollections)
+      createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
+    }
+  },
+  RemoveBiobankFromRecordSearchSelection (state, { biobanks, bookmark }) {
+    const biobanksToRemove = biobanks.map(b => b.id)
+    state.biobanksSelectedForRecordSearch = state.biobanksSelectedForRecordSearch.filter(sb => !biobanksToRemove.includes(sb.id))
+    if (bookmark) {
+      createBookmark(state.filters.selections, state.selectedCollections, state.filters.satisfyAll, state.biobanksSelectedForRecordSearch)
     }
   },
   /**
@@ -307,6 +323,16 @@ export default {
       if (state.searchHistory.length === 0) {
         state.searchHistory.push('Starting with a preselected list of collections')
       }
+    }
+
+    if (query.recordCart) {
+      const decoded = decodeURIComponent(query.recordCart)
+      const recordCartIdString = atob(decoded)
+      const recordCartIds = recordCartIdString.split(',')
+      state.biobanksSelectedForRecordSearch = recordCartIds.map(id => ({
+        name: id in state.biobanks ? state.biobanks[id].name : undefined,
+        id: id
+      }))
     }
 
     for (const filterName of filters) {

@@ -44,6 +44,10 @@
           {
             key: 'Country',
             sortable: false
+          },
+          {
+            key: 'Record_search_available',
+            sortable: false
           }
         ]">
         <template v-slot:cell(Name)="ressource">
@@ -52,6 +56,16 @@
         <template v-slot:cell(Logo)="logo_link">
           <!-- {{ logo_link.item.Logo }} -->
           <img style="width:100%;" :src="logo_link.item.Logo">
+        </template>
+        <template v-slot:cell(Record_search_available)="data">
+          <biobank-selector
+            v-if="data.value"
+            class="align-with-table mt-auto"
+            :biobankData="{
+              id: data.item.id,
+              name: data.item.Name
+            }"
+            bookmark></biobank-selector>
         </template>
       </b-table>
       </div>
@@ -97,9 +111,13 @@
 <script>
 // import BiobankCard from './BiobankCard'
 import { mapGetters, mapActions } from 'vuex'
+import BiobankSelector from '../buttons/BiobankSelector'
 
 export default {
   name: 'biobank-cards-container',
+  components: {
+    BiobankSelector
+  },
   data () {
     return {
       currentPage: 1,
@@ -160,7 +178,8 @@ export default {
           id: this.biobanksShown[key].id,
           Type: this.biobanksShown[key].ressource_types.label,
           Number_of_cases: this.addNumberDonors(this.biobanksShown[key]),
-          Country: this.biobanksShown[key].country.name
+          Country: this.biobanksShown[key].country.name,
+          Record_search_available: this.biobanksShown[key].record_search_service !== undefined
         })
       }
       this.setBusy(false)

@@ -31,7 +31,8 @@ export default {
     ...mapMutations(['MapQueryToState', 'ConfigureFilters']),
     ...mapActions([
       'GetNegotiatorType',
-      'GetNegotiatorEntities'
+      'GetNegotiatorEntities',
+      'GetRecordQueryServiceConfig'
     ])
   },
   watch: {
@@ -51,6 +52,7 @@ export default {
   mounted () {
     this.GetNegotiatorType()
     this.GetNegotiatorEntities()
+    this.GetRecordQueryServiceConfig()
   }
 }
 </script>

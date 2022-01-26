@@ -74,6 +74,21 @@
     <cart-selection-toast
       v-if="
         !loading &&
+        hasBiobankSelection &&
+        !biobankCartShown &&
+        !collectionCartShown &&
+        this.foundCollectionIds.length &&
+        recordQueryService
+      "
+      :cartSelectionText="`${this.biobanksSelectedForRecordSearch.length} biobank(s) selected for record search`"
+      :clickHandler="showBiobankSelection"
+      toastClass="bg-warning text-white">
+      <template v-slot:buttonText> Go to Record Search </template>
+    </cart-selection-toast>
+
+    <cart-selection-toast
+      v-if="
+        !loading &&
         hasSelection &&
         !collectionCartShown &&
         this.foundCollectionIds.length
@@ -158,6 +173,53 @@
         </div>
       </template>
     </b-modal>
+
+    <b-modal
+      v-if="recordQueryService"
+      hide-header
+      id="biobankcart-modal"
+      size="lg"
+      centered
+      body-bg-variant="white"
+      footer-bg-variant="primary"
+      body-class="pb-0"
+      @hide="closeBiobankModal">
+      <template v-if="hasBiobankSelection">
+        <div
+          class="card mb-3 border"
+          :key="`${biobank.name}-${index}`"
+          v-for="(biobank, index) in biobanksSelectedForRecordSearch">
+          <div class="card-header font-weight-bold d-flex">
+            <span>{{ biobank.name }}</span>
+            <div class="pl-3 ml-auto">
+              <span
+                class="fa fa-times text-bold remove-collection"
+                title="Remove Biobank"
+                @click="
+                  RemoveBiobankFromRecordSearchSelection({
+                    biobanks: [biobank],
+                    bookmark: true,
+                  })
+                "></span>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:modal-footer>
+        <b-button class="btn btn-dark mr-auto" @click="removeAllBiobanksFromRecordSearch">Remove all</b-button>
+        <div>
+          <span class="text-white font-weight-bold d-block">{{ biobanksSelectedForRecordSearch.length }} biobank(s) selected</span>
+        </div>
+        <div class="ml-auto">
+          <b-button class="btn btn-dark mr-2" @click="hideBiobankModal">Cancel</b-button>
+          <b-button
+            :disabled="!biobanksSelectedForRecordSearch.length"
+            class="btn btn-secondary ml-auto"
+            @click="sendRecordSearchRequest">Send to {{ recordQueryService.name }}</b-button>
+        </div>
+      </template>
+    </b-modal>
+
     <div class="row-footer">
       <p class="footer-p">
       Linking up rare disease resarch across the world
@@ -211,7 +273,9 @@ export default {
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
       'selectedNonCommercialCollections',
-      'externalResourcesFilters'
+      'externalResourcesFilters',
+      'biobanksSelectedForRecordSearch',
+      'recordQueryService'
     ]),
     ...mapState([
       'isPodium',
@@ -233,14 +297,23 @@ export default {
     collectionCartShown () {
       return this.modalEnabled
     },
+    biobankCartShown () {
+      return this.biobankModalEnabled
+    },
     currentSelectedCollections () {
       return this.isPodium ? this.collectionsInPodium : this.selectedCollections
     },
     collectionCart () {
       return this.groupCollectionsByBiobank(this.currentSelectedCollections)
     },
+    recordSearchCart () {
+      return this.biobanksSelectedForRecordSearch
+    },
     hasSelection () {
       return this.selectedCollections.length > 0
+    },
+    hasBiobankSelection () {
+      return this.biobanksSelectedForRecordSearch.length > 0
     },
     getUrl () {
       return 'https://rd-connect.eu/'
@@ -269,7 +342,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['RemoveCollectionsFromSelection', 'MapQueryToState']),
+    ...mapMutations(['RemoveCollectionsFromSelection', 'RemoveBiobankFromRecordSearchSelection', 'MapQueryToState']),
     ...mapActions([
       'GetCollectionInfo',
       'GetBiobankIds',
@@ -277,7 +350,8 @@ export default {
       'GetBiobankIdsForQuality',
       'GetCollectionIdsForQuality',
       'GetFilterReduction',
-      'GetExternalCatalogsResources'
+      'GetExternalCatalogsResources',
+      'SendToRecordSearchService'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0
@@ -308,20 +382,41 @@ export default {
         bookmark: true
       })
     },
+    removeAllBiobanksFromRecordSearch () {
+      this.hideBiobankModal()
+      this.RemoveBiobankFromRecordSearchSelection({
+        biobanks: this.biobanksSelectedForRecordSearch
+      })
+    },
     hideModal () {
       this.$bvModal.hide('collectioncart-modal')
       this.closeModal()
     },
+    hideBiobankModal () {
+      this.$bvModal.hide('biobankcart-modal')
+      this.closeBiobankModal()
+    },
     closeModal () {
       this.modalEnabled = false
+    },
+    closeBiobankModal () {
+      this.biobankModalEnabled = false
     },
     sendRequest () {
       this.$bvModal.hide('collectioncart-modal')
       this.$store.dispatch('SendToNegotiator').finally(this.closeModal)
     },
+    sendRecordSearchRequest () {
+      this.$bvModal.hide('biobankcart-modal')
+      this.$store.dispatch('SendToRecordSearchService').finally(this.closeBiobankModal)
+    },
     showSelection () {
       this.$bvModal.show('collectioncart-modal')
       this.modalEnabled = true
+    },
+    showBiobankSelection () {
+      this.$bvModal.show('biobankcart-modal')
+      this.biobankModalEnabled = true
     },
     applyIE11Bookmark () {
       const rawQuery = this.ie11BookmarkToApply.split('?')[1]
@@ -343,9 +438,10 @@ export default {
     }
   },
   mounted () {
-    // check if collections have been added off-screen.
-
-    createBookmark(this.activeFilters, this.selectedCollections)
+    // check if collections or records biobanks have been added off-screen.
+    if (this.selectedCollections.length || this.biobanksSelectedForRecordSearch.length) {
+      createBookmark(this.activeFilters, this.selectedCollections, this.activeSatisfyAll, this.biobanksSelectedForRecordSearch)
+    }
   }
 }
 </script>

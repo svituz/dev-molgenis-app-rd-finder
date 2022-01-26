@@ -56,7 +56,7 @@ const filterDefinitions = (state) => [
     maxVisibleOptions: 10,
     table: 'sys_ejprd_ExternalCatalog',
     options: genericFilterOptions('sys_ejprd_ExternalCatalog'),
-    initiallyCollapsed: !state.route.query.external_catalogs,
+    initiallyCollapsed: false,
     filters: state.filters.selections.external_catalogs,
     dynamic: false
   },

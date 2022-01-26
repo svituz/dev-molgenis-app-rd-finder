@@ -22,6 +22,7 @@ const NETWORK_API_PATH = '/api/v2/rd_connect_networks'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
 const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfig?attrs=*,biobankId(refEntityType)'
 const EXTERNAL_RESOURCES_API_PATH = '/api/ejprd/bbmri/external_sources'
+const RECORD_SERVICE_API_PATH = '/api/data/rd_connect_record_service'
 /**/
 
 /* Query Parameters */
@@ -288,6 +289,18 @@ export default {
     return api.post('/plugin/directory/export', options)
       .then(helpers.setLocationHref, error => commit('SetError', error))
   },
+  SendToRecordSearchService ({ state, getters }) {
+    if (state.biobanksSelectedForRecordSearch.length > 0 && state.recordQueryService) {
+      const queryParams = [`biobanks=${state.biobanksSelectedForRecordSearch.map(b => b.id).join(',')}`]
+      if ('diagnosis_available' in getters.activeFilters) {
+        queryParams.push(`diseases=${getters.activeFilters.diagnosis_available.join(',')}`)
+      }
+      window.open(
+        `${state.recordQueryService.url}?${queryParams.join('&')}`,
+        '_blank' // <- This is what makes it open in a new window.
+      )
+    }
+  },
   AddCollectionsToSelection ({ commit, getters }, { collections, bookmark }) {
     commit('SetCartValidationStatus', false)
     commit('SetCollectionsToSelection', { collections, bookmark })
@@ -344,6 +357,20 @@ export default {
         }
       })
     }
+  },
+  AddBiobankToRecordSearchSelection ({ commit }, { biobanks, bookmark }) {
+    commit('SetBiobanksToSelectionForRecordsSearch', { biobanks, bookmark })
+    // commit('SetSearchHistory', getters.getHumanReadableString)
+  },
+  GetRecordQueryServiceConfig ({ commit }) {
+    api.get(`${RECORD_SERVICE_API_PATH}`).then(
+      response => {
+        commit('SetRecordQueryService', response)
+      },
+      error => {
+        commit('SetError', error)
+      }
+    )
   }
 }
 // /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-4.css

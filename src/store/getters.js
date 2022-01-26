@@ -95,6 +95,7 @@ export default {
 
     return allIdsPresentInSelection
   },
+  biobanksSelectedForRecordSearch: state => state.biobanksSelectedForRecordSearch,
   selectedBiobankQuality: state => state.filters.selections.biobank_quality,
   selectedCollectionQuality: state => {
     return state.filters.selections.collection_quality
