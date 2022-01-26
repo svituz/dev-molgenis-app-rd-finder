@@ -108,6 +108,7 @@ export default {
    * Get map of active filters
    */
   activeFilters: state => state.filters.selections,
+  reductionFilters: state => state.filters.selections,
   dynamicFilters: state => state.dynamicFilters,
   getErrorMessage: state => {
     if (!state.error) {
@@ -120,5 +121,40 @@ export default {
       return state.error.message
     }
     return 'Something went wrong'
-  }
+  },
+  externalResources: state => {
+    return state.externalResources
+  },
+  externalResourcesFilters: state => {
+    const activeFilters = state.filters.selections
+    const filters = {}
+
+    if (activeFilters.diagnosis_available && activeFilters.diagnosis_available.length > 0) {
+      filters.diagnosisAvailable = activeFilters.diagnosis_available
+    }
+
+    if (activeFilters.ressource_types && activeFilters.ressource_types.length > 0) {
+      filters.ressourceTypes = activeFilters.ressource_types
+    }
+
+    if (activeFilters.country && activeFilters.country.length > 0) {
+      filters.country = activeFilters.country
+    }
+
+    if (activeFilters.search && activeFilters.search.length > 0) {
+      filters.name = activeFilters.search
+    }
+
+    if (activeFilters.external_catalogs && activeFilters.external_catalogs.length > 0) {
+      filters.externalSources = []
+      state.filters.selections.external_catalogs.forEach((source, index) => {
+        filters.externalSources.push({
+          id: source,
+          label: 'external_catalogs' in state.filters.labels ? state.filters.labels.external_catalogs[index] : ''
+        })
+      })
+    }
+    return filters
+  },
+  recordQueryService: state => state.recordQueryService
 }

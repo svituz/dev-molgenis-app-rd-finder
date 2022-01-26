@@ -365,5 +365,24 @@ export default {
       state.negotiatorCollectionEntityId = negotiatorEntities.collectionEntityId
       state.negotiatorBiobankEntityId = negotiatorEntities.biobankEntityId
     }
+  },
+  SetExternalCatalogResources (state, externalResources) {
+    state.externalResources = externalResources
+  },
+  AddExternalCatalogResources (state, { catalog, resources }) {
+    Vue.set(state.externalResources, catalog, resources)
+  },
+  RemoveExternalCatalogResources (state, catalog) {
+    Vue.delete(state.externalResources, catalog)
+  },
+  SetRecordQueryService (state, recordQueryServiceData) {
+    if (recordQueryServiceData && recordQueryServiceData.items.length > 0) {
+      state.recordQueryService = {
+        name: recordQueryServiceData.items[0].data.name,
+        url: recordQueryServiceData.items[0].data.url
+      }
+    } else {
+      state.recordQueryService = undefined
+    }
   }
 }

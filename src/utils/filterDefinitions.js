@@ -23,7 +23,8 @@ const filterDefinitions = (state) => [
     initiallyCollapsed: false,
     filters: state.filters.selections.ressource_types,
     maxVisibleOptions: 10,
-    humanReadableString: 'Ressource type(s):'
+    humanReadableString: 'Ressource type(s):',
+    reduction: true
     // all: true
   },
   // {
@@ -47,17 +48,18 @@ const filterDefinitions = (state) => [
   //   maxVisibleOptions: 25,
   //   humanReadableString: 'Covid-19 service(s):'
   // },
-  // {
-  //   component: 'CheckboxFilter',
-  //   name: 'external_sources',
-  //   label: 'External Sources',
-  //   type: 'checkbox-filter',
-  //   maxVisibleOptions: 10,
-  //   table: 'rd_connect_external_sources',
-  //   options: genericFilterOptions('rd_connect_external_sources'),
-  //   initiallyCollapsed: !state.route.query.external_sources,
-  //   filters: state.filters.selections.external_sources
-  // },
+  {
+    component: 'CheckboxFilter',
+    name: 'external_catalogs',
+    label: 'External Catalogs',
+    type: 'checkbox-filter',
+    maxVisibleOptions: 10,
+    table: 'sys_ejprd_ExternalCatalog',
+    options: genericFilterOptions('sys_ejprd_ExternalCatalog'),
+    initiallyCollapsed: !state.route.query.external_catalogs,
+    filters: state.filters.selections.external_catalogs,
+    dynamic: false
+  },
   {
     component: 'MultiFilter',
     name: 'diagnosis_available',
@@ -84,7 +86,8 @@ const filterDefinitions = (state) => [
     showSatisfyAllCheckbox: true,
     maxVisibleOptions: 25,
     humanReadableString: 'Material type(s):',
-    dynamic: true
+    dynamic: true,
+    reduction: true
   },
   {
     component: 'CheckboxFilter',
@@ -97,7 +100,8 @@ const filterDefinitions = (state) => [
     maxVisibleOptions: 10,
     humanReadableString: 'Countries:',
     initiallyCollapsed: false,
-    dynamic: true
+    dynamic: true,
+    reduction: true
     // adaptiveFunction: reducedFilterOptions('country')
     // optionsFilter: Object.keys(state.countryDictionary) // state.countryDictionary
     // optionsFilter: genericFilterOptions2

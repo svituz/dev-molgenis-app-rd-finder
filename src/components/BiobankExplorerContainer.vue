@@ -59,11 +59,15 @@
           <result-header></result-header>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12">
+
+      <b-tabs content-class="mt-3" fill>
+        <b-tab title="Internal Resources" active>
           <biobank-cards-container></biobank-cards-container>
-        </div>
-      </div>
+        </b-tab>
+        <b-tab title="External Resources">
+          <external-catalogs-cards-container></external-catalogs-cards-container>
+        </b-tab>
+      </b-tabs>
     </div>
     </div>
 
@@ -171,6 +175,7 @@
 <script>
 import CartSelectionToast from './popovers/CartSelectionToast.vue'
 import BiobankCardsContainer from './cards/BiobankCardsContainer'
+import ExternalCatalogsCardsContainer from './cards/ExternalCatalogsCardsContainer'
 import FilterContainer from './filters/containers/FilterContainer'
 import ResultHeader from './ResultHeader'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
@@ -185,7 +190,8 @@ export default {
     FilterContainer,
     ResultHeader,
     CartSelectionToast,
-    CollectionSelectAll
+    CollectionSelectAll,
+    ExternalCatalogsCardsContainer
   },
   data: () => {
     return {
@@ -204,7 +210,8 @@ export default {
       'selectedCollections',
       'collectionBiobankDictionary',
       'foundCollectionsAsSelection',
-      'selectedNonCommercialCollections'
+      'selectedNonCommercialCollections',
+      'externalResourcesFilters'
     ]),
     ...mapState([
       'isPodium',
@@ -255,6 +262,10 @@ export default {
     activeFilters: {
       immediate: true,
       handler: 'GetFilterReduction'
+    },
+    externalResourcesFilters: {
+      immediate: true,
+      handler: 'GetExternalCatalogsResources'
     }
   },
   methods: {
@@ -265,7 +276,8 @@ export default {
       'GetPodiumCollections',
       'GetBiobankIdsForQuality',
       'GetCollectionIdsForQuality',
-      'GetFilterReduction'
+      'GetFilterReduction',
+      'GetExternalCatalogsResources'
     ]),
     isNonCommercialCollection (collectionId) {
       return this.nonCommercialCollections.indexOf(collectionId) >= 0

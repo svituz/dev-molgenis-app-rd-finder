@@ -21,6 +21,7 @@ const COLLECTION_API_PATH = '/api/v2/rd_connect_collections'
 const NETWORK_API_PATH = '/api/v2/rd_connect_networks'
 const NEGOTIATOR_API_PATH = '/api/v2/sys_negotiator_NegotiatorConfig'
 const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfig?attrs=*,biobankId(refEntityType)'
+const EXTERNAL_RESOURCES_API_PATH = '/api/ejprd/bbmri/external_sources'
 /**/
 
 /* Query Parameters */
@@ -170,7 +171,7 @@ export default {
 
       for (const activeFilter in getters.activeFilters) {
       // skip the filter that was just changed
-        if (activeFilter !== filterName) {
+        if (activeFilter !== filterName && activeFilter !== 'external_catalogs') {
           var tempList = ''
           // iterate over active filters and add its ID to tempList (E.G: DNA,SERUM,)
           for (const option in getters.activeFilters[activeFilter]) {
@@ -291,6 +292,58 @@ export default {
     commit('SetCartValidationStatus', false)
     commit('SetCollectionsToSelection', { collections, bookmark })
     commit('SetSearchHistory', getters.getHumanReadableString)
+  },
+  GetExternalCatalogsResources ({
+    commit,
+    getters
+  }, { catalog, skip }) {
+    if (skip === undefined) {
+      skip = 0
+    }
+    const externalSourcesFilter = getters.externalResourcesFilters.externalSources
+    const diagnosisAvailableFilter = getters.externalResourcesFilters.diagnosisAvailable
+    const countryFilter = getters.externalResourcesFilters.country
+    const nameFilter = getters.externalResourcesFilters.name
+    const ressourceTypeMapper = {
+      BIOBANK: 'BiobankDataset',
+      REGISTRY: 'PatientRegistryDataset'
+    }
+    const ressourceTypesFilter = getters.externalResourcesFilters.ressourceTypes
+      ? getters.externalResourcesFilters.ressourceTypes.map(type => ressourceTypeMapper[type])
+      : undefined
+
+    const currentExternalCatalogResources = getters.externalResources
+    if (externalSourcesFilter && diagnosisAvailableFilter) {
+      externalSourcesFilter.forEach(source => {
+        if (catalog === undefined || catalog === source.id) {
+          commit('RemoveExternalCatalogResources', source.id)
+          if (source.id in currentExternalCatalogResources && currentExternalCatalogResources[source.id].page.number === skip) {
+            commit('AddExternalCatalogResources', {
+              catalog: source.id,
+              resources: currentExternalCatalogResources[source.id]
+            })
+          } else {
+            const url = `${EXTERNAL_RESOURCES_API_PATH}/${source.id}?` +
+              `diagnosisAvailable=${diagnosisAvailableFilter.join(',')}&` +
+              `${ressourceTypesFilter ? `resourceType=${ressourceTypesFilter.join(',')}&` : ''}` +
+              `${countryFilter ? `country=${countryFilter.join(',')}&` : ''}` +
+              `${nameFilter ? `name=${nameFilter}&` : ''}` +
+              `limit=10&skip=${skip}`
+            api.get(url).then(
+              response => {
+                commit('AddExternalCatalogResources', {
+                  catalog: source.id,
+                  resources: response
+                })
+              },
+              error => {
+                commit('SetError', error)
+              }
+            )
+          }
+        }
+      })
+    }
   }
 }
 // /@molgenis-ui/molgenis-theme/dist/themes/mg-molgenis-blue-4.css
