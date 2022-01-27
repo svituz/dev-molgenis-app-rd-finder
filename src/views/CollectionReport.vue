@@ -107,9 +107,9 @@
               <hr>
               <h5><b>Main Contact</b></h5>
               <p> </p>
-              <p>{{ this.collection.contact.first_name }} {{ this.collection.contact.last_name }} <br>
-              <a :href="'mailto:' + this.collection.contact.email">
-                      <span> {{this.collection.contact.email}}</span>
+              <p>{{ this.getName(this.collection) }} <br>
+              <a :href="'mailto:' + this.getMail(this.collection)">
+                      <span> {{this.getMail(this.collection)}}</span>
               </a>
               </p>
             </div>
@@ -243,6 +243,14 @@ export default {
     toggleDiseaseMatrix () {
       this.show_disease = true
       this.show_gi = false
+    },
+    getName (collection) {
+      const firstName = collection.contact.first_name ? this.collection.contact.first_name : ''
+      const lastName = collection.contact.last_name ? this.collection.contact.last_name : ''
+      return firstName + ' ' + lastName
+    },
+    getMail (collection) {
+      return this.collection.contact.email ? this.collection.contact.email : ''
     },
     getCode (subCollection, type) {
       var code = (subCollection.diagnosis_available[0] === undefined) ? '' : subCollection.diagnosis_available[0].code
