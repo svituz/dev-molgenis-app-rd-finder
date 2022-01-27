@@ -255,6 +255,9 @@ export default {
       return firstName + ' ' + lastName
     },
     getMail (collection) {
+      if (!collection.email) {
+        return ''
+      }
       return this.collection.contact.email ? this.collection.contact.email : ''
     },
     getCode (subCollection, type) {
