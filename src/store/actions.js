@@ -190,10 +190,7 @@ export default {
         url = url.slice(0, -2)
       }
 
-      console.log(url)
       fetchData(url, filterName)
-      console.log('after fetch:')
-      console.log(getters.dynamicFilters)
     }
   },
   GetBiobankIds ({ commit, getters }) {
@@ -203,12 +200,8 @@ export default {
     if (getters.biobankRsql) {
       url = `${url}&q=${encodeRsqlValue(getters.biobankRsql)}`
     }
-    console.log('GetIDs:')
-    console.log(url)
     api.get(url)
       .then(response => {
-        // console.log('handler getbiobankids')
-        // console.log(response.items)
         // commit('SetCountryList', response)
         commit('SetBiobankIds', response.items.map(item => item.data.id))
       }, error => {

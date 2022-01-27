@@ -421,7 +421,6 @@ export default {
           Synonyms: this.collection.sub_collections[key].description
         })
       }
-      console.log(items)
       return items
     },
     checkFunding () {
@@ -437,7 +436,6 @@ export default {
       return ''
     },
     getInfoItems () {
-      console.log(this.collection.biobank)
       const allItems = [
         { info_type: 'Acronym:', info_field: this.formatString(this.collection.biobank.acronym) },
         { info_type: 'Type of host institution:', info_field: this.formatString(this.checkHost) },
