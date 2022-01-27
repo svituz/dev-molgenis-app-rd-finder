@@ -245,8 +245,13 @@ export default {
       this.show_gi = false
     },
     getName (collection) {
+      if (!collection.contact) {
+        return ''
+      }
       const firstName = collection.contact.first_name ? this.collection.contact.first_name : ''
       const lastName = collection.contact.last_name ? this.collection.contact.last_name : ''
+      console.log('Contact:')
+      console.log(collection.contact)
       return firstName + ' ' + lastName
     },
     getMail (collection) {
