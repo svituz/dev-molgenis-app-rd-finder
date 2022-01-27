@@ -250,8 +250,6 @@ export default {
       }
       const firstName = collection.contact.first_name ? this.collection.contact.first_name : ''
       const lastName = collection.contact.last_name ? this.collection.contact.last_name : ''
-      console.log('Contact:')
-      console.log(collection.contact)
       return firstName + ' ' + lastName
     },
     getMail (collection) {
@@ -439,6 +437,7 @@ export default {
       return ''
     },
     getInfoItems () {
+      console.log(this.collection.biobank)
       const allItems = [
         { info_type: 'Acronym:', info_field: this.formatString(this.collection.biobank.acronym) },
         { info_type: 'Type of host institution:', info_field: this.formatString(this.checkHost) },
@@ -469,8 +468,6 @@ export default {
 
       var toPush
       const fields = this.collection.biobank.fields_display.split('_INSTANCE_')
-      console.log(fields)
-      console.log(this.collection.biobank)
       const reducedItems = []
       for (const field in fields) {
         var displayItem = String(fields[field]).slice(5).replaceAll('_', ' ').toUpperCase()

@@ -24,7 +24,7 @@ const NEGOTIATOR_CONFIG_API_PATH = '/api/v2/sys_negotiator_NegotiatorEntityConfi
 /**/
 
 /* Query Parameters */
-export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available(label,uri,code),name,type,order_of_magnitude(*),size,sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories),parent_collection,quality(*),data_categories(label,uri))'
+export const COLLECTION_ATTRIBUTE_SELECTOR = 'collections(id,description,materials,diagnosis_available(label,uri,code),name,type,order_of_magnitude(*),size,sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories),parent_collection,quality(*),data_categories(label,uri),diagnosis_available(*))'
 
 const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = () => {
   const collectionRsql = initialCollectionColumns.filter(icc => icc.rsql).map(prop => prop.rsql)
@@ -35,7 +35,8 @@ const COLLECTION_REPORT_ATTRIBUTE_SELECTOR = () => {
     rsqlStart += collectionRsql.join(',')
   }
 
-  return `${rsqlStart},biobank(id,name,juridical_person,country,url,contact),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories)`
+  // return `${rsqlStart},biobank(id,name,juridical_person,country,url,contact,ressource_types,acronym,description,bioresource_reference,type_of_host,source_of_funding,target_population,year_of_establishment,ontologies_used,imaging_available,also_listed,host_is,other_inventories,associated_data,additional_associated,additional_ontologies,text5085,biomaterials_available_in_biobanks),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories,diagnosis_available(*),ressource_types)`
+  return `${rsqlStart},biobank(*),contact(title_before_name,first_name,last_name,title_after_name,email,phone),sub_collections(name,id,sub_collections(*),parent_collection,order_of_magnitude,materials(label,uri),data_categories,diagnosis_available(*),ressource_types)`
 }
 /**/
 
