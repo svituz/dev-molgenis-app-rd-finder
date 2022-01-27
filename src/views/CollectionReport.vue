@@ -253,7 +253,7 @@ export default {
       return firstName + ' ' + lastName
     },
     getMail (collection) {
-      if (!collection.email) {
+      if (!collection.contact.email) {
         return ''
       }
       return this.collection.contact.email ? this.collection.contact.email : ''
