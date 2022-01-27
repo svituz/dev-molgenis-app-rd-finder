@@ -420,6 +420,7 @@ export default {
           Synonyms: this.collection.sub_collections[key].description
         })
       }
+      console.log(items)
       return items
     },
     checkFunding () {
